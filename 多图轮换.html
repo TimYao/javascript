@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>無標題文件</title>
+<script type="text/javascript" src="../jquery/js/jquery-1.7.1.js"></script>
+<script type="text/javascript">
+  window.onload = function()
+  {
+      var div1 = document.getElementById("div1");
+      var aA = div1.getElementsByTagName("a");
+      var divo = div1.children;
+      var aDiv = divo[2].getElementsByTagName("div");
+      var lengths = aDiv.length-1;
+      var arr = [];
+      var iNow = 1;
+      for(var i=0;i<aDiv.length;i++)
+      {
+          aDiv[i].index = i;
+          arr.push([aDiv[i],aDiv[i].offsetLeft,aDiv[i].offsetTop]);
+      }
+      aA[0].onclick = aA[1].onclick = move;
+      function move()
+      { 
+         if(this.className==="l")
+         {
+           iNow--;
+           var newarrr = arr.slice(iNow+2).concat(arr.slice(iNow,iNow+1),arr.slice(iNow+1,lengths));
+           arr = newarrr;
+           iNow = 1;
+         }else if(this.className==="r"){
+           iNow++;
+           var newarrr = arr.slice(iNow-1,iNow).concat(arr.slice(iNow),arr.slice(iNow-2,iNow-1));
+           arr = newarrr;
+           iNow = 1;
+         }
+         for(var i=0;i<aDiv.length;i++)
+         { 
+             for(var j=0;j<arr.length;j++)
+             {
+                 if(arr[j][1]===230)
+                 {
+                     var index = j;
+                     break;
+                 }
+             }
+             $(aDiv).eq(i).stop(true).animate({
+              'left':arr[i][1],'top':arr[i][2],'opacity':0.5,"z-index":-1
+             },'slow').end().eq(index).animate({"z-index":5,"opacity":1},'slow');
+         }
+      } 
+  }
+</script>
+<style>
+*{padding:0;margin:0;}
+  #div1{position:relative;width:700px;margin:20px auto;padding-top:40px;}
+  .div2{width:250px;height:100px;color:#fff;opacity:0.5;position:absolute;}
+  .divo{width:610px;margin:0px 50px 0 50px;clear:both;float:left;}
+  .l{position:absolute;left:0;}
+  .r{position:absolute;right:0;}
+  .divo div{z-index:-1;}
+  .div_1{left:50px;}
+  .divo .div_2{left:230px;top:60px;opacity:1;z-index:5;}
+  .div_3{right:50px;}
+</style>
+</head>
+
+<body>
+   <div id="div1">
+      <a href="javascript:void(0);" class="l">left</a>
+      <a href="javascript:void(0);" class="r">right</a>
+      <div class="divo">
+         <div class="div2 div_1"><img src="img/1.jpg" width="250" height="100" alt=""></div>
+         <div class="div2 div_2"><img src="img/2.jpg" width="250" height="100" alt=""></div>
+         <div class="div2 div_3"><img src="img/3.jpg" width="250" height="100" alt=""></div>
+      </div>
+   </div>
+</body>
+</html>

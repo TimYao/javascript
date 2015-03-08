@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<style>
+*{ margin:0; padding:0;}
+li{ list-style:none;}
+
+#ul1{width:366px;height:auto; margin:20px auto; position:relative;}
+#ul1 li{width:100px;height:100px;border:1px #000000 solid;background:red;float:left;margin:10px;display:inline;}
+</style>
+<script type="text/javascript" src="move.js"></script>
+<script>
+window.onload = function(){
+	var aLi = document.getElementsByTagName('li');
+	var arr = [];
+	var iZindex = 2;
+	var oInput = document.getElementById('input1');
+	var num = aLi.length;
+	var n = aLi.length;
+	var newsArr = [];
+	var result = [];
+	
+	oInput.onclick = function(){
+	    var newA = random();
+		for(var i=0;i<aLi.length;i++){
+            aLi[i].onmouseover = null;
+            aLi[i].onmouseout = null;
+			startMove(aLi[i],{left : arr[newA[i]][0],top : arr[newA[i]][1]});
+		}
+		//延迟再次运行效果防止两种运动冲突
+		setTimeout(function(){
+			 moves();
+		},1000);
+	};
+    
+
+	//随机产生
+	function random()
+	{
+	    var arrs = [];
+		var result = [];
+	    if(newsArr.length==0)
+	    {
+	        for(var i=0;i<num;i++)
+            {
+                newsArr[i]=i;
+            }
+	    }
+		for(var j=0;j<n;j++)
+		 {
+			var a = newsArr.splice(Math.floor(Math.random()*(num-1)),1);
+			num--;
+			result.push(a[0]);
+		 }
+         var tkey = result.splice(0,1);    //防止冲突  结果一样
+		 var tkey1 = result.splice(2,1);   //防止冲突  结果一样
+		 result.length-2;
+		 result.push(tkey[0]);  
+		 result.push(tkey1[0]);
+		 newsArr = result;
+		 return result;
+	}
+	
+	//布局转换
+	
+	for(var i=0;i<aLi.length;i++){
+		arr.push([aLi[i].offsetLeft,aLi[i].offsetTop]);
+	}
+
+	for(var i=0;i<aLi.length;i++){
+		aLi[i].style.position = 'absolute';
+		aLi[i].style.left = arr[i][0] + 'px';
+		aLi[i].style.top = arr[i][1] + 'px';
+		aLi[i].style.margin = 0; //清除其他影响定位的距离
+	}
+	
+	moves();
+	
+	function moves()
+	{
+	   for(var i=0;i<aLi.length;i++){
+		  aLi[i].index = i;   
+          aLi[i].onmouseover = function(){
+		      this.style.zIndex = iZindex++;
+			  startMove(this,{width:200,height:200,marginLeft:-50,marginTop:-50});
+		  };
+		  aLi[i].onmouseout = function(){
+			  startMove(this,{width:100,height:100,marginLeft:0,marginTop:0});
+		  };
+	  }
+	}
+	
+};
+</script>
+</head>
+
+<body>
+<input type="button" value="随机" id="input1" />
+<ul id="ul1">
+	<li>1</li>
+    <li>2</li>
+    <li>3</li>
+    <li>4</li>
+    <li>5</li>
+    <li>6</li>
+    <li>7</li>
+    <li>8</li>
+    <li>9</li>
+</ul>
+</body>
+</html>

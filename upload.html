@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>無標題文件</title>
+<style>
+*{padding:0;margin:0;}
+#div{width:318px;height:298px;border:1px solid #000;position:relative;}
+#span{width:100px;height:100px;border:1px solid #093;position:absolute;top:0;left:0;}
+#div1{position:absolute;width:400px;height:300px;border:1px solid #000;overflow:hidden;left:400px;top:0;}
+#img1{position:absolute;left:0;top:0;clip:rect(20,20,20,20);}
+</style>
+<script type="text/javascript">
+window.onload = function()
+{
+   var ofile = document.getElementById("upfile");
+   var odiv = document.getElementById("div");
+   var odiv1 = document.getElementById("div1");
+   var ospan = document.getElementById("span");
+   var oimg = odiv.getElementsByTagName("img")[0];
+   var oimg1 = odiv1.getElementsByTagName("img")[0];
+
+   ofile.onchange = function()
+   {
+	   oimg.src = sz(this);
+	   oimg1.src = sz(this);
+   }
+  
+   
+   function sz(obj)
+   {
+		if(obj.files)  
+        {  
+		    var objectURL = window.URL.createObjectURL(ofile.files[0]);
+            return objectURL; 
+        }
+		oimg1.style.top=0;
+		oimg1.style.left=0;  
+        return obj.value; 
+   }
+   
+   odiv.onmousedown=document.onmousedown = function(ev)    //阻止默认事件
+   {
+	   ev.preventDefault();     
+       return false;
+   }
+   
+   
+   
+   //边界值
+   var T = ospan.offsetTop+10;   //top border
+   var R = ospan.offsetLeft+ospan.offsetWidth-10;  //rignt border
+   var B = ospan.offsetTop+ospan.offsetHeight-10;  //bottom border
+   var L = ospan.offsetLeft+10;  //left border
+   //ospan的边界值
+   var sT = ospan.offsetTop;
+   var sR = ospan.offsetLeft+ospan.offsetWidth;
+   var sB = ospan.offsetTop+ospan.offsetHeight
+   var sL = ospan.offsetLeft
+   var iNum = 0;
+   var btn = true;
+   
+   ospan.onmousedown=function(ev)
+	   {
+			   var oev = ev || window.event; 
+			   var x = oev.clientX;         //点击下x
+			   var y = oev.clientY;         //点击下y
+			   var disx = x-ospan.offsetLeft;  //求x间距
+			   var disy = y-ospan.offsetTop;   //求y间距
+		   
+				   document.onmousemove = function(ev)
+				   {    
+						var ev = ev || window.event;
+						var disx_new = ev.clientX;
+						var disy_new = ev.clientY;
+						var l = ev.clientX-disx;
+						var t = ev.clientY-disy;
+						
+						console.log(disx_new);
+						console.log(R);
+							  if(disx_new>R)
+							 {
+								 iNum = 1;
+								 btn = false;
+								 ospan.style.cursor = "e-resize";
+							 }else if(disx_new<L)
+							 {
+								 iNum = 2;
+								 btn = false;
+								ospan.style.cursor = "w-resize";
+							 }else if(disy_new>B)
+							 {
+								 iNum = 3;
+								 btn = false;
+								 ospan.style.cursor = "s-resize"
+							 }else if(disy_new<T)
+							 {
+								 iNum = 4;
+								 btn = false;
+								 ospan.style.cursor = "n-resize"
+							 }else{
+								 ospan.style.cursor = "default";	 
+							 }
+							 
+							 if(iNum==1 && btn==false)
+							{
+								ospan.style.width = ev.clientX - disx + "px";
+							}else if(iNum==2 && btn==false)
+							{
+								ospan.style.width = ospan.offsetLeft + (ev.clientX-disx) + "px";
+							}
+						
+							if(btn==true)
+							{
+								if(ospan.setCapture)
+								{
+									ospan.setCapture();
+								}
+								if(l<0)
+								{
+									l=0;
+								}else if(l>odiv.offsetWidth-ospan.offsetWidth-2)
+								{
+									l=odiv.offsetWidth-ospan.offsetWidth-2;
+								}
+								
+								if(t<0)
+								{
+									t=0;
+								}else if(t>odiv.offsetHeight-ospan.offsetHeight-2)
+								{
+									t=odiv.offsetHeight-ospan.offsetHeight-2;
+								}
+								var scaleX = l/(odiv.offsetWidth-ospan.offsetWidth-2);
+								var scaleY = t/(odiv.offsetHeight-ospan.offsetHeight-2);
+								
+								ospan.style.left = l+'px'; 
+								ospan.style.top = t+'px';
+								oimg1.style.left = scaleX*(odiv1.offsetWidth-oimg1.offsetWidth)+'px';
+								oimg1.style.top = scaleY*(odiv1.offsetHeight-oimg1.offsetHeight)+'px';
+								ospan.style.cursor="move";
+								return false;	
+						}
+				   }
+				   document.onmouseup =function()
+				   {
+					   if(ospan.releaseCapture)
+					   {
+						 ospan.releaseCapture(); 
+					   }
+					   document.onmousemove =null;
+					   document.onmouseup = null;
+					   ospan.style.cursor="default";
+					   btn = true;	  
+				   }
+				   return false;	 
+		     
+	 }
+}
+</script>
+</head>
+
+<body>
+<input type="file" id="upfile" />
+<div class="div" id="div">
+ <img src="1.jpg" alt="" id="img" width="318" height="298"/>
+  <span id="span"></span>
+</div>
+<div class="div1" id="div1">
+ <img src="1.jpg" alt="" id="img1">
+</div>
+</body>
+</html>

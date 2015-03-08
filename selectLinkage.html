@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>select模拟器(联动)</title>
+<link rel="stylesheet" href="css/css.css" type="text/css"/>
+<script type="text/javascript" src="/demo/jquery/js/jquery-1.7.1.js"></script>
+<script type="text/javascript" src="js/LinkageSelect.js"></script>
+<script type="text/javascript">
+window.onload = function()
+{
+   LinkageSelect({
+      id : 'menuBox',
+	    evt : 'click',
+	    ajaxUrl:'/demo/ajax/select.php',
+	    type:'get',
+	    inputId : 'txt_put',
+	    defTxt:'请选择栏目',
+	    defKey:"-1",
+	    dateId:'dateid',
+	    datelayerRoot :['datelayer','0'],
+	    cssClass:{
+	  	 hoverClass:'hovers',
+	  	 btnShow:''
+	    },
+      callBack:function()
+      {
+      	  //提交或其他操作
+          //console.log($("#txt_put").val());
+      }
+   });
+}
+</script>
+</head>
+<body>
+<h1 class="bigTitle">select模拟器(联动)</h1>
+<div class="divInfor">
+    <p class="ptitle">插架介绍：</p>
+    <br>
+    <p>LinkageSelect 模拟联动select器(ajax请求,多项联动)<br>
+      该插件需要初始一级列表内容<br/>width为自适应</p>
+    <div class="sDiv"><span>参数：</span>
+       <p>id(容器ID)</p>
+       <p>evt(事件类型 click)</p>
+       <p>ajaxUrl(ajax数据请求地址)</p>
+       <p>type(ajax type请求方式)<span class="blue">默认GET</span></p>
+       <p>inputId(后端接入数据提交inputId号默认txt_put)<span class="blue">例如：这里id号是txt_put</span></p>
+       <p>defTxt(是否有自定义提示默认值)<span class="blue">例如：defTxt:'请选择项目'</span></p>
+       <p><strong>请注意：</strong><span><strong>如果defTxt无值，首项内容展示第一条内容，二级开始展示提示选择信息，例如：请选择</strong></span></p>
+       <p>defKey(默认值id标示，默认为-1)<span class="blue">例如：defKey:"-1"</span></p>
+       <p>dateId(后端数据ID) <span class="blue">例如：这里是dateId:'dateid'</span></p>
+       <p>datelayerRoot<span class="blue">(顶层级定义[生成层级标注号，默认datelayer,0级别开始]) //html首层datelayer对应</span></p>
+       <p>cssClass(hover,btn样式转换class) <span class="blue">例如：.menBox ul .hovers{background:#000;}</span></p>
+       <p>callBack回调函数(可以表单提交，也可不在callBack外做操作)</p>
+       <p>提交<code class="blue">input[type='hiden']</code>隐藏域各值以,分隔name值可以自行设置</p>
+       <p>后端请求需要返回的数据格式:<br/>
+         <span class="blue">{"父id":{"子id":"内容","子id":"内容","子id":"内容"}},以这种格式为好，如果许改变，需前端协调修改</span>
+       </p>
+    </div>
+</div>
+<p class="demos">demo</p>
+<div class="blank_20px"></div>
+<div class="selectMenBox">
+  <div id="menuBox" class="menBox">
+  <input type="hiden" value="" id="txt_put" name="myhidden">
+  <div class="men_box">
+  	 <div class="meth">
+  	 	<span class="spanTitle"></span>
+  	 	<a href="javascript:void(0);" hidefocus="true"></a>
+  	 </div>
+  	 <ul datelayer = "0">
+  	 	<li dateid="00_1"><span>select01</span></li>
+  	 	<li dateid="00_2"><span>select02</span></li>
+  	 	<li dateid="00_3"><span>select03</span></li>
+  	 	<li dateid="00_4"><span>select04</span></li>
+  	 	<li dateid="00_5"><span>select05</span></li>
+  	 </ul>
+  </div>
+ </div>
+</div>
+<p class="demos">默认样式联动</p>
+<script type="text/javascript" src="js/LinkageDefaultSelect.js"></script>
+<div class="alloption">
+  <div class="mulitipart">
+    <div class="selectOp" data_main=0>
+      <select>
+        <option value="-1">选择省份</option>
+        <option data_id=1 value="北京">北京</option>
+        <option data_id=2 value="天津">天津</option>
+        <option data_id=3 value="山西">山西</option>
+      </select>
+    </div>
+ </div>
+</div>
+</body>
+</html>

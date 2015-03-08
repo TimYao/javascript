@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head>
+  <title> New Document </title>
+  <meta name="Generator" content="EditPlus">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <script type="text/javascript">
+   window.onload = function()
+   {
+     var str = (window.location.hash.substring(1));
+	   //console.log(window.location);
+	   var ospan = document.getElementById("ospan");
+	   var ospan1 = document.getElementById("ospan1");
+	   var iFrame = document.createElement("iframe");
+	   var olderValue = ospan.innerHTML;
+	   ospan.innerHTML = str + olderValue;
+	   //iFrame.style.display = "none";
+	   iFrame.src = "http://www.ylx.com/demo/javascript/kyjson/c.html#"+ospan1.innerHTML;
+     document.body.appendChild(iFrame);
+   }
+  </script>
+ </head>
+
+ <body>
+ <span id="ospan">123</span>
+ <span id="ospan1">456</span>
+ </body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<style type="text/css">
+*{ margin:0; padding:0;}
+.divo{margin-bottom:50px;}
+.div1{width:180px;height:180px;position:relative;left:50px;top:50px;overflow:hidden;}
+#span,#span1{width:100px;height:100px;position:absolute;left:0;top:0;width:100px;height:100px;background:#000;filter:alpha(opacity=50);opacity:0.5;display:none;}
+.div2{width:500px;height:500px;overflow:hidden;position:absolute;left:400px;top:50px;display:none;}
+.div2 img {position:absolute;left:0;top:0;}
+</style>
+<script type="text/javascript">
+window.onload = function(){
+    new EnlargeImg('div1','div2','span');
+}
+EnlargeImg.prototype={  
+    mouseOverDiv:function()//div上做mouseover
+    {  
+       var This = this;
+       this.oDiv1.onmouseover = function()
+        {
+            This.oSpan.style.display = "block";
+            This.oDiv2.style.display = "block";
+            This.oWidth = This.oSpan.offsetWidth;
+            This.oHeight = This.oSpan.offsetHeight;
+        }
+    },
+    mouseOverSpan:function()//操作小模块上做mouseover
+    {
+       var This = this;
+       this.oSpan.onmouseover = function()
+       {
+            this.style.display = "block";
+            This.oDiv2.style.display = "block";
+       }
+    },
+    mouseOut:function()//mouseout
+    {
+       var This = this;
+       this.oDiv1.onmouseout = function()
+       {
+           This.oSpan.style.display = "none";
+           This.oDiv2.style.display = "none";
+       }
+    },
+    mouseMove:function()//mouseMove
+    {  
+        var This = this;
+        this.oDiv1.onmousemove = function(ev)
+        {
+            var ev = ev || window.event;
+            This.L = ev.clientX - This.oDiv1.offsetLeft-This.oWidth/2;
+            This.T = ev.clientY - This.oDiv1.offsetTop-This.oHeight/2;
+            This.setPosition(This.L,This.T);
+            This.oScaleX = This.L/(This.oDiv1.offsetWidth-This.oWidth);
+            This.oScaleY = This.T/(This.oDiv1.offsetHeight-This.oHeight);
+            This.oImg.style.left =This.oScaleX*(This.oDiv2.offsetWidth-This.oImg.offsetWidth)+'px';
+            This.oImg.style.top = This.oScaleY*(This.oDiv2.offsetHeight-This.oImg.offsetHeight)+'px';
+        }
+    },
+    setPosition:function(L,T)//设置鼠标位置
+    {
+        if(L<0)
+        {
+            L=0;
+        }else if(L>this.oDiv1.offsetWidth-this.oWidth)
+        {
+            L=this.oDiv1.offsetWidth-this.oWidth;
+        }
+        if(T<0)
+        {
+            T=0;
+        }else if(T>this.oDiv1.offsetHeight-this.oHeight)
+        {
+            T=this.oDiv1.offsetHeight-this.oHeight;
+        }
+        this.oSpan.style.left = L+'px';
+        this.oSpan.style.top = T+'px';
+    },
+    getStyle:function(obj,attr)//样式获取
+    {  
+       return obj.currentStyle ? obj.currentStyle[attr] : document.defaultView.getComputedStyle(obj,false)[attr];
+    } 
+}
+function EnlargeImg(mid,cid,sid)   //参数介绍mid(小图所在容器ID) cid(大图所在容器ID) sid(覆层模块ID)
+{
+    this.oDiv1 = document.getElementById(mid);
+    this.oDiv2 = document.getElementById(cid);
+    this.oSpan = document.getElementById(sid);
+    if(this.oDiv1&&this.oDiv2&&this.oSpan)
+    {
+        this.oImg = this.oDiv2.getElementsByTagName('img')[0];
+        this.oWidth = parseInt(this.getStyle(this.oSpan,'width'));
+        this.oHeight = parseInt(this.getStyle(this.oSpan,'height'));
+        this.mouseOverDiv();
+        this.mouseOverSpan();
+        this.mouseOut();
+        this.mouseMove();
+    }else{
+        return false;
+    } 
+}    
+</script>
+</head>
+
+<body>
+<div class="divo">
+<div class="div1" id="div1">
+    <img src="img/b2.jpg" alt="" />
+    <span id="span"></span>
+</div>
+<div class="div2" id="div2">
+    <img src="img/b1.jpg" alt=""/>
+</div>
+</div>
+</body>
+</html>

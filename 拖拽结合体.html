@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>無標題文件</title>
+<style>
+*{padding:0;margin:0;}
+.div{width:100px;height:100px;background:red;position:absolute;z-index:2;}
+.div1{border:1px dashed #000;position:absolute;z-index:2}
+#span{width:31px;height:31px;background:yellow;position:absolute;right:0;bottom:0;}
+.div3{width:200px;height:200px;background:blue;position:absolute;top:150px;left:200px;z-index:1;}
+</style>
+<script>
+window.onload = function()
+{
+	drag("div","span","div3");
+}
+
+function drag(id,tid,oid)
+{
+	var odiv = document.getElementById(id);
+	var ospan = document.getElementById(tid);
+	var odiv3 = document.getElementById(oid);
+	
+	//碰撞体的四边界定
+	var L2 = odiv3.offsetLeft;
+	var T2 = odiv3.offsetTop;
+	var R2 = odiv3.offsetLeft + odiv3.offsetWidth;
+	var B2 = odiv3.offsetTop + odiv3.offsetHeight;
+	
+	odiv.onmousedown = fndown;
+	
+	function fndown(ev)                         //整个块的拖拽
+	{
+		var ev = ev || window.event;
+		var disx = ev.clientX - this.offsetLeft;
+		var disy = ev.clientY - this.offsetTop;
+		
+		
+		//创建虚线框
+		var obox = document.createElement("div");
+		obox.className = "div1";
+		
+		obox.style.width = this.offsetWidth-2+'px';
+		obox.style.height = this.offsetHeight-2+'px';
+		obox.style.left = this.offsetLeft + 'px';
+		obox.style.top = this.offsetTop + 'px';
+		
+		document.body.appendChild(obox);
+		
+		document.onmousemove = function(ev)
+		{
+			var ev = ev || window.event;
+			if(odiv.setCapture)                     //ie关于拖拽选住文字兼容解决,加捕获 setCapture
+			{
+				odiv.setCapture();
+			}
+			obox.style.left = ev.clientX - disx + 'px';
+			obox.style.top = ev.clientY - disy + 'px';
+		}
+		document.onmouseup = function()
+		{
+			if(odiv.releaseCapture)                //ie关于拖拽选住文字兼容解决,去掉捕获
+			{
+				odiv.releaseCapture();
+			}
+			var l = parseFloat(obox.style.left);
+			var t = parseFloat(obox.style.top);
+			var r = l+odiv.offsetWidth;
+			var b = t+odiv.offsetHeight;
+			
+			if(r<L2 || b<T2 || l>R2 || t>B2)
+			{
+				odiv3.style.background="blue";
+			}else{
+				odiv3.style.background="green";
+			}
+			odiv.style.left = obox.style.left;
+			odiv.style.top = obox.style.top;
+			document.body.removeChild(obox);
+			document.onmousemove = null;
+			document.onmouseup = null;
+		}
+		return false;	
+	}
+	
+	ospan.onmousedown = function(ev)     //右下角的控制改变窗口的大小
+	{
+	   odiv.onmousedown = null;
+	   document.onmousedown = null;
+	   document.onmouseup = null;
+	   var ev = ev || window.event;
+	   var disx = ev.clientX - this.offsetLeft;
+	   var disy = ev.clientY - this.offsetTop; 	
+	   	
+	    document.onmousemove = function(ev)
+		{
+			var ev = ev || window.event;
+			if(ospan.setCapture)
+			{
+				ospan.setCapture()
+			}
+			odiv.style.width = ev.clientX - disx+ospan.offsetWidth+"px";
+			odiv.style.height = ev.clientY - disy+ospan.offsetHeight+"px";
+		}
+			
+		document.onmouseup = function()
+		{
+			if(ospan.releaseCapture)
+			{
+				ospan.releaseCapture();
+			}
+		    document.onmousemove = null;
+			document.onmouseup = null;
+			odiv.onmousedown = fndown;
+		}
+		return false;		
+	}	
+}
+</script>
+</head>
+
+<body>
+<div class="div" id="div">sdfsdf
+<span id="span"></span>
+</div>
+sdfsdfsdf
+<div class="div3" id="div3"></div>
+</body>
+</html>

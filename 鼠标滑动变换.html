@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>無標題文件</title>
+<script type="text/javascript" src="/jquery/jquery-1.7.1.js"></script>
+<style>
+*{padding:0;margin:0;}
+  ul li{list-style:none;}
+  #images_slide { width: 450px; height: 334px; position: absolute; top: 50%; left: 50%; margin: -167px 0 0 -225px; overflow:hidden; }
+  #images_slide img { position: absolute; top: 0; left: 0; alpha(opacity:100); opacity:1; }
+</style>
+<script type="text/javascript">
+ window.onload = function()
+ {
+    var images_slide = document.getElementById("images_slide");
+    var aImg = images_slide.getElementsByTagName("img");
+    var aImgs = [];
+    var abtn = images_slide.getElementsByTagName("a")[0];
+    var affect = [function(obj){gets(obj,-1,0);},function(obj){gets(obj,0,-1);},function(obj){gets(obj,1,0);},function(obj){gets(obj,0,1)}];
+    var nD=0;
+    abtn.onmouseover = function()
+    {   
+       var n = new Date();
+       var nTime = n.getTime();
+       if(nTime-nD<500)
+       {
+          return false;
+       }
+       for(var i=0;i<aImgs.length;i++)
+       {  
+           aImgs[i].style.zIndex = (i+2);
+       }
+       var oImg = aImgs.pop();
+       aImgs.unshift(oImg);
+       affect[parseInt(Math.random()*10)%aImg.length](oImg);
+       nD = nTime;
+    }
+    for(var i=0;i<aImg.length;i++)
+    {
+        aImgs.push(aImg[i]);
+        aImgs[i].inLeft = aImg[i].offsetLeft;
+        aImgs[i].inTop = aImg[i].offsetTop;
+        aImgs[i].timer = null;
+    }
+    function gets(obj,iLeft,iTop)
+    {
+      doMove(obj,{left:obj.offsetLeft+iLeft*obj.offsetWidth,top:obj.offsetTop+iTop*obj.offsetHeight,opacity:0},function fun(){
+          obj.style.zIndex = 1;
+          doMove(obj,{left:obj.inLeft,top:obj.inTop,opacity:100});
+      }); 
+    }
+    function doMove(obj,iTargent,fun)
+    {
+       obj.timer = null;
+       obj.icur = 0;
+       obj.ispeed = 0;
+       clearInterval(obj.timer);
+       obj.timer = setInterval(function(){
+          var flg = true;
+          for(var attr in iTargent)
+          {
+             if(attr === "opacity")
+             {
+                obj.icur = parseInt(parseFloat(getStyle(obj,attr))*100); 
+             }else{
+                obj.icur = parseInt(getStyle(obj,attr));
+             }
+             obj.ispeed = (iTargent[attr]-obj.icur)/5;
+             obj.ispeed = obj.ispeed>0?Math.ceil(obj.ispeed):Math.floor(obj.ispeed);
+             if(obj.icur!=iTargent[attr])
+             {
+                 flg = false;
+             }
+             if(attr === "opacity")
+             {
+                obj.style.opacity = (obj.icur+obj.ispeed)/100;
+                obj.style.filter = "alpha(opacity="+(obj.icur+obj.ispeed)+")";
+             }else{
+                obj.style[attr] = (obj.icur+obj.ispeed)+'px';
+             }
+          }
+          if(flg)
+          {
+             clearInterval(obj.timer);
+             if(fun)
+             {
+                fun.call(obj);
+             }
+          }
+          
+       },30);
+    }
+    function getStyle(obj,attr)
+    {
+        return obj.currentStyle ? obj.currentStyle[attr]:document.defaultView.getComputedStyle(obj,false)[attr];
+    }
+ }
+</script>
+</head>
+
+<body>
+  <div id="images_slide">
+  <a href="javascript:;" style="display:block; width:450px; height:334px; position:absolute; top:0px; left:0px; background:red; filter: alpha(opacity:0); opacity:0; z-index:10;"></a>
+    <img src="img/11.jpg" alt="1" style="z-index:1;" />
+    <img src="img/12.jpg" alt="2" style="z-index:2;" />
+    <img src="img/13.jpg" alt="3" style="z-index:3;" />
+  </div>
+</body>
+</html>

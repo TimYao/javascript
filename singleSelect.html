@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>select模拟器(非联动)</title>
+<link rel="stylesheet" href="css/css.css" type="text/css"/>
+<script type="text/javascript" src="js/SimulationSelect.js"></script>
+<script type="text/javascript" src="/demo/jquery/js/jquery-1.7.1.js"></script>
+<script type="text/javascript">
+window.onload = function()
+{
+     //调用模式
+     //demo1
+     SimulationSelect({
+        id:'menBox',
+        evt:'click',
+        dateId:'k_id',
+        defaultText:'所有活动',
+        defaultWidth:'max',
+        cssClass:{
+           hoverClass:'hovers',
+           zIndex:'55'
+        }
+     });
+     
+     //demo2
+     SimulationSelect({
+        id:'menBox1',
+        evt:'click',
+        dateId:'k_id',
+        defaultText:'所有活动',
+        defaultWidth:'normal',
+        cssClass:{
+           hoverClass:'hovers',
+           zIndex:'50'
+        },
+        url:'/demo/ajax/single.php',
+        type:'get',
+        data:'key=1&name=leo',
+        callBack:function(reponse){
+           var reponse = eval('('+reponse+')');
+           if(reponse.state==="200")
+           {  
+             $("#menBox1").after($("<span style='margin-left:5px;'>请求成功!</span>")); 
+           }else{
+             $("#menBox1").after($("<span style='margin-left:5px;'>请求失败!</span>")); 
+           }
+        }
+     });
+
+     //demo3
+     SimulationSelect({
+        id:'menBox2',
+        evt:'click',
+        dateId:'k_id',
+        defaultText:'所有活动',
+        defaultWidth:'normal',
+        cssClass:{
+           hoverClass:'hovers',
+           zIndex:'50'
+        }
+     });  
+}
+</script>
+<body>
+<!--html 格式-->
+<h1 class="bigTitle">select模拟器(非联动)</h1>
+<div class="divInfor">
+    <p class="ptitle">插架介绍：</p>
+    <br/>
+    <p>SimulationSelect 模拟select器(支持自动伸缩，固定最大值，自定义固定值)<br>该插件可以单容器里多个men_box单体，也可多容器（考虑到分离时需求）</p>
+    <p class="blue">列表下的 a标签可以替换为其他任意，根据需求改变</p>
+    <div class="sDiv"><span>参数：</span>
+       <p>id(容器ID)</p>
+       <p>evt(事件类型 click/mouser[暂不支持Ajax])</p>
+       <p>defaultText(默认自定义显示值)</p>
+       <p>dateId(数据ID，例如：k_id)</p>
+       <p>defaultWidth(宽度设置: max[列表下最大值],normal[自动伸缩默认值],数字[固定宽度])</p>
+       <p>cssClass(borderCss(例如：2px solid #000),下边框,btnIconClass按钮变换class,hoverClass鼠标hoverclass)</p>
+       <p>index=1(标注默认显示项目,不标注，无defaultText默认显示首选项)<br/>
+           <span class="blue small">注意：首要显示标注index=1的项目，其次是defaultText值，再是列表第一项目</span>
+       </p>
+       <br/>
+       <p>内支持列表项ajax请求</p>
+       <p>url:[ajax请求地址]</p>
+       <p>type:[请求类型]默认GET</p>
+       <p>data:[发送请求数据]默认为空<br/>
+           <span>数据格式：json格式，内部可以有数组格式</span><br/>
+           <span>例如：</span>
+           <span class="blue">
+              data:{
+                 key:1
+              }
+           </span>
+           <span class="blue">
+              data:{
+                 key:[]
+              }
+           </span>
+       </p>
+    </div>
+</div>
+
+<!--demo-->
+<p class="demos">demo</p>
+<div class="selecModel">
+ <p class="title">1、单个容器多选项目(menBox下面有两个men_box)----不是很适合做Ajax请求</p> 
+ <div id="menBox" class="menBox">
+    <div class="men_box">
+     <div class="meth">
+       <input type="text" id="ted"/>
+       <span></span>
+       <a href="javascript:void(0);" hidefocus=true></a>
+     </div>
+     <ul>
+          <li><a href="" k_id=0>上班途中上班途上班途中上班途</a></li>
+          <li><a href="" k_id=1>我的办公桌我的办公桌我的办公桌我的办公桌</a></li>
+          <li><a href="" k_id=2>宠物乐园</a></li>
+          <li><a href="" k_id=3>最喜欢的图片</a></li>
+          <li><a href="" k_id=4>我的第一台相机</a></li>
+     </ul>
+   </div> 
+   <div class="men_box">
+     <div class="meth">
+       <input type="text" id="ted1"/>
+       <span></span>
+       <a href="javascript:void(0);" hidefocus=true></a>
+     </div>
+     <ul>
+          <li><a href="" k_id=0>上班途中上班途上班途中上班途</a></li>
+          <li><a href="" k_id=1>我的办公桌</a></li>
+          <li><a href="" k_id=2>宠物乐园</a></li>
+          <li><a href="" k_id=3>最喜欢的图片</a></li>
+          <li><a href="" k_id=4>我的第一台相机</a></li>
+     </ul>
+   </div>
+ </div>
+</div>
+<div class="selecModel">
+ <p class="title">2、多个容器选项目(menBox1与menBox2下面有各自men_box)</p> 
+ <p class="title">(1)、列表内容触发请求</p> 
+ <div id="menBox1" class="menBox">
+    <div class="men_box">
+     <div class="meth">
+       <input type="text" id="ted2"/>
+       <span></span>
+       <a href="javascript:void(0);" hidefocus=true></a>
+     </div>
+     <ul>
+          <li><a href="" k_id=0>上班途中上班途上班途中上班途</a></li>
+          <li><a href="" k_id=1>我的办公桌我的办公桌我的办公桌我的办公桌</a></li>
+          <li><a href="" k_id=2>宠物乐园</a></li>
+          <li><a href="" k_id=3>最喜欢的图片</a></li>
+          <li><a href="" k_id=4>我的第一台相机</a></li>
+     </ul>
+   </div> 
+ </div>
+ <div class="blank_20px"></div>
+ <p class="title">(2)、按钮发送搜索请求</p> 
+ <div id="menBox2" class="menBox">
+    <div class="men_box">
+     <div class="meth">
+       <input type="text" id="ted3"/>
+       <span></span>
+       <a href="javascript:void(0);" hidefocus=true></a>
+     </div>
+     <ul>
+          <li><a href="" k_id=0>上班途中上班途上班途中上班途</a></li>
+          <li><a href="" k_id=1>我的办公桌我的办公桌我的办公桌我的办公桌</a></li>
+          <li><a href="" k_id=2>宠物乐园</a></li>
+          <li><a href="" k_id=3>最喜欢的图片</a></li>
+          <li><a href="" k_id=4>我的第一台相机</a></li>
+     </ul>
+   </div> 
+ </div>
+ <a href="###" class="btn">按钮请求AJAX</a>
+ <script type="text/javascript">
+   $(".btn").on('click',function(){
+       id = $("#ted3").val();
+       $.ajax({
+          url:'/demo/ajax/single.php',
+          type:'get',
+          dateType:'json',
+          async:true,
+          data:{
+             k_id:id,
+             name:'leo'
+          },
+          success:function(reponse){
+            var reponse = eval('('+reponse+')');
+            if(reponse.state==="200")
+            {  
+               $(".btn").after($("<span style='margin-left:5px;'>请求成功!</span>")); 
+            }else{
+               $(".btn").after($("<span style='margin-left:5px;'>请求失败!</span>")); 
+            }
+          },
+          error:function(){
+
+          }
+       })
+   });
+ </script>
+</div>
+</body>
+</html>

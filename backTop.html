@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html id="html">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!--<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9" />-->
+<script type="text/javascript" src="/demo/javascript/js/BackTop.js"></script>
+<title>无标题文档</title>
+<link href="/demo/javascript/css/css.css" media="screen" type="text/css" rel="stylesheet">
+<script type="text/javascript">
+window.onload = function()
+{
+   	
+   //返回顶部功能调用
+   new MoveSlider({
+   	 id:'aTop',
+   	 showPosition:0,
+   	 isHideHeight:true,
+   	 isClick:true,
+   	 isSport:true,
+   	 hideHeight:700
+   });
+   
+   new MoveSlider({
+     id:'aTop1',
+     showPosition:0,
+     isHideHeight:false,
+     isClick:true,
+     isSport:true,
+     hideHeight:700
+   });
+
+   //扩展内容调用
+   new MoveSlider({
+     id:'oDiv',
+     showPosition:0,
+     isHideHeight:true,
+     isClick:false,
+     isSport:false,
+     hideHeight:0
+   });
+}
+</script>
+</head>
+
+<body class="bodys">
+<h1 class="bigTitle">移动滚动</h1>
+<div class="divInfor">
+    <p class="ptitle">插架介绍：</p>
+    <p>moveSlider 移动滚动支持返回顶部常见的要求,可扩展单纯内容实现滚动,该插件暂时支持定位在顶部
+    </p>
+    <div class="sDiv"><span>参数：</span>
+       <p>id(操作触发对象ID)</p>
+       <p>showPosition(对象显示位置，注意这里是根据底部算起的，值越大越向上)</p>
+       <p>isHideHeight(是否可以有影藏)<span class="blue">默认false</span></p>
+       <p>isClick(是否可以点击)<span class="blue">默认false</span></p>
+       <p>isSport(是否有缓冲运动效果)<span class="blue">默认false</span></p>
+       <p>hideHeight(影藏高度，与isHideHeight有关)</p>
+       <p>备注：
+       	<span class="blue">标准浏览器采用<code>position:fixed</code></span>&nbsp;&nbsp;
+       	<span class="blue">ie6采用<code>position:absolute</code>已解决select层级影响问题,请在定位元素时给定其z-index，如无给定，默认999，iframe为999-2</span><br/>
+        <span class="blue">注意：对象的左右距离位置,自己定义，可以给定值，也可通过JS给值</span>
+       </p>
+    </div>
+</div>	
+<a href="javascript:void(0);" id="aTop" hidefocus=false>TOP</a>
+<a href="javascript:void(0);" id="aTop1" hidefocus=false>TOP</a>
+<div id="oDiv" >可以扩展内容</div>
+</body>
+</html>

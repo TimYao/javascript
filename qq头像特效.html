@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head>
+  <title> New Document </title>
+  <meta name="Generator" content="EditPlus">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <style>
+  *{padding:0;margin:0;}
+  .div{width:150px;height:150px;margin:0 auto;}
+  ul li{list-style:none;}
+  .div ul{width:148px;border:1px solid #000;display:none;}
+  .div ul li{margin:3px 0px;background:red;}
+  .div ul li span{display:block;background:#000;color:#fff;width:20px;height:20px;}
+  </style>
+  <script>
+  window.onload = function(){
+     var oDiv = document.getElementById('div');
+	 var oBtn = oDiv.getElementsByTagName('input')[0];
+	 var oUl = oDiv.getElementsByTagName('ul')[0];
+     var aLi = oUl.getElementsByTagName('li');
+     var length = aLi.length;
+	 var iScale = [];
+	 var timer = [];
+     var ispeed = 0;
+	 var fontSize = {x:20,y:20};
+	  oBtn.onclick = function()
+	  {
+	     oUl.style.display = "block";
+	  }
+      
+	  for(var i=0;i<length;i++)
+	  {  
+         aLi[i].index = i;
+		 timer[i] = null;
+         iScale[i]=10;
+	     aLi[i].onmouseover = setover;
+		 
+	  }
+
+      function setover()
+	  { 
+		 var iscale = 0;
+	     for(var i=0;i<length;i++)
+		 {
+		    if(Math.abs(i-this.index)===0)
+			{
+			   iscale=22;
+			}else{
+			   iscale=10;
+			}
+			set(i,iscale);
+		 }
+	  }
+	  
+	  function set(index,iTar)
+	  { 
+		 if(timer[index])
+		 {
+		    clearInterval(timer[index]);
+		 }
+         timer[index] = setInterval(function(){
+			 var iScales = iScale[index];
+		     var thisSpan = aLi[index].getElementsByTagName("span")[0];
+		     if(iScales==iTar)
+			 {  
+			    clearInterval(timer[index]);
+				timer[index] = null;
+			 }else{
+			    if(iScales>iTar)
+				{
+				   iScales--; 
+				}else{
+				   iScales++;
+				}
+
+              thisSpan.style.width = fontSize.x*iScales/10+'px';
+			  thisSpan.style.height = fontSize.y*iScales/10+'px';
+              iScale[index] = iScales;
+			 }
+		 },30);   
+
+	  }
+      /* 
+      for(var i=0;i<length;i++)
+	  {
+         aLi[i].Index=i;
+	     aLi[i].onmouseover = dropOver;
+		 iScale[i] = 10;
+         timer[i]=null;
+	  }
+      
+	  function dropOver()
+	  {
+	     var iscale=0;
+		 for(var i=0;i<length;i++)
+		 {
+		    switch(Math.abs(i-this.Index))
+			{
+			   case 0:
+                     iscale=22;
+			   break;
+			   case 1:
+			         iscale=10; 
+			   break;
+			   default:
+			         iscale=10;  
+			}
+			setDrop(i,iscale); //0 22  1 10  2 10 
+		 }
+	  }
+
+	  function setDrop(index,iTargent)
+	  {
+	      
+		  if(timer[index])
+		  {
+		     clearInterval(timer[index]);
+		  }
+		  timer[index]=setInterval(function(){
+			  var iScales = iScale[index];
+			  var thisSpan = aLi[index].getElementsByTagName("span")[0];
+		      if(iScales==iTargent)
+			  {
+			     clearInterval(timer[index]);
+				 timer[index] = null;
+			  }else{
+			     if(iScales>iTargent)
+				 {
+				     iScales--;
+				 }else{
+				     iScales++;
+				 }
+                 thisSpan.style.width = fontSize.x+iScales+'px';
+                 thisSpan.style.height = fontSize.y+iScales+'px';
+                 iScale[index]=iScales
+			  }
+		  }, 30);
+	  }*/
+  }
+  </script>
+  <!--<script type="text/javascript">
+   window.onload = function()
+  {
+  	 var oDiv = document.getElementById("div");
+  	 var obtn = oDiv.getElementsByTagName("input")[0];
+  	 var oul = oDiv.getElementsByTagName("ul")[0];
+  	 var aSpan = oul.getElementsByTagName("span");
+  	 var ali = oul.getElementsByTagName("li");
+  	 var length = aSpan.length;
+  	 var flg = false;
+  	 var ispeed = 1;
+  	 var timer = [];
+  	 var icur = 20;
+  	 var iTarg = 40;
+  	 obtn.onclick = function()
+  	 {
+         oul.style.display = "block";
+         flg = true;
+         mouseUl();
+  	 }
+  	 function mouseUl()
+  	 {
+  	 	if(flg===true)
+	  	 {  
+	        for(var i=0;i<aSpan.length;i++)
+	        {
+	           ali[i].index = i;
+	           timer[i] = null;
+	           ali[i].onmouseover = mouseOver;
+	        }
+	  	 }
+  	 }
+  	 function mouseOver()
+  	 {
+  	 	 var iNow = 0;
+  	 	 var This = this;
+  	 	 var oSpan = this.getElementsByTagName("span")[0];
+  	 	 
+         for(var j=0;j<aSpan.length;j++)
+         {   
+         	 clearInterval(timer[j]);
+             if(Math.abs(j-this.index)!=0)
+             {
+                aSpan[j].style.width=icur+"px";
+                aSpan[j].style.height=icur+"px";
+             }else{
+             	timer[This.index] = setInterval(function(){
+	         	 if(aSpan[This.index].offsetWidth===iTarg && aSpan[This.index].offsetHeight===iTarg)
+	         	 {
+	                clearInterval(timer[This.index]);
+	                aSpan[This.index].style.width = iTarg+"px";
+	                aSpan[This.index].style.height = iTarg+"px";
+	         	 }else{
+	         	 	aSpan[This.index].style.width = aSpan[This.index].offsetWidth+ispeed+'px';
+	                aSpan[This.index].style.height = aSpan[This.index].offsetHeight+ispeed+'px';
+	         	 }       	 
+	            },30);
+             }
+         }
+  	 }
+  } 
+  </script>-->
+ </head>
+
+ <body>
+  <div class="div" id="div">
+    <input type="button" value="click"/>
+	<ul>
+	  <li><span>1</span></li>
+	  <li><span>2</span></li>
+	  <li><span>3</span></li>
+	</ul>
+  </div>
+ </body>
+</html>

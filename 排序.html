@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>無標題文件</title>
+<script type="text/javascript">
+ function Quicksort(arr)
+ {
+    if(arr.length<=1)
+	{
+		return arr;
+    }
+	
+	var left = [];
+	var right = [];
+	var numValue = null;
+	var num = Math.floor(arr.length/2);
+	numValue = arr.splice(num,1);
+	
+	for(var i=0;i<arr.length;i++)
+	{
+		if(arr[i]<numValue)
+		{ 
+			left.push(arr[i]);
+		}else{
+		    right.push(arr[i]);	
+		}
+    }	
+	return Quicksort(left).concat(numValue,Quicksort(right));
+ }
+ 
+alert(Quicksort([5,29,13,40,10,3]));
+</script>
+</head>
+
+<body>
+</body>
+</html>

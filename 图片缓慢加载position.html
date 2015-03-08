@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title> New Document </title>
+		<meta name="Generator" content="EditPlus">
+		<meta name="Author" content="">
+		<meta name="Keywords" content="">
+		<meta name="Description" content="">
+		<meta charset="utf-8">
+		<script type="text/javascript" src="move.js"></script>
+		<style>
+			* {
+				padding:0;
+				margin:0;
+			}
+			ul li {
+				list-style:none;
+				width:150px;
+				margin:5px;
+			}
+			.box ul {
+				position:relative;
+			}
+			.box ul li{position:absolute;/*filter:alpha(opacity=0);opacity:0;*/}
+			.box ul li img {
+				width:150px;
+				/*height:300px;*/
+			}
+			.box {
+				width:400px;
+				margin:30px auto;
+			}
+			.clear {
+				height:0;
+				clear:both;
+				font-size:0;
+				line-height:0;
+			}
+		</style>
+		<script type="text/javascript">
+			window.onload = function() {
+				
+				var box = document.getElementById('box');
+
+				/*图片数据     可以通过AJAX获得数据*/  
+				var aImg = {
+					infor:["/images/1.jpg","/images/2.jpg","/images/3.jpg","/images/4.jpg","/images/5.jpg",'/images/6.jpg',"/images/7.jpg","/images/8.jpg","/images/9.jpg","/images/10.jpg","/images/11.jpg","/images/12.jpg","/images/13.jpg","/images/14.jpg","/images/15.jpg","/images/16.jpg","/images/17.jpg"]
+				}; 
+                var length = aImg.infor.length;
+				function createColum(length,colum)
+				{
+				    var oUl = document.createElement('ul');
+				    var m = 0;
+				    for(var i=0;i<length;i++)
+				    {   
+				    	var newImg = new Image();
+				    	newImg.src = aImg.infor[i];
+				    	(function(oImg,oLi,newImg){
+                          newImg.onload = function()
+				    	  {
+				    	  	newImg.onload = null;
+				    		oImg.src = this.src;
+				    		oLi.appendChild(oImg);
+				    	    oUl.appendChild(oLi);
+				    	    m++;
+				    	    if(m===length)
+				    	    {  
+				    	       funs();
+                               return;
+				    	    }
+				    	  }
+				    	})(document.createElement('img'),document.createElement('li'),newImg);	
+				    }
+				    box.appendChild(oUl);
+				    function funs()
+				    {   
+				    	var aLi = box.getElementsByTagName('li');
+	                    var obj = {L:[],M:[],R:[]};
+					    for(var i=0;i<aLi.length;i++)
+					    {
+	                       aLi[i].btn = true;
+					    }
+					    for(var i=0;i<length;i++)
+					    { 
+					   	  if(i%3==0)
+					       {
+					           obj.L.push(aLi[i].offsetHeight); 
+					       }else if(i%3==1){
+					           obj.M.push(aLi[i].offsetHeight);
+					       }else{
+					           obj.R.push(aLi[i].offsetHeight);
+					       }
+					    }
+					    fun(obj,aLi);
+					    toChange();
+				    }   
+				}
+				function fun(obj,aLi)
+				{ 
+				   for(var i=0;i<length;i++)
+				   {
+				       switch(i%3)
+				       {
+				          case 0:
+				          aLi[i].style.left=0;
+				          var setp=Math.floor(i/3);
+				          var sum = setFun(i,setp);
+				          aLi[i].style.top=sum+'px'; 
+				          break;
+				          case 1:
+				          aLi[i].style.left='155px';
+				          var setp=Math.floor(i/3);
+                          var sum = setFun(i,setp);
+                          aLi[i].style.top=sum+'px';
+				          break;
+				          case 2:
+				          aLi[i].style.left='310px';
+				          var setp=Math.floor(i/3);
+                          var sum = setFun(i,setp);
+                          aLi[i].style.top=sum+'px';
+				          break;
+				       }
+				   } 
+				    function setFun(iNum,setp)
+                    { 
+                        var sum = 0 ;
+                        if(iNum%3==0)
+                        {
+                            for(var j=0;j<setp;j++)
+                            {
+                               sum += obj.L[j]+5;
+                            }
+                            return sum;
+                        }else if(iNum%3==1)
+                        {
+                            for(var j=0;j<setp;j++)
+                            {
+                               sum += obj.M[j]+5;
+                            }
+                            return sum;
+                        }else{
+                            for(var j=0;j<setp;j++)
+                            {
+                               sum += obj.R[j]+5;
+                            }
+                            return sum;
+                        }  
+                    }
+				}
+                createColum(length,3);
+                window.onscroll = function()
+				{
+					toChange();
+				}
+				//图片可视区加载函数
+				function toChange()
+				{	
+					var aLi = box.getElementsByTagName('li');
+					var veHeight = document.documentElement.clientHeight;   //可视区高度 document.documentElement.clientHeight
+					var scrollHeight = document.documentElement.scrollTop || document.body.scrollTop;   //滚动高度兼容写法
+					for(var i=0;i<aLi.length;i++)
+					{
+						if(posTop(aLi[i])<=veHeight+scrollHeight && aLi[i].btn)
+						{
+							aLi[i].style.opacity=0;
+							aLi[i].style.filter="alpha(opacity=0)";
+							startMove(aLi[i],{opacity:100});
+							aLi[i].btn = false;
+						}
+					}	
+				}
+				//获得单个Li标签的OFFSETTOP
+				function posTop(obj)
+				{
+					var result = 0;
+					while(obj)
+					{
+						result+=obj.offsetTop;
+						obj = obj.offsetParent;
+					}
+					return result;
+				}
+			}
+		</script>
+	</head>
+
+	<body>
+		<div class="box" id="box">
+          
+		</div>
+	</body>
+</html>

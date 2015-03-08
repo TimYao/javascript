@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>無標題文件</title>
+<script type="text/javascript">
+  window.onload = function()
+  {
+  	 var ul_one = document.getElementById("ul_one");
+     var aLi = ul_one.getElementsByTagName("li");
+     var aUl = ul_one.getElementsByTagName("ul");
+     var timer = null;
+     /*for(var i=0;i<aLi.length;i++)
+     {
+         aLi[i].index = i
+         aLi[i].onmouseover = mouseover;
+         ul_one.onmouseout = mouseout;
+     }
+       function mouseover(ev)
+      {  
+         var ev = ev || window.event;
+         ev.cancelBubble = true;
+         clearTimeout(timer);
+         if(this.parentNode.className === "ul_one" || this.parentNode.className === "ul_sub")
+         {  
+            var osub = this.getElementsByTagName("ul");
+            if(this.parentNode.className==="ul_one")
+            {
+               var aUls = ul_one.children;
+               for(var i=0;i<aUls.length;i++)
+               {
+                   var all = aUls[i].getElementsByTagName("ul");
+                   if(all && all.length>0)
+                   {
+                      all[0].style.display = "none";
+                   }
+               }
+            }
+            if(osub && osub.length>0)
+            {
+               osub[0].style.display = "block"; 
+            }else{
+               
+               return false;
+            }
+         }   
+      }
+      function mouseout()
+      {
+         timer = setTimeout(function(){
+            for(var i=0;i<aUl.length;i++)
+            {
+               aUl[i].style.display = "none";
+            }
+         },1000); 
+      }*/
+	  ul_one.onmouseover = function(ev)
+	  {
+		  clearTimeout(timer);
+		  var ev = ev || window.event;
+		  var op = (ev.target.tagName).toLowerCase();
+		  var nextNode = ev.target.nextElementSibling || ev.target.nextSibling;
+		  if(nextNode&&nextNode.nodeType!=3)
+		  {
+			  var par = nextNode.parentNode.parentNode;
+		  }
+		  
+		  for(var i=0;i<aUl.length;i++)
+		  {
+			  if(aUl[i]!=par&&par)
+			  {
+				  aUl[i].style.display = "none"; 
+			  }
+		  }
+		  if(nextNode&&nextNode.tagName&&(nextNode.tagName).toLowerCase()==='ul')
+		  {
+			  nextNode.style.display = "block";
+		  }
+	  }
+	  ul_one.onmouseout = function()
+	  {
+	     timer = setTimeout(function(){
+            for(var i=0;i<aUl.length;i++)
+            {
+               aUl[i].style.display = "none";
+            }
+         },1000);
+	  }
+  }
+</script>
+
+<style>
+*{padding:0;margin:0;}
+  .div{width:100px;border:1px solid #000;margin:30px auto;}
+  .div h2{font-size:12px;font-weight:normal;height:25px;line-height:25px;text-align:center;cursor:pointer;}
+  ul{list-style:none;}
+  ul li{cursor:pointer;}
+  .ul_sub{border-top:1px solid #ccc;display:none;}
+  .ul_sub li{border-bottom:1px solid #ccc;}
+</style>
+</head>
+
+<body>
+   <div class="div">
+      <ul class="ul_one" id="ul_one">
+          <li>
+             <h2>1</h2>
+             <ul class="ul_sub">
+               <li>
+                 <h2>1_1</h2>
+                 <ul class="ul_sub">
+                     <li>
+                      <h2>1_1_1</h2>
+                      <ul class="ul_sub">
+                         <li>
+                          <h2>1_1_1_1</h2>
+                         </li>
+                     </ul>
+                     </li>
+                 </ul>
+               </li>
+             </ul>
+          </li>
+          <li>
+            <h2>2</h2>
+            <ul class="ul_sub">
+               <li>
+                 <h2>2_1</h2>
+               </li>
+            </ul>
+          </li>
+          <li><h2>3</h2></li>
+      </ul>
+   </div>
+</body>
+</html>

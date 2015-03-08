@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head>
+  <title> New Document </title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="Generator" content="EditPlus">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <style>
+  *{padding:0;margin:0;}
+  .div{width:160px;height:160px;margin:20px auto;}
+  ul li{list-style:none;}
+  .div ul li{float:left;width:30px;height:20px;line-height:20px;text-align:center;background:#000;color:#fff;margin:3px;display:inline;cursor:pointer;}
+  </style>
+  <script>
+  /*
+    autor@Tim
+     
+    开关运用的重要性  
+  */
+  var sNum1='';
+  var sqr='';
+  var btn = false;  //对重复点击符号屏蔽
+  var btn2 = false; //对当点击只有等号，不点击其他号时除去上次的点击记录状况
+  window.onload = function(){
+     var oInput = document.getElementById('input');
+	 var oDiv = document.getElementById('div');
+	 var oUl = oDiv.getElementsByTagName('ul')[0];
+	 var aLi = oUl.getElementsByTagName('li');
+
+	 for(var i=0;i<aLi.length;i++)
+	 {
+	    aLi[i].onmousedown = dropPut;
+	 }
+  }
+  function dropPut()
+  {
+     var str = this.innerHTML.replace(' ','');
+     var oInput = document.getElementById('input');
+	 switch(str)
+	 {
+	    case 'c': 
+        oInput.value = 0;
+		sNum1='';
+		btn = false;
+		btn2 = false;
+		break;
+		case '+':
+		case '-':
+		case '×':
+		case '÷':
+			 if(sNum1.length!=0 && btn==true && btn2==true)
+		     {  
+				oInput.value = cls(parseInt(sNum1),parseInt(oInput.value),sqr);
+				btn = false;
+			 }
+             sNum1=oInput.value;
+			 sqr = str; //写后面实现可以连续符号计算
+			 btn2 = true;
+		break;
+		case '=':
+		    if(btn==true && btn2==true)
+		    {  
+			   oInput.value=cls(parseInt(sNum1),parseInt(oInput.value), sqr);
+			   btn = false;
+			   btn2 = false;
+			}
+		break;
+		default:
+            oInput.value = 0;
+		    oInput.value = parseInt(str)+parseInt(oInput.value);
+			btn = true;
+		break;
+	 }
+  }
+  function cls(iNum1,iNum2,sqr)
+  { 
+	 var result = 0;
+     switch(sqr)
+	 {
+	    case '+':
+        result = iNum1+iNum2;
+		break;
+		case '-':
+		result = iNum1-iNum2;
+		break;
+		case '×':
+		result = iNum1*iNum2;
+		break;
+		case '÷':
+        result = iNum1/iNum2;
+		break;
+	 }
+	 return result;
+  }
+  </script>
+ </head>
+
+ <body>
+  <div class="div" id="div">
+    <input type="text" id="input" value="0"/>
+    <ul>
+	  <li>0</li>
+	  <li>1</li>
+	  <li>2</li>
+	  <li>3</li>
+	  <li>4</li>
+	  <li>5</li>
+	  <li>6</li>
+	  <li>7</li>
+	  <li>8</li>
+	  <li>9</li>
+	  <li>c</li>
+	  <li>+</li>
+	  <li>-</li>
+	  <li>×</li>
+	  <li>÷</li>
+	  <li>=</li>
+	</ul>
+  </div>
+ </body>
+</html>

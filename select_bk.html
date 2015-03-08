@@ -1,0 +1,527 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>输入法</title>
+<style type="text/css">
+	*{padding:0;margin:0;}
+	ul li{list-style:none;}
+	.menBox{width:600px;margin:20px auto;}
+	.menBox .men_box{margin:30px auto;position:relative;float:left;margin-right:10px;display:inline;background:url(img/oy.gif) no-repeat left center;height:35px;}
+	.menBox ul{border:1px solid #d8d8da;border-top:none;display:none;float:left;display:block;position:absolute;background:#fff;z-index:1;height:100px;overflow-y:scroll;}
+	.menBox ul li{cursor:pointer;clear:both;word-wrap:break-word;background:#fdfdfd;border-top:1px solid #e5e5e5;padding-left:10px;line-height:30px;}
+	.menBox ul li span{line-height:normal;}
+	.menBox input{display:none;}
+	.menBox .meth{position:relative;font-size:12px;/*background:#fff;border:1px solid #000;border-bottom:none;*/background:url(img/os.gif) repeat-x left center;height:35px;left:2px;line-height:35px;}
+	.menBox .meth span{display:block;float:left;white-space:nowrap;text-indent:10px;padding-right:5px;}
+	.menBox .meth a{float:left;background:url(img/btn.gif) no-repeat left top;height:35px;width:35px;}
+	.clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden;}
+	*html .clearfix{height:1%;}
+</style>
+<script type="text/javascript" src="/ajax/ajax.js"></script>
+<script type="text/javascript">
+window.onload = function()
+{
+   menuBox({
+      id : 'menuBox',
+	  evt : 'click',
+	  callback : function(){  //待开发(回调函数)
+	  }
+   });
+}
+//函数定义
+function menuBox(oParm)
+{
+	var oId = oParm.id || '';
+	var evt = oParm.evt || 'click';
+	var callback = oParm.callback || function(){};//待开发
+    
+	var oMain = document.getElementById(oId);
+	if(!oId || !oMain)
+	{
+       alert('请传入正确容器ID');
+	}
+	var dateMId = '00';                     //虚拟父级ID值
+	//初次ajax请求数据
+    getAjax(dateMId,function(date){
+	    var length = dataLength(date);
+		var id= 0;
+		for(var attr in date)
+		{
+		    id=attr;
+		}
+		create(id,date,length);            //对数据进行生成select选择器
+	});
+
+	//获取数据长度
+	function dataLength(date)
+    {
+       var length = 0;
+	   for(var attr in date)
+	   {
+	      length++;
+	   }
+	   return length;
+	}
+    //生成模拟SELECT器
+    function create(id,date,creatNum)    //传入DATE 和数据长度
+	{   
+	   //生成模拟select	
+	   for(var attr in date)
+	   {
+		   for(var i=0;i<creatNum;i++)
+	       {
+			   createTag(date[attr],id,date[attr][0],date[attr][1]);
+		   }
+	   }
+	   sel(oMain); //调用处理生成select模拟器 
+	}
+	//createTag 生成模拟select结构 主要复用地方
+	function createTag(obj,key,parentId,dateLayer)
+	{
+		  var arr = [];
+		  var oMen_box = document.createElement('div');  //创建一层div
+		  var oMeth = document.createElement('div');     //创建二层div
+		  var oInput = document.createElement('input');  //创建INPUT
+		  var oSpan = document.createElement('span');    //创建模拟编辑span
+		  var oA = document.createElement('a');          //创建A标签
+          var oUl = document.createElement('ul');        //创建模拟下拉列表UL
+		  var thisParent = obj[0];
+          oA.href="javascript:void(0);";
+		  oA.setAttribute('hidefocus',true);
+		  oMen_box.className = 'men_box';
+		  oMeth.className = 'meth clearfix';
+		  oInput.setAttribute("type",'text');
+		  oInput.setAttribute("value",'');
+		 
+		  oUl.setAttribute('dateId',key);
+		  oUl.setAttribute('dateLayer',dateLayer);
+		  oSpan.setAttribute('class','spanTitle');
+		  var length = obj.length;
+
+		  if(obj[2]==='-1')
+		  {
+			 oSpan.innerHTML = '默认';  
+		  }
+		  for(var i=2;i<length;i++)
+		  {
+			 var oLi = document.createElement('li');
+			 oLi.setAttribute('dateId',key+"_"+(i-2));
+			 oLi.setAttribute('dateParentId',parentId);
+			 oLi.setAttribute('dateLayer',dateLayer);
+			 var oSpan1 = document.createElement('span');
+			 //导入数据
+			 if(obj[i]==='-1')
+			 {
+			    oSpan1.innerHTML = '默认'; 
+				oLi.setAttribute('thisNoid',obj[i]);
+			 }else{
+			    oSpan1.innerHTML = obj[i];    
+			 } 
+			 oLi.appendChild(oSpan1);
+			 oUl.appendChild(oLi);
+		  }
+		   
+		   oMeth.appendChild(oInput);
+		   oMeth.appendChild(oSpan);
+		   oMeth.appendChild(oA);
+		   oMen_box.appendChild(oMeth);
+		   oMen_box.appendChild(oUl);
+           oMain.appendChild(oMen_box);
+    }	
+	//select control 这里根据后端数据改动联动修改
+    function sel(oMain)
+	{
+		   var aMen_box = oMain.children;					//主容器下一级子元素
+		   var iLength = aMen_box.length;
+           for(var i=0;i<iLength;i++)
+		   {
+		       showSel(aMen_box[i])
+		   }
+		   function showSel(oParent)
+		   {
+		       var aChild = oParent.children;				//all
+			   var oMeth = aChild[0];						//meth
+			   var oUl = aChild[1];							//oUl
+			   var aLi = oUl.getElementsByTagName('li')     //li
+			   var aSubChild = oMeth.children;				//meth for all 
+			   var oInput = aSubChild[0];					//input 
+			   var oSpan = aSubChild[1];					//span
+			   var oA = aSubChild[2];						//a标签
+			   oUl.btn = false;                             //展开影藏开关标注
+			   var liLength = aLi.length                    //列表项长度记录
+               var thisBtnWidth = oA.offsetWidth
+
+			   //初始化默认上来的宽度
+			   oUl.style.width = oMeth.offsetWidth+'px';
+			   //默认INPUT VALUE
+			   oInput.value = '';
+               //初始化上来list列表影藏
+               oUl.style.display = "none"; 
+			   //模拟下拉A箭头加事件
+               oA["on"+evt]=function(ev) 
+			   {  
+				  if(oUl.btn===false)
+				  {  
+				     oUl.style.display = "block";
+					 oUl.btn = true;
+				  }else{
+					 oUl.style.display = "none";
+				     oUl.btn = false;
+				  }
+				  (ev || window.event).cancelBubble = true;
+			   }
+
+			   //列表项加事件
+			   for(var i=0;i<liLength;i++)
+			   {
+                   aLi[i].index = i;
+				   aLi[i]["on"+evt]=function(ev)
+				   {  
+				      var thisText = (this.children)[0].innerHTML;
+					  var thisWidth = (this.children)[0].offsetWidth;
+					  var thisID = this.getAttribute('dateid');
+					  var thisParentID = this.getAttribute('dateparentid');
+					  var thisNoid = this.getAttribute('thisNoid');
+					  var thisDateLayer = this.getAttribute('dateLayer');
+					  var oMenuBox = oMain.children;
+					  var obj = null;
+					  var thisBj = this;
+
+					  oSpan.innerHTML = thisText;
+					  oInput.value = thisText;
+					  oUl.style.width = oMeth.offsetWidth+'px';
+					  this.parentNode.style.display = "none";
+                      this.parentNode.btn = false;
+					  
+                      //关于点击是否创建下拉
+					  if(thisNoid!=='-1')    //创建请求
+					  {
+						 getAjax(thisID,function(date){
+							var length = dataLength(date);
+							var id= 0;
+							var oParentId = 0;
+							var sflg = true;
+							var sdate = false;
+							for(var attr in date)
+							{
+								id=attr;
+								var thisLayer = date[attr][1];
+								oParentId = date[attr][0];
+								var oNewObj = date[attr];          //备份返回数据
+								var obackArr = date[attr];
+								obackArr = obackArr.slice(2);
+								var lengths = obackArr.length;     //数据length
+							}
+							//返回数据不为空不处理
+							if(obackArr[1].length>0)
+							{
+							   sdate=true;
+							}else{
+							   sdate=false;
+							}
+							//如果找到生成控件
+							if(oMenuBox && sdate)
+							{  
+							   var oLength = oMenuBox.length;
+							   for(var n=0;n<oLength;n++){
+								  var oUls = (oMenuBox[n].children)[1];
+							      var oUldatelay = oUls.getAttribute('datelayer');
+								  if(thisLayer===oUldatelay)
+								  {
+									sflg = false;
+									obj = oMenuBox[n];
+									break;
+								  }
+							   } 
+							}
+							//控制层级数据关联
+							if(sflg && sdate)//新创建
+						    { 
+							    create(id,date,length);   
+						    }else{
+                               setDateLayer(thisBj,obj,oMain,obackArr,sdate,oParentId,id,oUldatelay,thisLayer,lengths);
+							}	
+						 });
+						  
+					  }else{
+						//点击默认时都初始化为默认
+						var men_box = oMain.children;
+						var mlength = men_box.length;    
+						var thisClickobj = this.parentNode.parentNode;  //当前点击事件对象的二级父层
+                        var thisLayer = this.parentNode.getAttribute('datelayer');   //当前点击属于第几层
+						var thisLayer_1 = thisBj.parentNode.getAttribute('datelayer');
+						var men_box_3 = [];
+						//找当前点击默认值所属第几层级
+						for(var i=0;i<mlength;i++)
+						{
+						    var ochild = men_box[i].children;
+							var thislayers = ochild[1].getAttribute('datelayer'); //分别获取各自层标注
+							if(thislayers==thisLayer)
+							{
+							    var kflg = i;                        //位置标注
+							}	
+						}
+						//循环实现指定位置后面的点击置为默认
+						for(var j=kflg;j<mlength;j++)
+						{
+							var ochild = men_box[j].children;
+						    var thisInput = (ochild[0].children)[0];
+							var thisSpan = (ochild[0].children)[1];
+							thisInput.value = "-1";
+							thisSpan.innerHTML = "默认";
+						}
+
+						for(var i=0;i<mlength;i++)
+						{
+							var ochild = men_box[i].children;
+							var thislayers = ochild[1].getAttribute('datelayer');      //分别获取各自层标注
+							if(thislayers==thisLayer_1)
+							{
+								var kflgs = i;                                         //位置标注
+							}
+						    men_box_3.push(men_box[i]);                           //做移除点击对应对象之后所有    
+						}
+						var removeBox = [];
+						removeBox = men_box_3.slice(kflgs+1);
+						var removeLength = removeBox.length;
+						if(kflgs+1<mlength)
+						{
+							for(var j=0;j<removeLength;j++)
+							{  
+								oMain.removeChild(removeBox[j]);
+							}
+						}
+					  }
+					  (ev || window.event).cancelBubble = true; 
+				   }
+			   }
+
+			   //参数说明 thisBj点击列表中对应对象   obj存在层级别下的当前操作对象  oMain主容器对象 obackArr操作返回数据切割后数据对象
+			   //sdate(true or false)ajax请求后返回是否有数据 oParentId父级ID id数据ID  oUldatelay匹配层级 thisLayer当前层级 lengths(obackArr长度)
+			   function setDateLayer(thisBj,obj,oMain,obackArr,sdate,oParentId,id,oUldatelay,thisLayer,lengths)
+			   {
+				  //setRemove 根据返回数据情况，改变联动模拟select列表项
+				  function setRemove(oMain,sdate)
+				  {
+				       //返回有数据
+						var men_box_1 = oMain.children;                                    //所有层级对象
+						var mlength = men_box_1.length;    
+						var thisClickobj = thisBj.parentNode.parentNode;                  //当前点击事件对象的二级父层
+						var thisLayer_1 = thisBj.parentNode.getAttribute('datelayer');   //当前点击属于第几层
+						var men_box_2 = [];
+						//找当前点击默认值所属第几层级
+						if(sdate===true)
+					    {
+					       for(var i=0;i<mlength;i++)
+							{
+								var ochild = men_box_1[i].children;
+								var thislayers = ochild[1].getAttribute('datelayer');       //分别获取各自层标注
+								if(thislayers==thisLayer_1)
+								{
+									var kflg = i;                                           //位置标注
+								}
+								men_box_2.push(men_box_1[i]);                               //做移除点击对应对象之后所有    
+							}
+							var removeBox = [];
+							removeBox = men_box_2.slice(kflg+2);
+							var removeLength = removeBox.length;
+							if(kflg+1<mlength)
+							{
+								for(var j=0;j<removeLength;j++)
+								{  
+									oMain.removeChild(removeBox[j]);
+								}
+							}
+					   }else{
+					       //找当前点击默认值所属第几层级
+							for(var i=0;i<mlength;i++)
+							{
+								var ochild = men_box_1[i].children;
+								var thislayers = ochild[1].getAttribute('datelayer');      //分别获取各自层标注
+								if(thislayers==thisLayer_1)
+								{
+									var kflg = i;                                         //位置标注
+								}
+								 men_box_2.push(men_box_1[i]);                           //做移除点击对应对象之后所有    
+							}
+							var removeBox = [];
+							removeBox = men_box_2.slice(kflg+1);
+							var removeLength = removeBox.length;
+							if(kflg+1<mlength)
+							{
+							   for(var j=0;j<removeLength;j++)
+								{  
+								   oMain.removeChild(removeBox[j]);
+								}
+							}
+							
+						}
+			      }
+			      //替换内容
+				  if(obj)
+				  {   
+						var obox = obj.children;
+						var ometh = obox[0];
+						var oUls = obox[1];
+						var aLis = obox[1].getElementsByTagName('li');
+						var iLength = aLis.length;   //存在LI的length
+						var thisTag = ometh.children;
+						var thisInput = thisTag[0];
+						var thisSpan = thisTag[1];
+
+						oUls.setAttribute('dateid',id);
+						oUls.setAttribute('datelayer',oUldatelay);
+						if(iLength===lengths)
+						{  
+						   for(var k=0;k<iLength;k++)
+						   {
+							 if(k===0)
+							 {
+								(aLis[0].children)[0].innerHTML = '默认';
+								
+							 }else{
+								(aLis[k].children)[0].innerHTML = obackArr[k];
+							 }
+							 (aLis[k]).setAttribute('dateid',id+"_"+k);
+						   }
+						   thisTag.value = '-1';
+						   thisSpan.innerHTML = '默认';
+						}else if(iLength<lengths){                   //但数据长度大于已经存在的LI标签长度，创建多余的
+						   for(var k=0;k<iLength;k++)
+						   {
+							  if(k===0)
+							  {
+								(aLis[0].children)[0].innerHTML = '默认';
+							  }else{
+								(aLis[k].children)[0].innerHTML = obackArr[k];
+							  }
+							  (aLis[k]).setAttribute('dateid',id+"_"+k);
+						   }
+						   var ik = iLength;
+						   var lastObj = obackArr.slice(ik); 
+						   var iNum = lengths-iLength;
+						   var lastLength = lastObj.length;
+						   for(var i=0;i<lastLength;i++)
+						   {
+							  var oLi = document.createElement('li');
+							  var oSpan = document.createElement('span');
+							  oSpan.innerHTML = lastObj[i];
+							  oLi.setAttribute('dateid',id+"_"+(i+1)*ik);
+							  oLi.setAttribute('dateparentid',oParentId);
+							  oLi.setAttribute('datelayer',thisLayer);
+							  oLi.appendChild(oSpan);
+							  oUls.appendChild(oLi);
+						   }
+						   thisTag.value = '-1';
+						   thisSpan.innerHTML = '默认';
+						}else if(iLength>lengths){                   //当数据长度小于已近存在的LI标签长度，多余的删除
+
+						   for(var k=0;k<lengths;k++)
+						   {
+							  if(k===0)
+							  {
+								(aLis[0].children)[0].innerHTML = '默认';
+							  }else{
+								(aLis[k].children)[0].innerHTML = obackArr[k];
+							  }
+							  (aLis[k]).setAttribute('dateid',id+"_"+k);
+						   }
+						   var ik = k;
+						   for(var i=ik;i<iLength;i++)
+						   {
+							  oUls.removeChild(aLis[i]);
+						   }
+						   thisTag.value = '-1';
+						   thisSpan.innerHTML = '默认';
+						}
+
+                        setRemove(oMain,true);
+				  }else{
+                    setRemove(oMain,false);
+				  }
+			   }
+			   //document点击实现关闭列表项
+			   document.onclick = function(ev)
+			   {   
+				   var aUl = oMain.getElementsByTagName('ul');
+				   var length = aUl.length;
+				   for(var i=0;i<length;i++)
+				   {
+				     aUl[i].style.display = "none";
+					 aUl[i].btn = false;
+				   }
+				  (ev || window.event).cancelBubble = true;
+			   }
+		   }
+	}
+	//ajax调用 
+	function getAjax(dateId,callback)
+	{
+	   Vjajax({
+	      url:'/ajax/select.php',
+		  method : 'GET',
+		  data : {
+		     data_id:dateId
+		  },
+	      async : true,
+		  dataType : 'json',
+		  success : function(O) {
+	          var lastO = {};
+	          for(var attr in O)
+	          {
+	             if(attr!="state")
+	             {
+	                 lastO[attr] = O[attr];
+	             }
+	          }
+			 callback(lastO);
+			 if(typeof (O)===Object)
+			 {
+			    callback(eval(lastO));
+			 }else{
+			    return false;
+			 } 	   
+		  },
+		  failure : function(){
+			  alert('错误');
+		  }
+	   });
+	}
+	/*获取CSS样式*/
+	function getStyle(obj,attr)
+	{
+	  return obj.currentStyle ? obj.currentStyle[attr] : document.defaultView.getComputedStyle(obj,false)[attr];
+	}
+   /*获取指定class名字对象*/
+   function getByClass(obj,sClass)
+   { 
+	   var re = eval("/\\b"+sClass+"\\b/g");
+	   var result = [];
+	   if(obj.length>0)
+	   {
+	     var length = obj.length;
+		 var aobj = obj;
+		 
+	   }else{
+	       var aobj = obj.getElementsByTagName('*');
+		   var length = aobj.length;
+	   }
+	   for(var i=0;i<length;i++)
+	   {   
+		   var classN = aobj[i].className;
+			   
+		   if(re.test(classN)===true)
+		   {  
+		       result.push(aobj[i]);
+		   }
+	   }
+	   return result;
+   }
+}
+</script>
+</head>
+<body>
+<div id="menuBox" class="menBox clearfix"></div>
+</body>
+</html>

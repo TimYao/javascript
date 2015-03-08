@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="css/css.css" type="text/css"/>
+<script type="text/javascript" src="/demo/jquery/js/jquery-1.7.1.js"></script>
+<script type="text/javascript" src="js/Association.js"></script>
+<script type="text/javascript" src="js/AssociationInfor.js"></script>
+<title>Association(联想)</title>
+<script type="text/javascript">
+window.onload = function()
+{
+   //邮箱联想
+   var json = ['ss@163.com','ss@126.com','ss@yeah.net','ss@sina.com','@163.com','@yeah.net','@sina.com','@sina1.com','@sina2.com','@sina3.com'];
+   //菜单联想
+   var jsonMenu = ['新浪','百度','人人','校内','开心网','腾讯','爱奇艺','迅雷看看','百科全书','世界通史'];
+   
+   //SugestEmail
+   new SugestEmail({
+      inputId:'emailInput',
+      defaultText:'请输入邮箱',
+      url:'/demo/ajax/association.php',
+      type:'get'
+   });
+   new SugestEmail({
+      inputId:'emailInput1',
+      defaultText:'请输入邮箱2',
+      url:'/demo/ajax/association.php',
+      type:'get'
+   });
+
+   /**SugestMenu**/
+   //无外链接
+   new SugestMenu({
+      inputId:'menuInput1',
+      defaultText:'Search',
+      clickSelect:true,
+      targetType:'_blank',
+      url:'/demo/ajax/associationInfor.php',
+      type:'get'
+   });
+
+   //外连接
+   new SugestMenu({
+      inputId:'menuInput2',
+      defaultText:'Search',
+      clickSelect:false,
+      targetType:'_blank',
+      url:'/demo/ajax/associationInfor.php',
+      type:'get'
+   });
+}
+</script>
+</head>
+
+<body>
+<h1 class="bigTitle">联想(邮箱、菜单)</h1>
+<div class="divInfor">
+	<p class="ptitle">(1)联想邮箱</p><br>
+    <p class="ptitle">插架介绍：</p>
+    <p>SugestEmail 联想邮箱(ajax请求,非多次请求)<br/>
+     目前联想后端实时更改后的数据存在@情况下出现联想,支持列表hover效果，样式可随意自定义,
+     ajax请求非时不时请求，只请求一次
+    </p>
+    <div class="sDiv"><span>参数：</span>
+       <p>inputId(操作触发对象ID)</p>
+       <p>defaultText(默认值提示文字，默认没有)</p>
+       <p>url(ajax数据请求地址)</p>
+       <p>type(ajax type请求方式)<span class="blue">默认GET</span></p>
+       <p>html格式例如:&ltinput type="text" id="emailInput" class="emailInput" listClassName="list" &gt<br/>注意：<span class="blue">listClassName需要指定值（为生成数据的class名）,不指定默认值为</span><span class="blue">inputId+'_list'</span>
+       </p>
+       <p><span class="blue">备注：兼容ie6存在select影响覆层级别问题</span></p>
+       <p>后端返回数据(数组)格式例如：<br/>
+       	<span class="blue">["ss@163.com","ss@126.com","ss@yeah.net","ss@sina.com","@163.com","@yeah.net","@sina.com","@sina1.com","@sina2.com","@sina3.com"]</span></p>
+       	<p><span class="blue">注意事项：不要再listClassName标注的元素上定义间距边框等样式<br/>
+        关于弹层z-index设置，可以根据弹层最外层设置，如果不设置，默认将给它赋值为9999，ie6下iframe将使9999-10
+        </span></p>
+    </div>
+</div>
+<div class="blank_40px"></div>
+<div class="divInfor">
+  <p class="ptitle">(2)联想内容</p><br>
+    <p class="ptitle">插架介绍：</p>
+    <p>SugestMenu 联想内容(ajax请求，多次请求)<br/>
+     由后端返回请求数据，输入时时请求。
+    </p>
+    <div class="sDiv"><span>参数：</span>
+       <p>inputId(操作触发对象ID)</p>
+       <p>defaultText(默认值提示文字，默认没有)</p>
+       <p>clickSelect(默认为true，此选项为了满足联想到内容回车添入，false情况下为跳转链接页面)</p>
+       <p>targetType(在满足clickSelect，情况下该属性有效果，打开链接页面方式)</p>
+       <p>url(ajax数据请求地址)</p>
+       <p>type(ajax type请求方式)<span class="blue">默认GET</span></p>
+       <p>html格式例如:&ltinput type="text" id="menuInput1" class="emailInput" name="" listClassName="listMenu" &gt<br/>注意：<span class="blue">listClassName需要指定值（为生成数据的class名）,不指定默认值为</span><span class="blue">inputId+'_list'</span>
+       </p>
+       <p><span class="blue">备注：兼容ie6存在select影响覆层级别问题</span></p>
+       <p>后端返回数据(数组)格式例如：<br/>
+        <span class="blue">数组格式，[{"id":0,"title":"新浪","link":"http:\/\/www.qq.com"},{"id":1,"title":"新浪1","link":"http:\/\/www.qq.com"}],属性可根据具体情况添加和改变</span></p>
+        <p><span class="blue">注意事项：不要再listClassName标注的元素上定义间距边框等样式<br/>
+         关于弹层z-index设置，可以根据弹层最外层设置，如果不设置，默认将给它赋值为9999，ie6下iframe将使9999-10
+         <br/>
+         .loadingSpan为loading图class，设置请通过容器id指定来设置<br/>
+         .oloadContent为loading层，样式可写入，设置请通过容器id指定来设置<br/>
+         例如例子中的:  <code>.loadingmenuInput1 .oloadContent,.loadingmenuInput2 .oloadContent{border:1px solid #ccc;text-align:center;border-top:none;background:#fbfbfb;padding:5px 0;}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.loadingmenuInput1 .oloadContent .loadingSpan,.loadingmenuInput2 .oloadContent .loadingSpan{background:url(/javascript/img/loading.gif) no-repeat top center;display:inline-block;width:16px;height:16px;}</code>
+        </span></p>
+    </div>
+</div>
+<div class="blank_40px"></div>
+<!--code start-->
+<p class="demos subfont">联想邮箱demo</p>
+<div class="assDiv" id="assMailbox">
+  <input type="text" id="emailInput" class="emailInput" name=""  listClassName="list"/>
+  <input type="text" id="emailInput1" class="emailInput" name="" listClassName="list"/>
+</div>
+<p class="demos subfont">联想内容demo</p>
+<div class="assDiv">
+  <input type="text" id="menuInput1" class="emailInput" name=""  listClassName="listMenu"/>
+  <input type="text" id="menuInput2" class="emailInput" name=""  listClassName="listMenu"/>
+</div>
+<!--code end-->
+</body>
+</html>

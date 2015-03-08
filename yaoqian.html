@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html lange="en">
+   <head>
+   	<meta charset="utf-8">
+   	 <title>摇签</title>
+   	 <style type="text/css">
+      *{padding:0;margin:0;}
+     .yt{position:relative;width:80px;margin:100px auto;-webkit-transform-style:preserve-3d;-webkit-perspective:500;-webkit-backface-visibility:hidden;-moz-transform-style:preserve-3d;-moz-perspective:500;-moz-backface-visibility:hidden;backface-visibility:hidden;transform-style:preserve-3d;}
+     .yt span{width:5px;height:100px;display:block;bottom:-30px;left:50%;margin-left:-2.5px;-webkit-backface-visibility:hidden;-moz-backface-visibility:hidden;backface-visibility:hidden;}
+     .yt .f0{position:absolute;background:#000;-webkit-transform:rotate(45deg);-webkit-transform-origin:bottom right;-moz-transform:rotate(45deg);-moz-transform-origin:bottom right;transform-origin:bottom right;}
+     .yt .f1{position:absolute;background:#ff0000;}
+     .yt .f2{position:absolute;background:gray;}
+     .tt{position:absolute;width:80px;height:100px;border:1px solid #000;z-index:10;background:yellow;-webkit-perspective:200;-moz-perspective:200;perspective:200;}
+     </style>
+   </head>
+   <body>
+      <script type="text/javascript" src="../jquery/js/jquery-1.7.1.js"></script>
+      <div class="yt">
+        <span class="f0"></span> 
+        <span class="f1"></span> 
+        <span class="f2"></span> 
+        <div class="tt"></div>
+      </div>
+      <div style="padding-bottom:200px;"></div>
+      <a href="" id="dd">摇奖</a><a href="" id="dd1">静止</a>
+      <script>
+        $(function(){
+            var kv = 35;
+            var ls = $(".yt span");
+            var t = 150;
+            var m=[];
+            var time = null;
+            ls.each(function(i,obj){
+                var v = randoms();
+                $(obj).css({"-webkit-transform":"rotate("+v+"deg)","-moz-transform":"rotate("+v+"deg)","transform":"rotate("+v+"deg)"});
+            }); 
+            function randoms()
+            {
+                var k = Math.ceil(Math.random()*10);
+                var v = 0;
+                var s = 1;
+                if(k>=5)
+                {
+                   s *= -1;
+                }else{
+                   s *= 1;
+                }
+                v = Math.ceil(Math.random()*kv)*s;
+                return v;
+            }
+            $("#dd").on('click',function(event){
+                time=setInterval(function(){
+                    var v=0;
+                    m.length = 0;
+                    ls.each(function(i,obj){
+                         v = randoms();
+                         m.push(-v);
+                         $(obj).css({"-webkit-transform":"rotate("+-v+"deg)","-moz-transform":"rotate("+-v+"deg)","transform":"rotate("+-v+"deg)","z-index":-1});
+                     });
+                    m.sort(function(a,b){
+                        return a-b;
+                    });
+                    $(".tt").css({"-webkit-transform":"rotateX("+v+"deg) translateZ("+Math.abs(m[0])+"px)","-moz-transform":"rotateX("+v+"deg) translateZ("+Math.abs(m[0])+"px)","transform":"rotateX("+v+"deg) translateZ("+Math.abs(m[0])+"px)","z-index":2});
+                },t);
+                event.preventDefault();
+                event.stopPropagation();
+                return false;
+            });
+            $("#dd1").on('click',function(event){
+                clearInterval(time);
+                time = null;
+                event.stopPropagation();
+                event.preventDefault();
+                return false;
+            });
+        });
+      </script>
+   </body>
+</html>

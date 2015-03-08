@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title> New Document </title>
+        <meta name="Generator" content="EditPlus">
+        <meta name="Author" content="">
+        <meta name="Keywords" content="">
+        <meta name="Description" content="">
+        <meta charset="utf-8">
+        <script type="text/javascript" src="move.js"></script>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+            }
+            li {
+                list-style: none;
+            }
+            img {
+                border: none;
+            }
+            #div1 {
+                height: 250px;
+                width: 1000px;
+            }
+            #div1 ul {
+                position: absolute;
+                display: none;
+            }
+            #div1 ul li {
+                float: left;
+                width: 205px;
+                padding: 5px;
+                border: 1px #000000 solid;
+                margin: 10px;
+                display: none;
+                filter: alpha(opacity=0);
+                opacity: 0;
+            }
+            #div1 ul.active li {
+                display: block;
+                filter: alpha(opacity=100);
+                opacity: 1;
+            }
+        </style>
+        <script type="text/javascript">
+            window.onload = function() {
+               var oInput = document.getElementsByTagName('input');
+               var oDiv = document.getElementById('div1');
+               var oUl = div1.getElementsByTagName('ul');
+               var olderIndex = 0;
+               var olindex = 0;
+              
+               for(var i=0;i<oInput.length;i++)
+               {
+                   oInput[i].index = i;
+                   oInput[i].onclick = function()
+                   {
+                       oInput[olderIndex].style.background = '';
+                       oInput[this.index].style.background = 'red';
+                       olderIndex = this.index;
+                       toChange(this.index);
+                   }
+                   
+               }
+               
+               function toChange(index)
+               {
+                   
+                   for(var i=0;i<oUl.length;i++)
+                   {
+                       oUl[i].iNow = 0;
+                       oUl[i].timer = null;
+                       if(i == index)
+                       {
+                           toShow(i);
+                       }else{
+                           
+                           toHidden(i);
+                       }
+                   }
+                   
+                   function toShow(index)
+                   {
+                       var aLi = oUl[index].getElementsByTagName('li');
+                       oUl[index].timer = setInterval(function(){
+                          if(oUl[index].iNow==4)
+                          {
+                              clearInterval(oUl[index].timer);
+                          }else{
+                             aLi[oUl[index].iNow].style.display='block';
+                             startMove(aLi[oUl[index].iNow],{opacity:100});
+                             oUl[index].iNow++;
+                          } 
+                       },50);
+                   }
+                   
+                   function toHidden(index)
+                   {
+                       var aLi = oUl[index].getElementsByTagName('li');
+                       oUl[index].timer = setInterval(function(){
+                           if(oUl[index].iNow==4)
+                           {
+                               clearInterval(oUl[index].timer);
+                           }else{
+                               startMove(aLi[oUl[index].iNow],{opacity:0},function(){
+                                   this.style.display = 'none';
+                               });
+                               oUl[index].iNow++;
+                           }
+                       },50);
+                   }
+                   
+                   /*简单方式
+                   for(var i=0;i<oUl.length;i++)
+                   {
+                       oUl[i].index = i;
+                       oUl[olindex].style.display = 'none';
+                   }
+                   oUl[index].style.display = 'block';
+                   olindex = index;*/
+               }
+               
+               toChange(0)
+
+            }
+        </script>
+    </head>
+
+    <body>
+        <div id="div1">
+            <ul>
+                <li><img src="img/1.jpg" />
+                </li>
+                <li><img src="img/2.jpg" />
+                </li>
+                <li><img src="img/3.jpg" />
+                </li>
+                <li><img src="img/4.jpg" />
+                </li>
+            </ul>
+            <ul>
+                <li><img src="img/4.jpg" />
+                </li>
+                <li><img src="img/3.jpg" />
+                </li>
+                <li><img src="img/2.jpg" />
+                </li>
+                <li><img src="img/1.jpg" />
+                </li>
+            </ul>
+            <ul>
+                <li><img src="img/3.jpg" />
+                </li>
+                <li><img src="img/1.jpg" />
+                </li>
+                <li><img src="img/4.jpg" />
+                </li>
+                <li><img src="img/2.jpg" />
+                </li>
+            </ul>
+        </div>
+        <div style="clear:both"></div>
+        <input type="button" value="1" style="background:red;" />
+        <input type="button" value="2" />
+        <input type="button" value="3" />
+    </body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title> New Document </title>
+		<meta name="Generator" content="EditPlus">
+		<meta name="Author" content="">
+		<meta name="Keywords" content="">
+		<meta name="Description" content="">
+		<meta charset="utf-8">
+		<script type="text/javascript" src="move.js"></script>
+		<style>
+			* {
+				padding:0;
+				margin:0;
+			}
+			ul li {
+				list-style:none;
+				width:150px;
+				margin:5px;
+			}
+			.box ul {
+				float:left;
+			}
+			.box ul li img {
+				width:150px;
+			}
+			.box {
+				width:400px;
+				margin:30px auto;
+			}
+			.clear {
+				height:0;
+				clear:both;
+				font-size:0;
+				line-height:0;
+			}
+		</style>
+		<script type="text/javascript">
+			window.onload = function() {
+				
+				var box = document.getElementById('box');
+
+				/*图片数据     可以通过AJAX获得数据*/  
+				var aImg = {
+
+					infor:["/images/1.jpg","/images/2.jpg","/images/3.jpg","/images/4.jpg","/images/1.jpg",'/images/6.jpg',"/images/5.jpg","/images/2.jpg","/images/3.jpg","/images/1.jpg","/mages/6.jpg","/images/5.jpg","/images/6.jpg","/images/4.jpg","/images/6.jpg","/images/3.jpg","/images/3.jpg"]
+
+				};
+
+				/*得到JSON长度*/
+				var length = 0;
+
+				for (var attr in aImg) {
+					
+					length=aImg[attr].length;
+					
+					//封装好的creatLi函数
+					function creatLi(oUid,length) {
+						
+						length = Math.round(length);
+						var allNum = length*2;
+						var res = radom(allNum,length);
+						var oUl = document.getElementById(oUid);
+
+						for(var i=0;i<length;i++) {
+							var oLi = document.createElement("li");
+							var oImg = document.createElement("img");
+							oImg.src = aImg[attr][res[i]];
+							oLi.appendChild(oImg);
+							oUl.appendChild(oLi);
+						}
+					}
+
+					/*JSON*/
+					for(var j=0;j<2;j++) {
+						var oul = document.createElement('ul');
+						box.appendChild(oul);
+						oul.id = "oul"+j;
+						//创建li标签和image
+						creatLi(oul.id,length/2);               
+					}
+
+				}
+				//随机生成数
+				function radom(length,iNum) {
+					var result = [];
+					for(var i=0;i<iNum;i++) {
+						result.push(Math.floor(Math.random()*iNum));
+					}
+					return result;
+				}
+				
+			
+			    /*图片缓慢加载*/
+				var aLi = box.getElementsByTagName("li");
+				
+				for(var i=0;i<aLi.length;i++)
+				{
+					aLi[i].btn = true;	
+				}
+				
+				window.onscroll = function()
+				{
+					toChange();
+				}
+				
+				//图片可视区加载函数
+				function toChange()
+				{	
+					var veHeight = document.documentElement.clientHeight;   //可视区高度 document.documentElement.clientHeight
+					var scrollHeight = document.documentElement.scrollTop || document.body.scrollTop;   //滚动高度兼容写法
+					for(var i=0;i<aLi.length;i++)
+					{
+						if(posTop(aLi[i])<=veHeight+scrollHeight && aLi[i].btn)
+						{
+							aLi[i].style.opacity=0;
+							aLi[i].style.filter="alpha(opacity=0)";
+							startMove(aLi[i],{opacity:100});
+							aLi[i].btn = false;
+						}
+					}	
+				}
+				
+				toChange();
+				
+				//获得单个Li标签的OFFSETTOP
+				function posTop(obj)
+				{
+					var result = 0;
+					while(obj)
+					{
+						result+=obj.offsetTop;
+						obj = obj.offsetParent;
+					}
+					return result;
+				}
+
+			}
+		</script>
+	</head>
+
+	<body>
+		<div class="box" id="box">
+          
+		</div>
+	</body>
+</html>

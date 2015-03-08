@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>無標題文件</title>
+<style type="text/css">
+  * { padding: 0; margin: 0; }
+li { list-style: none; }
+body { background: #333; }
+#iphone { width: 900px; height: 600px; background: url(img/bg.png); position: absolute; top: 50%; left: 50%; margin: -300px 0 0 -450px; }
+#wrap { width: 238px; height: 360px; position: absolute; top: 121px; left: 326px; overflow:hidden; }
+#iphone ul { width: 960px; height: 361px; cursor: pointer; position: absolute; top: 0px; left: 0px; }
+#iphone li { float: left; width:240px; height:360px; overflow:hidden; }
+</style>
+<script type="text/javascript">
+/*方法纾解：
+  1、拖拽
+  2、弹性运动
+  解决关于拖拽触发问题
+*/
+ window.onload = function()
+ {
+    var oUl = document.getElementById("wrap").getElementsByTagName("ul");
+    var aLi = oUl[0].getElementsByTagName("li");
+    var length = oUl[0].getElementsByTagName("li").length;
+    var lastX;
+    var iStartX;
+    var timer = null;
+    var iNow = 0;
+    var ispeed=0;
+    oUl[0].onmousedown = function(ev)
+    {
+    	  var obj = this;
+        var ev = ev || window.event;
+        var x = ev.clientX;
+        var y = ev.clientY;
+        lastX = x-obj.offsetLeft;
+        ev.cancelBubble=true;
+        if(obj.setCapture)
+        {
+        	obj.setCapture();
+            obj.onmousemove = funMove;
+            obj.onmouseup = funUp;
+        }else{
+        	document.addEventListener("mousemove",funMove,true);//chrom下document上触发
+        	document.addEventListener("mouseup",funUp,true);
+        }
+        function funMove(ev)
+        {   
+        	var ev = ev || window.event;
+            ev.cancelBubble=true;
+            var x1 = ev.clientX;
+            var l = x1-lastX;
+            if(obj.setCapture)
+            {
+               obj.setCapture();
+            } 
+            clearInterval(timer);
+            obj.style.left = l+'px';
+            return false;
+        }
+        function funUp(ev)
+        { 
+           var ev = ev || window.event;
+           ev.cancelBubble=true;
+           if(obj.releaseCapture)
+           {
+              obj.releaseCapture();
+              obj.onmousemove = null;
+              obj.onmouseup = null;
+           }else{
+           	  document.removeEventListener("mousemove",funMove,true);
+           	  document.removeEventListener("mouseup",funUp,true);
+           }
+           if(Math.abs(obj.offsetLeft-iStartX)>=50)
+           {  
+              if(obj.offsetLeft>iStartX) //前拉
+              {
+              	 /*if(iNow===0)  循环
+                 {
+                     iNow=length;
+                 }
+                 iNow--;*/
+                 if(iNow!=0)
+                 {
+                    iNow--;
+                 }
+              }else{
+              	 /*if(iNow===length-1)循环
+              	 {
+                    iNow=-1;
+              	 }
+              	 iNow++;*/
+              	 if(iNow!=length-1)//非循环
+              	 {
+                    iNow++;
+              	 }
+              }
+           }
+           starMove((aLi[0].offsetWidth)*-iNow);
+           return false;
+        }
+        iStartX = obj.offsetLeft;
+        return false;
+    } 
+    function starMove(iTargent)
+    {   
+    	if(timer)
+    	{
+           clearInterval(timer);
+    	}
+    	timer = setInterval(function(){doMove(iTargent);},30);
+    }
+    //弹性运动+摩擦运动
+    function doMove(iTargent)
+    { 
+       var l = parseFloat(oUl[0].offsetLeft);
+       ispeed += (iTargent-l)/5;
+       ispeed*=0.7;
+       /*
+        缓存运动
+        ispeed = (iTargent-l)/5
+       */
+       l+=ispeed;
+       if(Math.abs(ispeed)<1 && Math.abs((iTargent-l))<1)
+       {
+          clearInterval(timer);
+          timer = null;
+          l = iTargent;
+       }
+       oUl[0].style.left=l+'px';
+    }
+ }
+</script>
+</head>
+
+<body>
+<div id="iphone">
+	<div id="wrap">
+		<ul>
+			<li style="background:url(img/pic1.png);" title="img_1"></li>
+			<li style="background:url(img/pic2.png);" title="img_2"></li>
+			<li style="background:url(img/pic3.png);" title="img_3"></li>
+			<li style="background:url(img/pic4.png);" title="img_4"></li>
+		</ul>
+	</div>
+</div>
+</body>
+</html>

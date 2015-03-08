@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>New Web Project</title>
+        <link href="../website/playsite/css/css.css" type="text/css"/>
+        <style>
+            *{padding:0;margin:0;}
+            ul{list-style:none;margin:20px;}
+        </style>
+        <script type="text/javascript" src="move.js"></script>
+        <script type="text/javascript">
+            window.onload = function()
+            {
+                var aInput = document.getElementsByTagName('input');
+                var aLi = document.getElementsByTagName('li');
+                var oParent = document.getElementById('ul');
+                var length = aInput.length;
+                var arr = [];
+				var time = '';
+                
+                for(var i=0;i<aLi.length;i++)
+                {
+                    arr.push([aLi[i].offsetLeft,aLi[i].offsetTop]);
+                    
+                }
+                for(var i=0;i<aLi.length;i++)
+                {
+                    aLi[i].style.position = "absolute";
+                    aLi[i].style.left = arr[i][0]+'px';
+                    aLi[i].style.top = arr[i][1]+'px';
+                }
+                
+                for(var i=0;i<length;i++)
+                {
+                    if(aInput[i].value=='上移动')
+                    {   
+					    
+                        aInput[i].onclick =function()
+                        {   
+						    var time1 = new Date().getTime();
+							if(time1-time<500)
+							{
+								return false;
+							}
+                            var oNow = this.parentNode;
+                            var oTagert = pre(this.parentNode);
+                             if(this.parentNode==first(this.parentNode.parentNode))
+                             {
+                                 alert('到顶部了！');
+                             }else{
+								 var oLeft = oNow.offsetLeft;
+								 var oTop = oNow.offsetTop;
+                                 startMove(oNow,{"left":oTagert.offsetLeft,"top":oTagert.offsetTop},function(){
+                                     oParent.insertBefore(oNow,pre(oNow));
+                                 });
+                                 startMove(oTagert,{"left":oLeft,"top":oTop});
+                             }
+							time = time1;
+                        }
+                    }else{
+                        aInput[i].onclick = function()
+                        {
+							var time1 = new Date().getTime();
+							if(time1-time<500)
+							{
+								return false;
+							}
+                            var oNow = this.parentNode;
+                            var oTagert = next(this.parentNode);
+                            if(oNow==last(oParent))
+                            {
+                                alert('到低部了！');
+                            }else{
+                                var oLeft = oNow.offsetLeft;
+                                var oTop = oNow.offsetTop;
+                                
+                                startMove(oNow,{"left":oTagert.offsetLeft,"top":oTagert.offsetTop},function(){
+                                     oParent.insertBefore(next(oNow),oNow); 
+                                 });
+                               startMove(oTagert,{"left":oLeft,"top":oTop});
+                            }
+							time = time1;
+                        }
+                    }
+                }
+                
+                //firstElementChild firstChild  previousElementSibling previousSibling nextElementSibling nextSibling lastElementChild lastChild
+                function first(obj)
+                {
+                    return obj.firstElementChild||obj.firstChild;
+                }
+                
+                function pre(obj)
+                {
+                    return obj.previousElementSibling || obj.previousSibling;
+                }
+                
+                function next(obj)
+                {
+                    return obj.nextElementSibling || obj.nextSibling;
+                }
+                
+                function last(obj)
+                {
+                    return obj.lastElementChild || obj.lastChild;
+                }
+                
+            }
+        </script>
+    </head>
+    <body>
+        <ul id="ul">
+            <li date="1">1&nbsp;<input type="button" value="上移动"/><input type="button" value="下移动"/></li>
+            <li date="2">2&nbsp;<input type="button" value="上移动"/><input type="button" value="下移动"/></li>
+            <li date="3">3&nbsp;<input type="button" value="上移动"/><input type="button" value="下移动"/></li>
+            <li date="4">4&nbsp;<input type="button" value="上移动"/><input type="button" value="下移动"/></li>
+        </ul>
+    </body>
+</html>
+

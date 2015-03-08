@@ -1,0 +1,827 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title> New Document </title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <style type="text/css">
+     input,textarea{outline:none;}
+    .myform{width:500px;}
+    .inpute{float:left;clear:both;margin:10px 0;width:1000px;}
+    .textTitle{float:left;margin-right:10px;display:inline;}
+    .suBtn{clear:both;padding:10px 0 10px 60px;padding:10px 0 10px 40px\9;}
+    .textBox{float:left;position:relative;}
+    .textBox .text,.textBox .textarea,.textBox .password{font-size:12px;-ms-box-shadow:0 1px 3px rgba(0, 0, 0, 0.1) inset;-o-box-shadow:0 1px 3px rgba(0, 0, 0, 0.1) inset;-webkit-box-shadow:0 1px 3px rgba(0, 0, 0, 0.1) inset;box-shadow:0 1px 3px rgba(0, 0, 0, 0.1) inset;border:1px solid #ccc;-o-border-radius:3px;-ms-border-radius:3px;-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px;-moz-transition:border 0.2s linear 0s,box-shadow 0.2s linear 0s;-webkit-transition:border 0.2s linear 0s,box-shadow 0.2s linear 0s;-ms-transition:border 0.2s linear 0s,box-shadow 0.2s linear 0s;-o-transition:border 0.2s linear 0s,box-shadow 0.2s linear 0s;height:20px;line-height:22px;}
+    .textBox .textarea{width:200px;height:100px;resize:none;}
+    .textBox .text:focus,.textBox .textarea:focus,.textBox .password:focus{
+        border-color: rgba(82, 168, 236, 0.8);
+        -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) inset, 0 0 8px rgba(82, 168, 236, 0.6);
+        -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) inset, 0 0 8px rgba(82, 168, 236, 0.6);
+        -o-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) inset, 0 0 8px rgba(82, 168, 236, 0.6);
+        -ms-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) inset, 0 0 8px rgba(82, 168, 236, 0.6);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) inset, 0 0 8px rgba(82, 168, 236, 0.6);
+     }
+     .textBox .bred{border:1px solid #ff0000;}
+     /*密码有默认值*/
+     .pass_label{position:absolute;left:6px;top:4px;font-size:12px;color:#ccc;z-index:1;}
+     .textBox .password{font-size:12px;font-family:Arial;}
+     #cke_editor4{float:left;}
+  </style>
+  <script type="text/javascript" src="/jquery/jquery-1.7.1.js"></script>
+  <script type="text/javascript" src="/ajax/ajax.js"></script>
+  <script src="/plugin_example/ckeditor/ckeditor/ckeditor.js"></script>
+  <script>
+
+    CKEDITOR.on( 'instanceReady', function( evt ) {
+      var editor = evt.editor;
+      editor.setData( 'This editor has it\'s tabIndex set to <strong>' + editor.tabIndex + '</strong>' );
+
+      // Apply focus class name.
+      editor.on( 'focus', function() {
+        editor.container.addClass( 'cke_focused' );
+      });
+      editor.on( 'blur', function() {
+        editor.container.removeClass( 'cke_focused' );
+      });
+
+      // Put startup focus on the first editor in tab order.
+      if ( editor.tabIndex == 1 )
+        editor.focus();
+    });
+  </script>
+<script type="text/javascript">
+  /*插件介绍：
+    
+    验证功能支持：
+       1、input（text，passwor，textarea，checkbox，radio）
+       2、验证方式有
+          empty(不能为空) restriction(长度) regular(正则) otherRules(其他自定义，返回数组个是布尔（true，false）和自定义的错误提示)
+       3、非默认textarea暂时支持提交验证,checkbox/radio 支持提交验证
+       4、已处理空字符串问题
+
+    验证要求字段：
+       1、input[text] class='text'
+          input[password] class='password'
+          textarea  class='textarea'
+          默认值（default_value）
+          边框提示错误标签 addErrorClass=class名
+          inpute不能修改
+    
+    调用格式：
+          formControl（调用函数）
+          form_id（表单id）
+          rules（对应验证规则）
+          subAction（提交相关）[submit提交按钮] [funAct提交时需要的做的动作,返回（true成功，false失败）]
+
+    注意验证顺序需要一一对应!!
+    
+  */
+	window.onload = function()
+	{
+		formControl({
+      form_id : 'form',
+      rules :[
+           {
+             tagname:'inputText',
+             name:'text',
+             all_rule:[
+                {
+                  rule:'empty',
+                  law:'',
+                  error:'<img src="img/false.png" class="ierr_img" alt="" />',
+                  correct:'<img src="img/true.png" class="icorr_img" alt="" />'
+                },
+                {
+                  rule:'restriction',
+                  law:[0,4,'en'],
+                  error:'长度过长',//<img src="img/false.png" class="ierr_img" alt="" />
+                  correct:'<img src="img/true.png" class="icorr_img" alt="" />'
+                },
+                {
+                  rule:'regular',
+                  law:/^[\d]+$/,
+                  error:'格式不对',
+                  correct:'<img src="img/true.png" class="icorr_img" alt="" />'
+                },
+                {
+                  rule:'otherRules',
+                  fun:function()//返回数组格式[布尔，提示信息]
+                  {   
+                      //普通方式
+                      var reg = /^[4]$/g; 
+                      var oput = $("#oput");
+                      var prompt;
+                      var bfor = [];
+                      var flg;
+                      if(reg.test(oput.val()))
+                      {
+                          prompt = "不能只有4";
+                          flg = false;
+                      }else{
+                          prompt = "其他验证正确";
+                          flg = true;
+                      }
+                      bfor.push(flg);
+                      bfor.push(prompt);
+                      return bfor;
+
+                      //ajax方式
+                      /*var bfor=[];
+                      $.ajax({
+                        url :'/ajax/login.php',
+                        type : 'GET',
+                        async : true,
+                        timeout : '',
+                        data :{
+                             name : "tim",
+                             password :"123456"
+                        },
+                        dataType : 'json',
+                        success:function(RETURNA)
+                        {
+                           if(RETURNA.state==="200")
+                          {
+                             $("#oput").val("ss");
+                          }else{
+                             $("#oput").val("name1");
+                          }
+                        }
+                      });
+                      if($("#oput").val()==="name")
+                      {
+                          var sflg = false;
+                          var stext = "不能为name";
+                      }else{
+                          var sflg = true;
+                          var stext = "正确";
+                      }
+                      bfor.push(sflg);
+                      bfor.push(stext);
+                      return bfor;*/
+                      //return true;
+                  }
+                }   
+             ]
+           },
+           {
+             tagname:'inputText1',
+             name:'text',
+             all_rule:[
+                {
+                  rule:'empty',
+                  law:'',
+                  error:'<img src="img/false.png" class="ierr_img" alt="" />',
+                  correct:'<img src="img/true.png" class="icorr_img" alt="" />'
+                },
+                {
+                  rule:'restriction',
+                  law:[0,4,'en'],
+                  error:'长度过长',//<img src="img/false.png" class="ierr_img" alt="" />
+                  correct:'<img src="img/true.png" class="icorr_img" alt="" />'
+                } 
+             ]
+           },
+           {
+             tagname:'password',
+             name:'password',
+             all_rule:[
+                {
+                  rule:'empty',
+                  law:'',
+                  error:'<img src="img/false.png" class="ierr_img" alt="" />',
+                  correct:'<img src="img/true.png" class="icorr_img" alt="" />'
+                }
+             ]
+           },
+           {
+             tagname:'textarea',
+             name:'textarea',
+             all_rule:[
+                {
+                  rule:'empty',
+                  law:'',
+                  error:'<img src="img/false.png" class="ierr_img" alt="" />',
+                  correct:'<img src="img/true.png" class="icorr_img" alt="" />'
+                },{
+                  rule:'otherRules',
+                  fun:function()
+                  {
+                      var reg = /^[4]$/g; 
+                      var oput = $("#textarea");
+                      var prompt;
+                      var bfor = [];
+                      var flg;
+                      if(reg.test(oput.html()))
+                      {
+                          prompt = "不能只有4";
+                          flg = false;
+                      }else{
+                          prompt = "其他验证正确";
+                          flg = true;
+                      }
+                      bfor.push(flg);
+                      bfor.push(prompt);
+                      return bfor;
+                  }
+                }
+             ]
+           }/*,
+           {
+             tagname:'textarea1',
+             name:'textarea',
+             all_rule:[
+                {
+                  rule:'empty',
+                  law:'',
+                  error:'<img src="img/false.png" class="ierr_img" alt="" />',
+                  correct:'<img src="img/true.png" class="icorr_img" alt="" />'
+                }/*,{
+                  rule:'otherRules',
+                  fun:function()
+                  {
+                      var reg = /^[4]$/g; 
+                      var oput = $("#textarea");
+                      var prompt;
+                      var bfor = [];
+                      var flg;
+                      if(reg.test(oput.html()))
+                      {
+                          prompt = "不能只有4";
+                          flg = false;
+                      }else{
+                          prompt = "其他验证正确";
+                          flg = true;
+                      }
+                      bfor.push(flg);
+                      bfor.push(prompt);
+                      return bfor;
+                  }
+                }
+             ]
+           }*/
+      ],
+      subAction:{
+         submit:'suBtn',
+         funAct:function(){
+            //函数运行后返回true提交 返回false不提交
+            //return true;  
+            //例子
+            /*var text1 = $("#text1");
+            if(text1.val()==="")
+            {
+                return false; 
+            }else{
+                return true;
+            }*/
+            /* ajax验证例子
+            $.ajax({
+                url :'/ajax/login.php',
+                type : 'GET',
+                async : true,
+                timeout : '',
+                data :{
+                     name : "tim",
+                     password :"123456"
+                },
+                dataType : 'json',
+                success:function(RETURNA)
+                {
+                   if(RETURNA.state==="200")
+                  {
+                     $("#text1").val("name");
+                  }else{
+                     $("#text1").val("name1");
+                  }
+                }
+            });
+            if($("#text1").val()==="name")
+            {
+                return false;
+            }else{
+                return true;
+            }*/
+
+            /*checkbox添加和验证
+            var ckbox = $("#ckbox");
+            var ck = !!$(ckbox).attr("checked");
+            if(ck)
+            {
+                return true;
+            }else{
+                return false;
+            }*/
+         }
+      }
+    });
+    
+		function formControl(PARSE)
+		{
+        var oid = PARSE.form_id || '';
+        var rules = PARSE.rules || {};
+        var oFrom = getById(oid);
+        var iflg = false;//验证后返回标示
+        var subAction = PARSE.subAction || {};//提交相关
+        if((oid != '' || oid != ' '|| oid != null) && oFrom && rules && subAction.submit!="")
+        { 
+           var form = oFrom.getElementsByTagName('form')[0];//form
+           var subtn = subAction.submit || '';
+           var aInputs = getByClass(oFrom,'text') || [];//all inputs
+           var aPasswords = getByClass(oFrom,'password') || [];//all checkbox
+           var aTextAreas = getByClass(oFrom,'textarea') || [];//all textarea
+           var aCheckbox = getByClass(oFrom,'checkbox') || [];//all checkbox
+           var osuBtn = getByClass(oFrom,subAction.submit) || [];//提交
+           var subActFun = subAction.funAct || function(){};//提交执行函数
+           var iRules_length = rules.length;//规则长度
+           var all_ver_obj = [];
+           var all_arry = [];
+           var all_obj = [];
+           if(aInputs && aInputs.length>0)
+           {
+               var inputLength = aInputs.length; //input length
+               all_arry.push(aInputs);
+           }
+           if(aPasswords && aPasswords.length>0)
+           {
+               var passwordLength = aPasswords.length;
+               all_arry.push(aPasswords);
+           }
+           if(aTextAreas && aTextAreas.length>0)
+           {
+               var textarealLength = aTextAreas.length;
+               all_arry.push(aTextAreas);
+           }
+           //组合所有验证对象
+           for(var i=0;i<(all_arry.length);i++)
+           {
+               if(all_arry[i] && all_arry[i].length>1)
+               {
+                   for(var j=0;j<all_arry[i].length;j++)
+                   {
+                       all_ver_obj.push(all_arry[i][j]);
+                   }
+               }else{
+                   all_ver_obj.push(all_arry[i][0]); 
+               }
+           }
+           for(var j=0;j<(iRules_length);j++)
+           {
+               var oTagName = all_ver_obj[j].getAttribute("tagname");
+               if(oTagName === rules[j].tagname)
+               {
+                  all_obj[j] = [all_ver_obj[j],rules[j]];
+               }  
+           }
+           //default_value设置
+           for(var i=0;i<(inputLength);i++)
+           {  
+              var value_text = strim(aInputs[i].value);//若input有value值
+              if(value_text==="")
+              { 
+                if(aInputs[i].getAttribute('default_value'))
+                { 
+                   aInputs[i].setAttribute('value',aInputs[i].getAttribute('default_value'));
+                }
+              }
+           }
+           for(var i=0;i<(passwordLength);i++)
+           {  
+              var value_text = strim(aPasswords[i].value);
+              if(value_text==="")
+              {
+                 var default_value = aPasswords[i].getAttribute("default_value");
+                 createTxt(aPasswords[i],default_value);
+              }
+           }
+           for(var i=0;i<textarealLength;i++)
+           {
+              var value_text = strim(aTextAreas[i].innerHTML);//若input有value值
+              if(value_text==="")
+              { 
+                if(aTextAreas[i].getAttribute('default_value'))
+                { 
+                   aTextAreas[i].innerHTML = aTextAreas[i].getAttribute('default_value');
+                }
+              } 
+           }
+           
+           //分派验证
+           verAddEvent(all_obj);
+           
+           //onSubmit
+           onSubmit(osuBtn);
+        }else{
+          return false;
+        }
+        //给password创建提示文本
+        function createTxt(obj,default_value)
+        {
+           var oLabel = document.createElement("label");
+           oLabel.className = "pass_label";
+           oLabel.innerHTML = default_value;
+           obj.parentNode.appendChild(oLabel);
+           oLabel.onclick = function()
+           { 
+              obj.focus();
+           }
+        }
+        //给input textarea 置空项加聚失焦事件
+        function verAddEvent(all_obj)
+        {  
+           var length = all_obj.length;
+           for(var i=0;i<length;i++)
+           {
+               var obj = all_obj[i][0];
+               var obj_rules = all_obj[i][1];
+               Focus(obj,obj_rules);
+               Blur(obj,obj_rules);
+           }
+        }
+        //Focus
+        function Focus(obj,obj_rules)
+        {  
+           var verName = (obj_rules.name).toLowerCase();
+           if(verName === 'text')
+           {
+               obj.onfocus = function()
+               {
+                   if(obj.getAttribute('value')===obj.getAttribute('default_value'))
+                   {  
+                       obj.setAttribute('value','');
+                   }else{
+                       return false;
+                   }
+               }
+           }
+           if(verName==='password')
+           { 
+              obj.onfocus = function()
+              {
+                 var oLabel_default = getByClass(obj.parentNode,"pass_label");
+                 var default_value = obj.getAttribute("default_value");
+                 if(oLabel_default && oLabel_default.length>0 && default_value)
+                 {
+                    oLabel_default[0].style.display = "none";
+                 } 
+              }
+           }
+           if(verName==='textarea')
+           {
+               obj.onfocus = function()
+               { 
+                  if(obj.innerHTML=== obj.getAttribute('default_value'))
+                  {
+                     obj.innerHTML='';
+                  }else{
+                     return false;
+                  }
+               }
+           }
+        }
+        //Blur
+        function Blur(obj,obj_rules)
+        {
+            var verName = (obj_rules.name).toLowerCase();
+            var rules = obj_rules.all_rule;
+            //调用规则方法处理对应不同规则显示
+            obj.onblur = function()
+            {
+                Rules(obj,verName,rules);
+            }
+        }
+        //Rules
+        function Rules(obj,verName,rules)
+        { 
+           var iflg = true;
+           var mainParent = (getParent(obj,"inpute"));//inpute二顶级父节点
+           var rule_length = rules.length;//规则个数
+           var value = strim(obj.value) || obj.innerHTML;
+           var default_value = obj.getAttribute("default_value") || '';
+           var addErrorClass = obj.getAttribute("addErrorClass") || '';//input上添加border错误提示class
+           obj.prompt_flg = false;
+           //分类验证
+           for(var i=0;i<rule_length;i++)
+           {
+              var rule_name = rules[i].rule; 
+              if(rule_name === "empty")
+              {
+                 var law = rules[i].law;
+                 var correct = rules[i].correct;
+                 var error = rules[i].error;
+                 if(value === "" || value === default_value)
+                 {   
+                     obj.cflg = false;
+                     addErrClass(obj,addErrorClass,obj.cflg);
+                     errorPoint(mainParent,obj,error);
+                     iflg = false;
+                     break;
+                 }else{
+                     obj.cflg = true;
+                     addErrClass(obj,addErrorClass,obj.cflg);
+                     errorPoint(mainParent,obj,correct);
+                 }   
+              }else if(rule_name === "restriction")
+              {
+                 var law = rules[i].law;
+                 var correct = rules[i].correct;
+                 var error = rules[i].error;
+                 var minValue = law[0];
+                 var maxValue = law[1];
+                 var type = law[2];
+                 var txt = stringLength(value,type)
+                 if(txt < minValue || txt > maxValue)
+                 {
+                     obj.cflg = false;
+                     addErrClass(obj,addErrorClass,obj.cflg);
+                     errorPoint(mainParent,obj,error);
+                     iflg = false;
+                     break;
+                 }else{
+                     obj.cflg = true;
+                     addErrClass(obj,addErrorClass,obj.cflg);
+                     errorPoint(mainParent,obj,correct);
+                 }  
+              }else if(rule_name === "regular")
+              {
+                 var law = rules[i].law;
+                 var correct = rules[i].correct;
+                 var error = rules[i].error;
+                 if(law.test(value) === false)
+                 {
+                     obj.cflg = false;
+                     addErrClass(obj,addErrorClass,obj.cflg);
+                     errorPoint(mainParent,obj,error);
+                     iflg = false;
+                     break;
+                 }else{
+                     obj.cflg = true;
+                     addErrClass(obj,addErrorClass,obj.cflg);
+                     errorPoint(mainParent,obj,correct);
+                 }    
+              }else if(rule_name === "otherRules")
+              {
+                 var fun = rules[i].fun;
+                 if(fun)
+                 {
+                    var fun_value = fun();
+                    var fun_true = fun_value[0];
+                    var prompt = fun_value[1] || '';
+                    if(!!fun_true === true)
+                    {   
+                        obj.cflg = true;
+                        addErrClass(obj,addErrorClass,obj.cflg);
+                        errorPoint(mainParent,obj,prompt);
+                    }else{
+                        obj.cflg = false;
+                        addErrClass(obj,addErrorClass,obj.cflg);
+                        errorPoint(mainParent,obj,prompt);
+                        iflg = false;
+                        break;
+                    }
+                 } 
+              }
+           }
+           return iflg; 
+        } 
+        //errorPoint
+        function errorPoint(mainParent,obj,prompt)
+        { 
+           var oPrompt = getByClass(mainParent,'prompt');
+           if(oPrompt && oPrompt.length>0)
+           {
+               mainParent.removeChild(oPrompt[0]);
+           } 
+           if(obj.prompt_flg === false)
+           {
+               createSpan(mainParent,prompt);
+           }
+           //创建错误提示
+           function createSpan(oParent,value)
+           { 
+               var ospan = document.createElement("span");
+               ospan.className = "prompt";
+               ospan.innerHTML = value;
+               oParent.appendChild(ospan);
+           }   
+        }
+        //addErrorClass
+        function addErrClass(obj,addErrorClass,cBtn)
+        { 
+           var aClass = (obj.className).split(" ") || Array.prototype.slice.call((obj.className));
+           var length = aClass.length;
+           var oCbtn = false;
+           if(length>0)
+           {
+              for(var i=0;i<length;i++)
+              {
+                  if(aClass[i] === addErrorClass)
+                  {
+                      var iset = i;
+                      var oCbtn = true;
+                      break;
+                  }
+              }
+           }
+           if(cBtn === false && oCbtn === false)
+           {    
+                if(addErrorClass!="")
+                {  
+                   obj.className +=" "+addErrorClass; 
+                }
+           }else if(cBtn === true && oCbtn === true)
+           {
+               if(parseInt(iset)===0)
+               {
+                 var newClass = aClass.slice(1);
+               }else if(parseInt(iset)===length-1)
+               {
+                 var newClass = aClass.slice(0,parseInt(iset));
+               }else{
+                 var newClass = aClass.slice(0,parseInt(iset)).concat(aClass.slice(parseInt(iset)+1,aClass.length));
+               }
+               if(newClass.length>0)
+               {
+                 var lastClass = newClass.join(" ");
+                 obj.className = lastClass;
+               }
+           }
+        }
+        //onsubmit
+        function onSubmit(osuBtn)
+        {  
+           if(osuBtn.length>0)
+           {  
+              var obtn = osuBtn[0].getElementsByTagName('input')[0];
+              obtn.onclick=function()
+              {  
+                 var isTs;
+                 var iflgs=[];
+                 var iLastFlg;
+                 var length = all_obj.length;
+                 for(var i=0;i<length;i++)
+                 {
+                     var obj = all_obj[i][0];
+                     var obj_rules = all_obj[i][1];
+                     var verName = (obj_rules.name).toLowerCase();
+                     var rules = obj_rules.all_rule;
+                     var isTs = Rules(obj,verName,rules);
+                     var default_value = obj.getAttribute("default_value");
+                     obj.value = strim(obj.value);
+                     var value = obj.value;
+                     obj.blur();
+                     //提交时将默认值删除
+                     if(default_value === value)
+                     {
+                         obj.value = "";
+                     }
+                     if(subActFun)
+                     {
+                        var fun_flg = subActFun();
+                     }
+                     iflgs.push(isTs);
+                     iflgs.push(fun_flg);
+                 }
+                 for(var i=0;i<iflgs.length;i++)
+                 {
+                     if(iflgs[i]===false)
+                     {
+                        iLastFlg = false;
+                        break;
+                     }else{
+                        iLastFlg = true;
+                     }
+                 }
+                 if(iLastFlg)//true提交
+                 {
+                    form.submit();
+                 }
+                 return false;
+              }
+           }
+        }
+		}
+
+    //公用函数
+		function getById(ivalue)
+		{
+        return (typeof ivalue)==='string'?document.getElementById(ivalue):document.getElementById('ivalue');
+		}
+    //search parent
+    function getParent(obj,sClass)
+    {
+       var result = [];
+       var reg = eval("/\\b"+sClass+"\\b/");
+       while(obj)
+       {
+          if(reg.test(obj.className))
+          {
+             result.push(obj);
+             break;
+          }else{
+             obj = obj.parentNode;
+          }
+       }
+       return result[0];
+    }
+		function getByClass(obj,sClass)
+		{
+           var result = [];
+           var regClass = eval('/\\b'+sClass+'\\b/');
+           if(obj && sClass!='' && sClass!=' ' && sClass!=null)
+           {
+               var allobj = obj.getElementsByTagName("*");
+               var ilength = allobj.length;
+               for(var i=0;i<(ilength);i++)
+               {
+                   if(regClass.test(allobj[i].className)===true)
+                   {
+                      result.push(allobj[i]);
+                   }
+               }
+           }
+           return result;
+		}
+    //stringLength字符长度
+    function stringLength(iString,type)
+    {
+        var length = 0;
+        switch(type)
+        {
+           case 'cn':
+                 length = iString.length;
+                 return length;
+                 break;
+           case 'en':
+                 for(var i=0;i<(iString.length);i++)
+                 {
+                     var charCode = iString.charCodeAt(i);
+                     if(charCode>=0 && charCode<=128)
+                     {   
+                         length+=0.5;//英文，数字
+                     }else{
+                         length+=1;//汉字
+                     }
+                 }
+                 return length;
+                 break;
+        }
+    }
+    //strim去除空格
+    function strim(iValue)
+    {
+       var reg = /^\s+|\s+$/g;
+       var result;
+       result = iValue.replace(reg,"");
+       return result;
+    }
+	}
+</script>
+
+ </head>
+
+ <body>
+<div id="form" class="myform">
+   <form action = 'www.baidu.com' id="forms" name="form">
+       <div class="inpute">
+       	 <div class="textTitle">title1</div>
+       	 <div class="textBox">
+          <input type="text" value='' class='text' default_value = '请输入...' id="oput" tagname="inputText"  addErrorClass = "bred"/>
+        </div>
+    </div>
+	   <div class="inpute">
+       	 <div class="textTitle">title2</div>
+       	 <div class="textBox">
+           <input type="text" value='' class='text' default_value = '请输入...' tagname="inputText1" addErrorClass = "bred"/>
+        </div>
+     </div>
+     <div class="inpute">
+         <div class="textTitle">password</div>
+         <div class="textBox">
+          <input type="password" value=""  class='password' default_value = '请输入密码' autocomplete="off" tagname="password" addErrorClass = "bred"/>
+        </div>
+     </div>
+     <div class="inpute">
+         <div class="textTitle">title3</div>
+         <div class="textBox"><textarea class ='textarea' default_value = '请输入1...' tagname="textarea" id="textarea" addErrorClass = "bred"></textarea></div>
+      </div>
+	   <div class="inpute">
+       	 <div class="textTitle">title4</div>
+       	 <div class="textBox">
+            <input type="text" value='' class='text1' default_value = '请输入...' id="text1"/>
+        </div>
+     </div>
+     <div class="inpute">
+         <div class="textTitle"></div>
+         <div class="textBox">
+            <input type="checkbox" id="ckbox"/><label for="ckbox">checkbox</label>
+        </div>
+     </div>
+     <div class="inpute">
+         <div class="textTitle">title3</div>
+         <div class="textBox"><textarea class="textarea ckeditor" cols="80" id="editor4" rows="10" tabindex="1" tagname="textarea1"></textarea></div>
+      </div>
+	   <div class="suBtn">
+		 <input type="submit" value="click"/>
+	   </div>
+   </form>
+</div>
+ </body>
+</html>

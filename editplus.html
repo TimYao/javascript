@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<script type="text/javascript">
+window.onload = function()
+{
+   var reg = /msie \d+/ig;
+   var arrClass = ['fontw','fonti','bq01','bq02'];
+   var editDiv = document.getElementById("editDiv");
+   var textarea = editDiv.getElementsByTagName("textarea")[0];
+   var iframe = editDiv.getElementsByTagName("iframe")[0];
+   var allBnts = document.getElementById("flgTag").getElementsByTagName("a");
+   var bqflg;
+
+   iframe.contentWindow.document.body.setAttribute('contenteditable',true);
+   iframe.contentWindow.document.body.contenteditable = true;
+   iframe.contentWindow.document.body.style.overflow = "hidden";
+   if(reg.test(window.navigator.userAgent))
+   {
+	   iframe.contentWindow.document.designMode = "on";
+   }
+   for(var i=0;i<allBnts.length;i++)
+   {
+	   allBnts[i].onclick = function(event)
+	   {
+		  var ev = event || window.event;
+	      var sclass = this.className.split(',');
+		  for(var j=0;j<arrClass.length;j++)
+		  {
+			 for(var k=0;k<sclass.length;k++)
+			 {
+				 if(sclass[k]===arrClass[j])
+				 {
+					 var mflg = sclass[k];
+					 break;
+				 }
+		     }  
+		  }
+		  
+		  if(mflg==='fontw')
+		  {
+			 textarea.innerHTML=iframe.contentWindow.document.body.innerHTML = '<strong>'+iframe.contentWindow.document.body.innerHTML+'</strong>';
+		  }else if(mflg==='fonti'){
+			 textarea.innerHTML=iframe.contentWindow.document.body.innerHTML = '<i>'+iframe.contentWindow.document.body.innerHTML+'</i>'; 
+		  }else if(mflg==='bq01')
+		  {
+			 bqflg = '#b_q01#';
+			 textarea.innerHTML +=bqflg; 
+			 iframe.contentWindow.document.body.innerHTML =iframe.contentWindow.document.body.innerHTML; 
+		  }else if(mflg==='bq02')
+		  {
+		     bqflg = '#b_q02#';
+		  }
+		  ev.cancelBubble = true;
+		  return false;
+	   }
+   }
+   iframe.contentWindow.document.body.onfocus = function(event)
+   {
+	  var range = document.selection.createRange();console.log(range)
+   }
+   iframe.contentWindow.document.body.onblur = function(event)
+   {
+	   //var ev = event || window.event;//console.log(event.x);//event.x,event.y
+       textarea.innerHTML = iframe.contentWindow.document.body.innerHTML;
+   }
+   /*document.onselectionchange = function() {  
+		var range = document.selection.createRange();  
+		var srcele = range.parentElement();  
+		var copy = document.body.createTextRange();  
+		copy.moveToElementText(srcele);  
+
+		for (cursor = 0; copy.compareEndPoints("StartToStart", range) < 0; cursor++) {  
+			copy.moveStart("character", 1);  
+		}  
+		document.title = srcele.innerText.substring(cursor - 1, cursor);  
+	}*/  
+}
+</script>
+<style>
+*{padding:0;margin:0;}
+img{border:none;}
+.addText{width:300px;margin:40px auto;box-shadow:2px 2px 3px #666;}
+.editDiv{border:1px solid #CCC;width:300px;height:150px;margin:0px auto;position:relative;overflow:hidden;border-top:0;}
+.editDiv textarea{display:none;}
+.editDiv iframe{position:absolute;width:300px;height:150px;}
+.addText .flgTag{background:#CCC;height:45px;padding:0 5px;}
+.addText .flgTag .bq01 img{vertical-align:middle;}
+.addText .flgTag a{text-decoration:none;color:#000;font-size:13px;display:inline-block;margin:0 5px 0 0;vertical-align:top;line-height:45px;}
+.addText .flgTag .bq01{line-height:normal;}
+.addText .flgTag .bq02{line-height:normal;margin-top:12px;}
+.addText .flgTag .bq02 img{vertical-align:middle;}
+</style>
+</head>
+
+<body>
+<div class="addText">
+  <div class="flgTag" id="flgTag">
+     <a href="" class="fontw">加粗</a><a href="" class="fonti">斜体</a><a href="" class="bq01 bq"><img src="img/0008.gif" width="40" height="40" alt=""/></a><a href="" class="bq02 bq"><img src="img/0040.gif" width="24" height="24" alt=""/></a>
+  </div>
+ <div class="editDiv" id="editDiv">
+  <textarea></textarea>
+  <iframe id="if" scrolling="no" frameborder="0"></iframe>
+ </div>
+</div>
+</body>
+</html>

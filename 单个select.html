@@ -1,0 +1,687 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>输入法</title>
+<style type="text/css">
+	*{padding:0;margin:0;}
+	ul li{list-style:none;}
+	.menBox{width:600px;margin:20px auto;}
+	.menBox .men_box{margin:30px auto;position:relative;float:left;margin-right:10px;display:inline;background:url(img/oy.gif) no-repeat left center;height:35px;}
+	.menBox ul{border:1px solid #d8d8da;border-top:none;display:none;float:left;display:none;position:absolute;background:#fff;z-index:1;height:100px;overflow-y:scroll;}
+	.menBox ul li{cursor:pointer;clear:both;word-wrap:break-word;background:#fdfdfd;border-top:1px solid #e5e5e5;padding:5px 0 5px 10px;}
+	.menBox ul li span{line-height:normal;}
+	.menBox input{display:none;}
+	.menBox .meth{position:relative;font-size:12px;/*background:#fff;border:1px solid #000;border-bottom:none;*/background:url(img/os.gif) repeat-x left center;height:35px;left:2px;line-height:35px;}
+	.menBox .meth span{display:block;float:left;white-space:nowrap;text-indent:10px;cursor:pointer;}
+	.menBox .meth a{position:absolute;right:0px;background:url(img/btn.gif) no-repeat left top;height:35px;width:35px;outline:none;}
+	.clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden;}
+	*html .clearfix{height:1%;}
+    .menBox ul .hovers{background:url(img/shover.gif);}
+   /*固定的模拟select*/
+   .menBox_tab .men_box{width:150px;}
+   .menBox_tab ul{width:148px;display:none;}
+   .menBox_tab .meth span{width:106px;overflow:hidden;}
+</style>
+<script type="text/javascript">
+/*
+  插架介绍：
+  nFixedSelect 可变动宽度模拟select器
+    参数：id(容器ID),evt(事件类型),dateId(数据ID),cssClass(borderCss下边框,btnIconClass按钮变换class,hoverClass鼠标hoverclass)
+    index=1(列表下标注，为默认值,不标注显示第一个，首要显示index=1的值，其次提示默认值，再这是无显示第一个值)
+
+  fixedSelect 固定宽度模拟select器
+    参数：id(容器ID),evt(事件类型),dateId(数据ID),cssClass(borderCss下边框,btnIconClass按钮变换class,hoverClass鼠标hoverclass,zIndex:属性值)
+    index=1(列表下标注，为默认值,不标注显示第一个，首要显示index=1的值，其次提示默认值，再这是无显示第一个值)
+*/
+window.onload = function()
+{
+   nFixedSelect({
+      id:'menBox',
+      evt:'click',
+      dateId:'k_id',
+      defaultText:'请选择',
+      cssClass:{
+      	 borderCss:'',
+      	 btnIconClass:'',
+      	 hoverClass:'',
+         zIndex:'50'
+      },
+      callBack:function()
+      {
+
+      }
+   });
+   
+   
+   /*fixedSelect({
+      id:'menBox1',
+      evt:'click',
+      dateId:'k_id',
+      defaultText:'请选择',
+      cssClass:{
+         borderCss:'',
+         btnIconClass:'',
+         hoverClass:'',
+         zIndex:'50'
+      },
+      callBack:function()
+      {
+          //console.log(document.getElementById('ted').value);
+      }
+   });*/
+
+   /*fixedSelect({
+      id:'menBox2',
+      evt:'click',
+      dateId:'k_id',
+      defaultText:'请选择',
+      cssClass:{
+         borderCss:'',
+         btnIconClass:'',
+         hoverClass:'',
+         zIndex:'60'
+      },
+      callBack:function()
+      {
+          console.log(document.getElementById('ted1').value);
+      }
+   });*/
+}
+//select 非固定宽度fixeSelect  id,evt,jsonCss
+function nFixedSelect(OPARME)
+{
+    var boxId = OPARME.id || '',
+        evt = OPARME.evt || 'click',
+        dateId = OPARME.dateId || 'k_id',
+        defaultText = OPARME.defaultText || '',
+        cssClass = OPARME.cssClass || {borderCss:'',btnIconClass:'',hoverClass:''},
+        callBack = OPARME.callBack || function(){},
+        borderCss = cssClass.borderCss || '',
+        btnIconClass = cssClass.btnIconClass || '',
+        hoverClass = cssClass.hoverClass || '',
+        zIndex = cssClass.zIndex || 1,
+        btnSpace = 44,                  
+        menuBox,
+        flgIndex=false;
+    if(boxId==="")
+    {
+        alert("请填写容器ID");
+        return false;
+    }
+    menuBox = document.getElementById(boxId);
+    if(!menuBox || !evt)
+    {
+        return false;
+    }else{
+      var oMenuBox = menuBox.children,
+	        length = oMenuBox.length,
+          oInput = menuBox.getElementsByTagName("input"),
+	        aUl = menuBox.getElementsByTagName('ul'),
+	        timer1 = null,
+	        a_ul = [],
+	        a_oTag = [],
+	        oMe = (getByClass(document,'menBox'));//修改document点击关闭所有UL列表
+      for(var j=0;j<oMe.length;j++)
+      {
+          //a_ul.push(oMe[j].getElementsByTagName('ul'));
+          //a_oTag.push((getByClass((oMe[j].children)[0],"meth")[0]).getElementsByTagName("a")[0]);
+      }
+	    for(var i=1;i<length;i++)   //默认多级非联动菜单
+	    {
+	       displayBox(oMenuBox[i]);
+	    }   
+    }
+    function displayBox(obj)
+    {
+	      var aMenbox = obj.children,            
+            oMeth = aMenbox[0],
+	          oList = aMenbox[1],     
+	          aSub = oMeth.children, 
+	          oSpan = aSub[0], 
+            oBtn = aSub[1],
+	          aList = oList.children,          //获得LI对象
+            iLength = aList.length,          //记录Ul下Li长度
+            newarr = [],                     //定义空数组，为记录列表内容width排序
+	          tagArr = [];                     //定义空数组，为记录初始得到的列表对象信息
+        //对列表下内容的信息记录
+        for(var i=0;i<iLength;i++)
+	      {   
+	          var longs = ((aList[i].children)[0].innerHTML).length;
+		        newarr.push([(aList[i].children)[0],(aList[i].children)[0].offsetWidth,longs]); 
+		        tagArr.push([(aList[i].children)[0],(aList[i].children)[0].offsetWidth,longs]);    
+	      }
+	      //数组排序，获得最大WIDTH
+	      var lastarr = newarr.sort(function(a,b){
+	          return a[1]-b[1];
+	      }); console.log(lastarr);
+	      //oMeth[0].style.borderBottom = borderCss;
+	      //添加事件
+	      if(evt === "mouseover")
+	      {   
+	  	      var oTagObj = oTag.parentNode.parentNode;
+            oTagObj.onmouseover = function(ev)
+            {
+                clearTimeout(timer1);
+    		        oList.style.display = "block";
+    			      if(zIndex<=1)
+                {
+                   zIndex++;
+                }
+    			      oList.style.zIndex = zIndex;
+    			      oMeth[0].style.zIndex = zIndex;
+    			      oMeth[0].parentNode.style.zIndex = zIndex;
+    			      oMeth[0].style.borderBottom="none";
+    			      oTag.className = btnIconClass;
+    		        (ev||window.event).cancelBubble = true;
+            }
+            oTagObj.onmouseout = function()
+            {
+    	      	  timer1 = setTimeout(function(){
+                    oList.style.display = "none";
+                    oMeth[0].style.borderBottom = borderCss;
+                    oTag.className = '';
+    	          },300);
+    			      oList.style.zIndex = 1;
+    			      oMeth[0].style.zIndex = 1;
+    			      oMeth[0].parentNode.style.zIndex = 1;
+            }
+	      }else{
+    	  	  oBtn["on"+evt]=function(ev)
+    		    { 
+        			 var tag = getStyle(oList,"display");
+        			 if(tag==="none")
+        			 {
+        			    oList.style.display = "block";
+        				  if(zIndex<=1)
+                  {
+                     zIndex++;
+                  }
+        				  oList.style.zIndex = zIndex;
+        				  //oMeth[0].style.zIndex = zIndex;
+        				  //oMeth[0].parentNode.style.zIndex = zIndex;
+        				  //oMeth[0].style.borderBottom="none";
+        				  this.className = btnIconClass;
+        			 }else{
+        			    oList.style.display = "none";
+        				  oList.style.zIndex = 1;
+        				  //oMeth[0].style.zIndex = 1;
+        				  //oMeth[0].parentNode.style.zIndex = 1;
+        				  //oMeth[0].style.borderBottom=borderCss;
+        				  this.className = '';
+        			 }
+      		     (ev||window.event).cancelBubble = true;
+    		    }
+	      }
+  	    //列表添加点击事件
+  	    /*for(var i=0;i<iLength;i++)
+  	    {
+  		   aList[i].index = i;
+  	     aList[i].onclick = function(ev)
+  		   {  
+  		    var oTxt = (this.children)[0].innerHTML,
+  		        kId = (this.children)[0].getAttribute(dateId),
+  			      this_parent = this.parentNode.parentNode.parentNode;
+    			for(var i=0;i<iLength;i++)
+    			{
+    			   (aList[i].children)[0].setAttribute("index",'');
+    			}
+
+    			(this.children)[0].setAttribute("index",1);
+    			oText.innerHTML = oTxt;
+    			oText.setAttribute(dateId,kId);
+          oInput.value = kId;
+    			oList.style.display = "none";
+    			oList.style.zIndex = 1;
+    			oMeth[0].style.borderBottom=borderCss;
+    			changeBox(obj,this.index);   //实现模拟select变换
+    			(ev||window.event).cancelBubble = true;
+  		   }
+         //hover效果
+  		   //alistHover(aList[i]);
+  	    }*/
+        //默认触发
+        changeBox(obj,-1);
+  	    function changeBox(obj,index)
+  	    {
+            var largeW = lastarr[lastarr.length-1][1],  //得到列表下文字显示最大对象WIDTH 
+                ob = null;
+      		  if(index===-1)                              //默认渲染后情况
+      		  {
+        			  for(var i=0;i<iLength;i++)
+        			  {
+        			  	  var largeWidth = (aList[i].children)[0].offsetWidth;
+        			      lastarr[lastarr.length-1][0].style.wordWrap="break-word";             
+                    lastarr[lastarr.length-1][0].style.width=largeWidth+btnSpace+'px';
+        				    if((aList[i].children)[0].getAttribute("index")>=1)
+        				    {
+        				 	       flgIndex = true;
+        				 	       ob = (aList[i].children)[0];
+                         break;
+        				    }else{
+                         flgIndex = false;
+        				    }
+        			  }
+        			  if(flgIndex===true)    //当前显示判断
+        	      {
+        	           oText.innerHTML = ob.innerHTML;
+        	           oText.setAttribute(dateId,ob.getAttribute(dateId));
+        	           oInput.value= ob.getAttribute(dateId); 
+        	           largeWidth = oText.offsetWidth; 
+        	      }else{
+                     if(defaultText!="")
+                     {
+                         oText.innerHTML = defaultText;
+                         oText.setAttribute(dateId,"-1");
+    			               oInput.value= "-1";
+    			               largeWidth = oText.offsetWidth;
+                     }else{
+                         oText.innerHTML = (aList[0].children)[0].innerHTML;
+                         oText.setAttribute(dateId,(aList[0].children)[0].getAttribute(dateId));
+    			               oInput.value= (aList[0].children)[0].getAttribute(dateId);
+                     }
+        	      }
+      		  }else{                                     //点击列表下对象触发情况
+      		      for(var i=0;i<tagArr.length;i++)
+      			    {
+        			    if(i===index && tagArr[i][1]<=largeW)
+          				{ 
+          				   var largeWidth = tagArr[i][1];         //当前宽度
+          				   olarg = tagArr[i][0];
+                     for(var i=0;i<lastarr.length;i++)
+          				   {
+          				       lastarr[i][0].style.wordWrap="break-word";                //控制文字折行           
+          					     lastarr[i][0].style.width = largeWidth+btnSpace+'px';     //宽度附加
+          				   }
+          				}
+      			    } 
+      		  }
+      		  oList.style.display = "none";
+      		  oList.style.zIndex = 1;
+      		  oList.style.width=oMeth[0].style.width = largeWidth+btnSpace+'px';//改变对应整个容器的WIDTH，达到适应                    
+  	    }
+	     //点击文档对象关闭所有列表
+	     document.onclick = function(ev)
+	     {     
+    			for(var i=0;i<a_ul.length;i++)
+    		  {
+    			    a_ul[i][0].style.display = "none";
+    			    (a_ul[i][0].parentNode.children)[0].style.borderBottom = borderCss;
+    			    a_oTag[i].className = '';
+    			}
+    			(ev || window.event).cancelBubble = true; 
+	     }
+	     //alistHover  列表hover效果
+       function alistHover(obj)
+	     {
+    	     obj.onmouseover = function()
+      		 {
+      		 	   this.className = hoverClass;
+      		 }
+      		 obj.onmouseout = function()
+      		 {  
+      			   this.className = "";
+      		 }
+	     }
+    }
+    /*公用函数获取CSS样式*/
+	  function getStyle(obj,attr)
+	  {
+	  return obj.currentStyle ? obj.currentStyle[attr] : document.defaultView.getComputedStyle(obj,false)[attr];
+	  }
+	  function getByClass(obj,sClass)
+	  { 
+	   var re = eval("/\\b"+sClass+"\\b/g");
+	   var result = [];
+	   if(obj.length>0)
+	   {
+	     var length = obj.length;
+		 var aobj = obj;
+		 
+	   }else{
+	       var aobj = obj.getElementsByTagName('*');
+		   var length = aobj.length;
+	   }
+	   for(var i=0;i<length;i++)
+	   {   
+		   var classN = aobj[i].className;  
+		   if(re.test(classN)===true)
+		   {  
+		       result.push(aobj[i]);
+		   }
+	   }
+	   return result;
+	  }
+}
+//select 固定宽度nFixeSelect
+function fixedSelect(OPARME) {
+    var boxId = OPARME.id || '',
+        evt = OPARME.evt || 'click',
+        dateId = OPARME.dateId || 'k_id',
+        defaultText = OPARME.defaultText || '',
+        cssClass = OPARME.cssClass || {borderCss:'',btnIconClass:'',hoverClass:''},
+        callBack = OPARME.callBack || function(){},
+        borderCss = cssClass.borderCss || '',
+        btnIconClass = cssClass.btnIconClass || '',
+        hoverClass = cssClass.hoverClass || '',
+        zIndex = cssClass.zIndex || 1, 
+        btnSpace = 44,                  
+        menuBox,
+        flgIndex=false;
+    if(boxId==="")
+    {
+       alert("请填写容器ID");
+       return false;
+    }
+    var menuBox = document.getElementById(boxId);
+    if (!menuBox || !evt) {
+        return false;
+    }else{
+        var oMenuBox = menuBox.children,
+            length = oMenuBox.length,
+            aUl = menuBox.getElementsByTagName('ul'),
+            //修改document点击关闭所有UL列表
+            oMe = (getByClass(document,'menBox')),
+            a_ul = [],
+            a_oTag = [];
+        for(var j=0;j<oMe.length;j++)
+        {
+            a_ul.push(oMe[j].getElementsByTagName('ul'));
+            a_oTag.push((getByClass((oMe[j].children)[0],"meth")[0]).getElementsByTagName("a")[0]);
+        }
+        //默认多级非联动菜单
+        for (var i = 0; i < length; i++)
+        {
+            displayBox(oMenuBox[i]);
+        }
+    }
+    function displayBox(obj) {
+        var oMeth = obj.children,
+            //获得容器下一级孩子
+            oList = oMeth[1],
+            //获得一级孩子下的UL列表
+            aSub = oMeth[0].children,
+            //获得一级孩子下的容器
+            oInput = aSub[0],
+            //获得input
+            oText = aSub[1],
+            //获得模拟SPAN
+            oTag = aSub[2],
+            //获得事件触发按钮
+            aList = oList.children,
+            //获得LI对象
+            iLength = aList.length,
+            //记录Ul下Li长度
+            btnSpace = 50,
+            //事件触发按钮与内容之间的间隔
+            ob = null,
+            timer1 = null;
+        //有border默认设置
+        oMeth[0].style.borderBottom = borderCss;
+        //对列表下内容的信息记录
+        for (var i = 0; i < iLength; i++) {
+            if ((aList[i].children)[0].getAttribute("index"))//当前显示判断
+            {
+                flgIndex = true;
+                ob = (aList[i].children)[0];
+                break;
+            }else{
+                flgIndex = false;
+            }
+        }
+        if(flgIndex===true)
+        {
+           oText.innerHTML = ob.innerHTML;
+           oText.setAttribute(dateId,ob.getAttribute(dateId));
+           oInput.value = ob.getAttribute(dateId);
+        }else{
+           if(defaultText !== "")
+           {
+              oText.innerHTML = defaultText;
+              oText.setAttribute(dateId,"-1");
+              oInput.value = "-1";
+           }else{
+              oText.innerHTML = (aList[0].children)[0].innerHTML;
+              oText.setAttribute(dateId,(aList[0].children)[0].getAttribute(dateId));
+              oInput.value = (aList[0].children)[0].getAttribute(dateId);
+           }
+        }
+        callBack();
+        if (evt === 'mouseover') {
+            var oTagObj = oTag.parentNode.parentNode;
+            oTagObj.onmouseover = function(ev) {
+                clearTimeout(timer1);
+                oList.style.display = "block";
+                if(zIndex<=1)
+                {
+                   zIndex++;
+                }
+                oList.style.zIndex = zIndex;
+                oMeth[0].style.zIndex = zIndex;
+                oMeth[0].parentNode.style.zIndex = zIndex;
+                oMeth[0].style.borderBottom = "none";
+                this.className = btnIconClass;
+            }
+            oTagObj.onmouseout = function() {
+                timer1 = setTimeout(function(){
+                    oList.style.display = "none";
+                    oMeth[0].style.borderBottom = borderCss;
+                    this.className = '';
+                },300);
+                oList.style.zIndex = 1;
+                oMeth[0].style.zIndex = 1;
+                oMeth[0].parentNode.style.zIndex = 1;
+            } 
+        } else {
+            
+            //添加事件
+            oText["on" + evt]=oTag["on" + evt] = function(ev) {
+                var tag = getStyle(oList, "display");
+                if (tag === "none") {
+                    oList.style.display = "block";
+                    if(zIndex<=1)
+                    {
+                       zIndex++;
+                    }
+                    oList.style.zIndex = zIndex;
+                    oMeth[0].style.zIndex = zIndex;
+                    oMeth[0].parentNode.style.zIndex = zIndex;
+                    oMeth[0].style.borderBottom = "none";
+                    this.className = btnIconClass;
+                } else {
+                    oList.style.display = "none";
+                    oList.style.zIndex = 1;
+                    oMeth[0].style.zIndex = 1;
+                    oMeth[0].parentNode.style.zIndex = 1;
+                    oMeth[0].style.borderBottom = borderCss;
+                    this.className = '';
+                }
+                (ev || window.event).cancelBubble = true;
+                return false;
+            }
+        }
+        //列表添加点击事件
+        for (var i = 0; i < iLength; i++) {
+            aList[i].index = i;
+            aList[i].onclick = function(ev) {
+                var ThisParent = (this.parentNode);
+                var oTxt = (this.children)[0].innerHTML;
+                var thisKindex = (this.children)[0].getAttribute(dateId);
+                for (var i = 0; i < iLength; i++) {
+                    (aList[i].children)[0].setAttribute("index", '');
+                }
+                (this.children)[0].setAttribute("index", 1);
+                oText.innerHTML = oTxt; 
+                oText.setAttribute(dateId,thisKindex);
+                oInput.value = thisKindex;
+                ThisParent.style.display = "none";
+                ThisParent.style.zIndex = 1;
+                oMeth[0].style.borderBottom = borderCss;
+                (ev || window.event).cancelBubble = true;
+                callBack();
+            }
+            //hover效果
+            alistHover(aList[i]);
+        }
+        //点击文档对象关闭所有列表
+        document.onclick = function(ev) {
+            for (var i = 0; i < a_ul.length; i++) {
+                a_ul[i][0].style.display = "none";
+                (a_ul[i][0].parentNode.children)[0].style.borderBottom = borderCss;
+                a_oTag[i].className = '';
+            }
+            (ev || window.event).cancelBubble = true;
+        }
+        //alistHover  列表hover效果
+        function alistHover(obj) {
+            obj.onmouseover = function() {
+                this.parentNode.style.display = "block";
+                this.className = hoverClass;
+            }
+            obj.onmouseout = function() {
+                this.className = '';
+            }
+        }
+    }
+    //获取Class
+	  function getByClass(obj,sClass)
+	  { 
+	   var re = eval("/\\b"+sClass+"\\b/g");
+	   var result = [];
+	   if(obj.length>0)
+	   {
+	     var length = obj.length;
+		 var aobj = obj;
+		 
+	   }else{
+	       var aobj = obj.getElementsByTagName('*');
+		   var length = aobj.length;
+	   }
+	   for(var i=0;i<length;i++)
+	   {   
+		   var classN = aobj[i].className;  
+		   if(re.test(classN)===true)
+		   {  
+		       result.push(aobj[i]);
+		   }
+	   }
+	   return result;
+	  }
+	  /*获取CSS样式*/
+	  function getStyle(obj, attr){
+	     return obj.currentStyle ? obj.currentStyle[attr] : document.defaultView.getComputedStyle(obj,false)[attr];
+	  }
+}
+</script>
+</head>
+
+<body>
+<p style="text-align:left;padding:10px 0 0 200px;">F非固定SELECT模拟</p>
+<div id="menBox" class="menBox clearfix">
+ <input type="hiden"/>
+ <div class="men_box">
+   <div class="meth clearfix">
+     <span>谷歌</span>
+	 <a href="javascript:void(0);" hidefocus=true></a>
+   </div>
+   <ul>
+      <li><span k_id=0>谷歌</span></a></li>
+      <li><span k_id=1>aaa1</span></li>
+      <li><span k_id=2>bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</span></li>
+	    <li><span k_id=3>aaaaaa2</span></li>
+	    <li><span k_id=4>aaa</span></li>
+	    <li><span k_id=5>aaa</span></li>
+	    <li><span k_id=6>aaa</span></li>
+	    <li><span k_id=7>aaa</span></li>
+	    <li><span k_id=8>aaa</span></li>
+	    <li><span k_id=9>aaa</span></li>
+   </ul>
+ </div>
+ <div class="men_box">
+   <div class="meth clearfix">
+     <span>谷歌</span>
+     <a href="javascript:void(0);" hidefocus=true></a>
+   </div>
+   <ul>
+      <li><span k_id=0>谷歌</span></a></li>
+      <li><span k_id=1>aaa1</span></li>
+      <li><span k_id=2>bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</span></li>
+      <li><span k_id=3>aaaaaa2</span></li>
+      <li><span k_id=4>aaa</span></li>
+      <li><span k_id=5>aaa</span></li>
+      <li><span k_id=6>aaa</span></li>
+      <li><span k_id=7>aaa</span></li>
+      <li><span k_id=8>aaa</span></li>
+      <li><span k_id=9>aaa</span></li>
+   </ul>
+ </div>  
+</div>
+<!--<div id="menBox11" class="menBox clearfix">
+ <div class="men_box">
+   <div class="meth clearfix">
+     <input type="text"/>
+     <span>谷歌</span>
+	 <a href="javascript:void(0);" hidefocus=true></a>
+   </div>
+   <ul>
+      <li><span k_id=0>谷歌</span></a></li>
+      <li><span k_id=1>aaa</span></li>
+      <li><span index=1 k_id=2>bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</span></li>
+	  <li><span k_id=3>aaa</span></li>
+	  <li><span k_id=4>aaa</span></li>
+	  <li><span k_id=5>aaa</span></li>
+	  <li><span k_id=6>aaa</span></li>
+	  <li><span k_id=7>aaa</span></li>
+	  <li><span k_id=8>aaa</span></li>
+	  <li><span k_id=9>aaa</span></li>
+   </ul>
+ </div> 
+</div>-->
+
+<p style="text-align:left;padding:10px 0 0 200px;">固定SELECT模拟</p>
+<!--固定SELECT模拟-->
+<!--<div id="menBox1" class="menBox menBox_tab">
+ <div class="men_box">
+   <div class="meth clearfix">
+     <input type="text" id="ted"/>
+     <span>谷歌</span>
+	 <a href="" hidefocus=true></a>
+   </div>
+   <ul>
+      <li><span k_id=0>谷歌</span></li>
+      <li><span k_id=1>aaa1</span></li>
+      <li><span k_id=2>bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</span></li>
+	    <li><span k_id=3>aaa2</span></li>
+	    <li><span k_id=4>aaa3</span></li>
+	    <li><span k_id=5>aaa4</span></li>
+	    <li><span k_id=6>aaa5</span></li>
+	    <li><span k_id=7>aaa6</span></li>
+	    <li><span k_id=8>aaa7</span></li>
+	    <li><span k_id=9>aaa8</span></li>
+   </ul>
+ </div> 
+</div>
+<div class="clear" style="clear:both;margin-top:-20px;"></div>
+<!--<div id="menBox2" class="menBox menBox_tab">
+ <div class="men_box">
+   <div class="meth clearfix">
+     <input type="text" id="ted1"/>
+     <span>谷歌</span>
+   <a href="javascript:void(0);" hidefocus=true></a>
+   </div>
+   <ul>
+      <li><span k_id=0>谷歌</span></li>
+      <li><span k_id=1>aaa1</span></li>
+      <li><span k_id=2>bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</span></li>
+      <li><span k_id=3>aaa2</span></li>
+      <li><span k_id=4>aaa3</span></li>
+      <li><span k_id=5>aaa4</span></li>
+      <li><span k_id=6>aaa5</span></li>
+      <li><span k_id=7>aaa6</span></li>
+      <li><span k_id=8>aaa7</span></li>
+      <li><span k_id=9>aaa8</span></li>
+   </ul>
+ </div> 
+</div>-->
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>無標題文件</title>
+<style>
+*{padding:0;margin:0;}
+.div{width:100px;height:100px;background:#ff0000;position:absolute;left:0;top:40px;}
+</style>
+<script type="text/javascript">
+
+
+window.onload = function()
+{
+	var div = document.getElementById("div");
+    startMove(div,2,{"left":"200","top":"5","width":"300","height":"200"},1,30,5,0.7,function(){alert(1);});  				//弹簧+摩擦运动
+	//startMove(div,{"left":"100","top":"100"},3,50,8,'');  			    //缓存运动
+	//startMove(div,{"left":100},4,30,50,'');       //弹性运动
+	//startMove(div,1,{"left":"200","top":"5","width":"300","height":"200"},30,5,0.7,function(){
+		 //startMove(div,3,{"left":"100","top":"100"},50,8,'');
+	//});	
+}
+
+
+
+  //运动模式选择
+  var pattern_type = {  
+		 BUFFER:1,          //弹性运动
+		 FIX:2,             //碰撞运动+重力
+		 CACHMOVE:3,        //缓存运动
+		 ELASTIC:4          //弹性运动（原始运动）
+	  }
+   //参数介绍：obj(指定对象) iTargent(指定运动到目标点) time(定时器时间控制) coeffDivisor(除数系数控制缓存运动波动) coeff(摩擦系数数) 
+  function startMove(obj,pattern_value,iTaJon,time,coeffDivisor,coeff,fun)   //obj 对象   pattenrn //运动模式
+  {   
+	  var funMove = null;
+	  if(pattern_value)
+	  {
+		 switch(pattern_value)
+		  {
+			 case pattern_type.BUFFER:
+				  funMove = bufferMove;
+				  funMove(obj,iTaJon,time,coeffDivisor,coeff,fun);
+				  break;
+			 case pattern_type.FIX:
+				  funMove = fixMove;
+				  funMove(obj,iTaJon);
+				  break;
+		     case pattern_type.CACHMOVE:
+			      funMove = cacheMove;
+				  funMove(obj,iTaJon,time,coeffDivisor,fun);
+			      break;
+		     case pattern_type.ELASTIC:
+			      funMove = elasticMove;
+				  funMove(obj,iTaJon,time,coeffDivisor);
+			      break;
+		  }   
+	  }else{
+		
+		 alert("请填写函数必用参数");  
+	  }
+	  
+	  
+	  
+	  /****************运动方式函数****************/
+	  
+	  //缓存运动
+	  function cacheMove(obj,iTaJon,time,coeffDivisor,fun)
+	  {
+		  if(obj.timer)
+		  {
+			  clearInterval(obj.timer);
+		  }
+		  var icur = 0;
+		  obj.timer = setInterval(function(){
+		  	  btn = true;
+		  	  for(var attr in iTaJon)
+              {
+                  if(attr === "opacity")
+                  {
+                      icur = parseFloat(css(obj,attr)*100);
+                  }else{
+                  	  icur = parseInt(css(obj,attr));
+                  }
+                  var ispeed = (iTaJon[attr]-icur)/coeffDivisor;
+				  ispeed = ispeed>0?Math.ceil(ispeed):Math.floor(ispeed);
+				  if(icur!=iTaJon[attr])
+				  {
+				     btn = false;
+				  }
+				  if(attr === "opacity")
+				  {
+				  	 css(obj,attr,(icur+ispeed)/100);
+				  }else{
+				  	 css(obj,attr,icur+ispeed); 
+				  } 
+		  	  }
+			  if(btn===true)
+			  {
+                  clearInterval(obj.timer);
+                  if(fun)
+                  { 
+                     fun.call(obj);
+                  }
+			  }
+		  },time);
+	  }
+	  
+	  
+	  
+	  //弹性运动
+	  function elasticMove(obj,iTaJon,time,coeffDivisor)
+	  {
+		 var ispeed = 0;
+		 var left = 0;
+		 if(obj.timer)
+		 {
+			 clearInterval(obj.timer);
+		 } 	 
+		 obj.timer = setInterval(function(){
+			for(var attr in iTaJon)
+		    {
+		        var iTargent = iTaJon[attr];
+			    var icur = parseInt(css(obj,attr));
+			    ispeed += parseInt((iTargent-icur)/coeffDivisor);
+			    css(obj,attr,ispeed+icur);
+		    }
+		 },time); 
+	  }
+	  
+	  
+	  //buffer  弹性运动+摩擦 
+	  function bufferMove(obj,iTaJon,time,coeffDivisor,coeff,fun)       
+	  { //
+		 var ispeed = 0;   /*运动公式*/
+		 if(obj.timer)
+		 {
+			 clearInterval(obj.timer);
+		 }
+		 obj.timer = setInterval(function(){
+		 	    for(var attr in iTaJon)
+		 	    {
+		 	    	var iTargent = iTaJon[attr];
+				    var icur = parseFloat(css(obj,attr));                  //获得初始值，OFFSETLEFT
+				    ispeed += (iTargent-icur)/coeffDivisor; 
+			        ispeed*=coeff;                                         //加入摩擦运动提高停止可能性
+				    if(Math.abs(ispeed)<1 && Math.abs(iTargent-icur)<1)
+					{
+						setTimeout(function(){
+							clearInterval(obj.timer);
+							if(fun)
+							{
+								fun.call(obj);
+							}
+						},1000);
+						css(obj,attr,iTargent);                          
+					}else{
+						css(obj,attr,icur+ispeed);
+					}
+			    }
+			 },time); 
+	  }
+	  
+	  
+	  
+	  //fix     碰撞运动
+	  function fixMove(obj,iTaJon)
+	  { 
+		  var ispeedX = iTaJon.ispeedX || 5;
+		  var ispeedY = iTaJon.ispeedY || 8;
+		  var tspeed = iTaJon.tspeed || 3;
+		  var coefX = iTaJon.coefX || 0.8;
+		  var coefY = iTaJon.coefY || 0.8;
+		  var time = iTaJon.time || 30;
+		  var fun = iTaJon.fun || function(){};
+		  var timer = setInterval(function(){
+		  	 var btn = false;
+		  	 ispeedY+=tspeed;
+		  	 var l= obj.offsetLeft+ispeedX;
+		  	 var t = obj.offsetTop+ispeedY;
+		  	 if(l<0)
+		  	 {
+                l=0;
+                ispeedX*=-coefX;
+                ispeedY*=coefY;
+		  	 }else if(l>=document.documentElement.clientWidth-obj.offsetWidth)
+		  	 {
+                l=document.documentElement.clientWidth-obj.offsetWidth;
+                ispeedX*=-coefX;
+                ispeedY*=coefY;
+		  	 }
+		  	 if(t<0)
+		  	 {
+                t=0;
+                ispeedY*=-coefY;
+                ispeedX*=coefX;
+		  	 }else if(t>=document.documentElement.clientHeight-obj.offsetHeight)
+		  	 {
+                t=document.documentElement.clientHeight-obj.offsetHeight;
+                ispeedY*=-coefY;
+                ispeedX*=coefX;
+		  	 }
+		  	 if(Math.abs(ispeedX)<1 && Math.abs(ispeedY)<1)
+		  	 { 
+                ispeedX=0;
+                ispeedY=0;
+		  	 }
+             if(ispeedX==0 && ispeedY===0 && t===document.documentElement.clientHeight-obj.offsetHeight)
+             {
+                clearInterval(timer);
+                t=document.documentElement.clientHeight-obj.offsetHeight+'px';
+                if(fun)
+                {
+                   fun.call(obj);
+                }
+             }else{
+             	obj.style.left = l+'px';
+                obj.style.top =  t+'px';
+             } 
+		  },time);   
+	  }
+	  
+	  //获得样式
+	  function css(obj,attr,value)
+	  {
+		  if(arguments.length==2)
+		  {
+			  return obj.currentStyle ? obj.currentStyle[attr] : document.defaultView.getComputedStyle(obj,false)[attr]; 
+		  }else if(arguments.length==3){
+			  switch(attr)
+			  {
+				  case "width":
+				  case "height":
+				  case "paddingTop":
+				  case "paddingLeft":
+				  case "paddingRight":
+				  case "paddingBottom":
+				  case "marginTop":
+				  case "marginLeft":
+				  case "marginRight":
+				  case "marginBottom":
+				  case "top":
+				  case "left":
+				  case "right":
+				  case "bottom":
+				       obj.style[attr]=value+'px';
+					   break;
+				  case "opacity":
+				       obj.style.opacity = value;
+					   obj.style.filter = "alpha(opacity="+parseFloat(value*100)+")";
+					   break;
+				  default:
+				       obj.style[attr] = value;
+			  }
+		  }
+	  }	  
+  }
+</script>
+</head>
+
+<body>
+<div class="div" id="div"></div>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<script type="text/javascript" src="../jquery/js/jquery-1.7.1.js"></script>
+<style>
+*{padding:0;margin:0;}
+ul,ol{list-style:none;}
+</style>
+</head>
+
+<body>
+<!--单个效果-->
+<style>
+.obox{width:300px;height:250px;position:relative;overflow:hidden;margin:30px auto;}
+.oul{position:relative;list-style:none;}
+.oul li{width:300px;height:250px;float:left;color:#fff;font-size:20px;text-align:center;background:#000;line-height:250px;position:absolute;left:300px;}
+.obox ol{position:absolute;bottom:10px;right:10px;list-style:none;z-index:10;}
+.obox ol li{width:15px;height:15px;background:#666;float:left;margin:0 5px;display:inline;}
+.obox ol .current{background:red;}
+</style>
+<div class="obox">
+  <ul class="oul">
+    <li>1</li><li>2</li><li>3</li><li>4</li><li>5</li>
+  </ul>
+  <ol>
+    <li></li><li></li><li></li><li></li><li></li>
+  </ol>
+</div>
+<script>
+$(function(){
+	var obox = $('.obox'),
+	    oul = obox.find('.oul'),
+		ol = obox.find('ol'),
+		oLi = ol.find('li'),
+		aLi = oul.children('li'),
+		length = aLi.size(),
+		oWidth = aLi.eq(0).width(),
+		olderIndex = 0,
+		iNow=0,
+		ob = null;
+	ob = aLi.eq(olderIndex);
+	aLi.eq(olderIndex).css({"zIndex":5,"left":0});
+	oul.css({"width":aLi.eq(0).width()*length});
+	oLi.bind('click',function(){
+		var index = $(this).index();
+		if(index!=olderIndex)
+		{
+		   aLi.eq(index).css({"left":aLi.eq(0).width()});
+		   aLi.eq(olderIndex).stop().animate({"left":-(aLi.eq(0).width())},'slow',function(){
+		        aLi.eq(olderIndex).css({"left":0});
+		   });
+		   aLi.eq(index).stop().animate({"left":0},'slow');
+		   olderIndex = index;
+		}
+	});
+	function tab(obj,index)
+	{
+	   obj.removeClass('current');
+	   obj.eq(index).addClass('current');
+	}
+});
+</script>
+
+
+<!--多结合效果-->
+<style>
+.solide{position:relative;width:300px;margin:60px auto;height:250px;overflow:hidden;}
+.left{background:#999;color:#fff;font-size:20px;width:50px;height:30px;position:absolute;left:0;z-index:15;top:100px;}
+.right{background:#999;color:#fff;font-size:20px;width:50px;height:30px;position:absolute;right:0;z-index:15;top:100px;}
+.scrollUl{height:250px;position:absolute;}
+.scrollUl li{float:left;width:300px;height:250px;position:absolute;left:300px;}
+.scrollUl li .titleInfor{position:absolute;background:#999;left:0;bottom:0;color:#000;height:30px;line-height:30px;width:100%;}
+.sunBtn{position:absolute;bottom:35px;z-index:15;right:10px;font-size:14px;}
+.sunBtn li{border:8px solid #999;-o-border-radius:8px;-ms-border-radius:8px;-moz-border-radius:8px;-webkit-border-radius:8px;border-radius:8px;display:inline-block;line-height:0;font-size:0;margin:0 -3px;cursor:pointer;}
+.sunBtn .current{border-color:#F00;}
+</style>
+<div class="solide">
+  <a href="" class="left">left</a>
+  <a href="" class="right">right</a>
+  <ul class="scrollUl">
+      <li>
+        <img src="../jquery/img/t103_26.jpg" width="300" height="250">
+        <div class="titleInfor">title1</div>
+      </li>
+      <li>
+        <img src="../jquery/img/t103_27.jpg" width="300" height="250">
+        <div class="titleInfor">title2</div>
+      </li>
+      <li>
+        <img src="../jquery/img/tlh_06.jpg" width="300" height="250">
+        <div class="titleInfor">title3</div>
+      </li>
+      <li>
+        <img src="../jquery/img/tlh_29.jpg" width="300" height="250">
+        <div class="titleInfor">title4</div>
+      </li>
+      <li>
+        <img src="../jquery/img/t103_27.jpg" width="300" height="250">
+        <div class="titleInfor">title5</div>
+      </li>
+       <li>
+        <img src="../jquery/img/t103_27.jpg" width="300" height="250">
+        <div class="titleInfor">title6</div>
+      </li>
+  </ul>
+  <ol class="sunBtn">
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+    <li></li>
+  </ol>
+</div>
+<script>
+$(function(){
+  (function(){
+     var solide = $('.solide'),
+	     scrollUl = solide.children('ul'),
+		 aBtns = solide.children('a'),
+		 aLi = scrollUl.children('li'),
+		 length = aLi.length,
+		 subBtnLi = solide.children('ol').find('li'),
+		 oWidth = aLi.eq(0).width(),
+		 iNow = 0,
+		 index = 0,
+		 olderIndex = 0,
+		 a = 0,
+		 klg = false,
+		 time0=0,
+		 time1=0,
+		 timer = null;
+	 
+	 subBtnLi.eq(0).addClass('current');
+	 aLi.eq(olderIndex).css({"zIndex":10,"left":0});
+	 aLi.eq(olderIndex).find('.titleInfor').css({"zIndex":10,"left":0});
+	 timer = setInterval(function(){
+	     toMove('auto',index);
+	 },2500);
+	 aBtns.eq(0).bind('click',function(event){
+		 clearInterval(timer);
+		 flg = 'left';
+		 time0 = new Date().getTime();
+		 if(time0-time1>550)
+		 {
+			toMove('left',index);	 
+		 }
+		 time1 = time0;
+		 timer = setInterval(function(){
+	        toMove('left',index);
+	     },2500);
+	     event.preventDefault();
+	     return false;
+	 });
+	 aBtns.eq(1).bind('click',function(event){
+		 clearInterval(timer);
+		 flg = 'right';
+		 time0 = new Date().getTime();
+		 if(time0-time1>550)
+		 {
+			toMove('right',index);	 
+		 }
+		 time1 = time0;
+		 timer = setInterval(function(){
+	        toMove('auto',index);
+	     },2500);
+		 event.preventDefault();
+	     return false;
+	 });
+	 subBtnLi.bind('click',function(event){
+		 var ipos = $(this).index();
+	     clearInterval(timer);
+		 toMove('rightpos',ipos);
+		 timer = setInterval(function(){
+	        toMove('auto',index);
+	     },2500);
+		 event.stopPropagation();
+	     return false;	 
+	 });
+	 function toMove(flg,ik)
+	 {
+
+		if(flg==="left" || flg==="auto")
+		{
+		   if(ik<=0)
+		   {
+			  iNow = (length)-ik;
+		   }
+		   if(flg==="auto")
+		   {
+			  klg = true; 
+		   }
+		   f = -1;
+		   iNow--;
+		}else if(flg==="right")
+		{ 
+		   if(iNow==length-1)
+		   {
+			  iNow = -1;
+		   }
+		   f = 1;
+		   iNow++;	 
+		}else if(flg==="rightpos")
+		{  
+		   if(ik==olderIndex)
+		   {
+			   
+			   return false;
+		   }
+		   a = ik;
+		   iNow=a;
+		   ik = olderIndex;
+		   f = 1; 
+		}
+		aLi.eq(iNow).css({"left":f*(aLi.eq(0).width()),"zIndex":10});
+	    aLi.eq(ik).stop().animate({"left":-f*(aLi.eq(0).width())},'slow',function(){
+		   aLi.eq(ik).css({"zIndex":0}); 
+	    });
+	    aLi.eq(iNow).stop().animate({"left":0},'slow',function(){
+		   index = iNow;
+		   olderIndex = iNow;
+	    });
+	   tabClass();  
+	 }
+	 function tabClass()
+	 {
+		subBtnLi.removeClass('current');
+	    subBtnLi.eq(iNow).addClass('current');
+	 }
+  })();
+});
+</script>
+</body>
+</html>

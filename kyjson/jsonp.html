@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head>
+  <title> New Document </title>
+  <meta name="Generator" content="EditPlus">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+ <!--json javascript跨域方式<script type="text/javascript">
+ function box(json)
+ {
+	 alert(json.name);
+ }
+ </script>
+ <script type="text/javascript" src="http://www.test.com/demo/javascript/jsonp.js"></script>-->
+ <!--<script type="text/javascript">
+ function box(json)
+ {
+	 alert(json.name);
+ }
+ </script>
+ <script type="text/javascript" src="http://www.test.com/demo/javascript/jsonp.php?jsoncallback=box"></script>-->
+ 
+ <!--getjson jquery方式跨域-->
+ <script type="text/javascript" src="http://www.ylx.com/demo/javascript/kyjson/jquery-1.7.1.js"></script>
+ <script type="text/javascript">
+  $(function(){
+     /*$.getJSON("jsonp.php","{'id':1}",function(json){
+	    alert(json.name);
+		//alert(1);
+	 });*/
+	 /*Í¨¹ýGET·½Ê½ÇëÇó£¬Ö»ÓÐ³É¹¦Ê±ÓÐ·µ»Ø£¬³É¹¦ºóº¯ÊýÖ´ÐÐ
+	 $.get("jsonp.php","{'id',1}",function(data){
+	     //alert(typeof data); ×Ö·û´®
+	 });*/
+	 /*$.getScript()
+	 $.getScript('http://www.ylx.com/demo/javascript/kyjson/test.js',function(){   //ÇëÇó³É¹¦ºóÖ´ÐÐº¯Êý
+	    console.log('¹þ¹þ³É¹¦ÁË£¡');
+	 });*/
+	 /*$.post()
+	 $.post('http://www.ylx.com:81/javascript/kyjson/jsonp.php',"{'id',1}",function(data){
+	     process(data);
+	 })*/ 
+  })
+ </script>
+ </head>
+
+ <body>
+
+ </body>
+</html>

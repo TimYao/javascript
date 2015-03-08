@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<style>
+*{padding:0;margin:0;}
+img{border:none;text-align:center;}
+body{text-align:center;}
+#div{width:640px;margin:20px auto;}
+#bg{background:#000;filter:alpha(opacity=60);opacity:0.6;position:absolute;left:0;top:0;z-index:99;display:block;}
+#prog{position:absolute;z-index:1000;color:#fff;background:url(img/bar.png) no-repeat 0 40px;width:324px;height:60px;overflow:hidden;}
+#bar{background:url(img/bar_line.gif) repeat-x left top;width:0%;height:16px;overflow:hidden;position:absolute;bottom:2px;left:2px;}
+#img1{display:none;}
+</style>
+<script>
+window.onload=function ()
+{  
+	var oImg = document.getElementById("img1");
+	var oDiv = document.getElementById("div");
+	var bg = document.getElementById("bg");   //背景
+	var prog = document.getElementById("prog");  //加速条
+	var x = 0;
+	var allImg = 77;           
+	var lastimg = oImg;
+	var ispeed = 0;
+	var lastX = 0;
+	var iLoaded = 0;
+	var timer = null;
+	var oTxt = prog.getElementsByTagName("span")[0];
+	var oBar = document.getElementById("bar");
+	var oHeight = document.documentElement.clientHeight;
+	var oWidth = document.documentElement.clientWidth;
+    
+	bg.style.width = oWidth+'px';
+	bg.style.height = oHeight+'px';
+	prog.style.left = (oWidth-prog.offsetWidth)/2+'px';
+	prog.style.top = (oHeight-prog.offsetHeight)/2+'px';
+	
+	
+	for(var i=0;i<allImg;i++)                                     //解决抖动(预加载)和性能(不用改变图片地质问题)问题
+	{
+		var img1 = new Image();           
+		img1.src = "img/miaov ("+i+").jpg";
+		img1.onload = function()
+		{
+			img = document.createElement("img");
+			img.src = this.src;
+			
+				var timers = setInterval(function(){
+					if(iLoaded==allImg)
+					{   
+						clearInterval(timers);
+						oImg.style.display = "block";
+						setTimeout(function(){
+						   prog.style.display="none";
+						   bg.style.display="none";	
+						   sMove();
+						},500);
+					}else{
+						iLoaded++;
+				        oTxt.innerHTML=oBar.style.width=Math.ceil(100*iLoaded/allImg)+'%';
+					}
+				},800);
+				oDiv.appendChild(img);
+				img.style.display = "none";
+            
+		}
+	
+	}
+	
+	
+	function sMove()
+	{
+	    if(getStyle(bg,"display")==="block")
+	    {
+		
+			prog.onselectstart=function(){return false;}  //ie
+			prog.onmousedown = function(){return false;}  //firefox
+		
+	    }else{
+			document.onmousedown = function(ev)
+			{
+				clearInterval(timer);
+				var ev = ev || window.event;
+				var disx = ev.clientX-x;
+				document.onmousemove = function(ev)
+				{
+					var ev = ev||window.event;
+					x = ev.clientX-disx;
+					move();
+					ispeed = x-lastX;
+					lastX = x;   
+					return false;
+				}
+				document.onmouseup = function(ev)
+				{
+					clearInterval(timer);
+					timer =setInterval(function(){
+						x+=ispeed;
+						
+						if(ispeed<0)
+						{
+						   ispeed++;
+						}else{
+						   ispeed--;	
+						}
+						if(ispeed==0)
+						{
+						  clearInterval(timer);	
+						}
+						move(); 
+					},30);
+					document.onmousemove = null;
+					document.onmouseup = null;
+				}
+				return false;
+			}    
+		}	
+	}
+	
+	function move()
+	{   
+		var l = parseInt(x/10);
+		if(l>0)    
+		{
+		    l = (allImg-1)-l%allImg;        //正方向
+		}else{
+		    l = l%allImg*-1;	           //反方向
+		}
+		var allimgs = document.getElementsByTagName("img");
+		lastimg.style.display = "none";
+		allimgs[l].style.display="block";
+		//oImg.src="img/miaov ("+l+").jpg";         //根据地址来展示效果 
+		lastimg = allimgs[l];
+	}
+	
+	function getStyle(obj,attr)
+	{
+	    return obj.currentStyle?obj.currentStyle[attr]:document.defaultView.getComputedStyle(obj,false)[attr];
+	}
+	
+};
+</script>
+</head>
+
+<body>
+<div id="div"><img id="img1" src="img/miaov (0).jpg" /></div>
+<div id="bg"></div>
+<div id="prog">
+	360度全景展示 载入中......<span>0%</span>
+	<div id="bar"></div>
+</div>
+</body>
+</html>

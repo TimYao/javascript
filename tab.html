@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>tab制作</title>
+<script type="text/javascript" src="../ajax/ajax.js"></script>
+<style>
+   *{padding:0;margin:0;}
+   body{background:#fbfbfb;}
+   a{text-decoration:none;}
+   p{width:300px;margin:0px auto;padding:30px 0 0px 0;-webkit-text-shadow: 2px 2px 2px #ccc;-moz-text-shadow: 2px 2px 2px #ccc;text-shadow: 2px 2px 2px #ccc;color:#666;}
+   #div1,#div2{width:300px;margin:30px auto;}
+   .div{background:#fff;}
+   .btns{width:300px;background:#fbfbfb;margin:0px 0 0 0;border-bottom:1px solid #ccc;padding:0 0 3px 0px;margin-left:1px;}
+   .btns a{color:#005EAC;padding:3px 10px;}
+   .tab{width:280px;height:180px;display:none;border:1px solid #ccc;border-top:none;-webkit-box-shadow: 2px 2px 3px #ccc;-moz-box-shadow: 2px 2px 3px #ccc;-ms-box-shadow: 2px 2px 3px #ccc;box-shadow: 2px 2px 3px #ccc;padding:10px;}
+   #div2 .tab{display:block;} 
+   .active{background:#ccc;-webkit-border-radius:5px 5px 0 0;-moz-border-radius:5px 5px 0 0;-ms-border-radius:5px 5px 0 0;border-radius:5px 5px 0 0;}
+
+
+   /*样式介绍
+   text-shadow(水平阴影，垂直阴影，模糊距离，颜色值)    文字阴影    主流浏览器都支持     IE不支持
+   box-shadow(水平阴影，垂直阴影，模糊距离，颜色值)     盒子阴影    高级浏览器都支持     IE9以上支持
+   border-radius(左上，右上，右下，左下)                圆角        高级浏览器都支持     IE9以上支持
+   */
+</style>
+
+<script type="text/javascript">
+  
+  window.onload = function()
+  {
+      tab1('div1');
+	  tab2('div2');
+  }
+
+  //第一种方式 tab  静态
+  function tab1(id)
+  {
+	 var obj = document.getElementById(id);
+     if(id && obj)
+	 {
+	    var aBtns = document.getElementById('btns').getElementsByTagName('a');
+		var oTab = obj.getElementsByTagName('div');
+		var iLength = aBtns.length;
+		var olderIndex = 0;
+		var timer = null;
+		var time = 3000;
+
+        //默认选中第一个
+		aBtns[olderIndex].className = 'active';
+	    oTab[olderIndex+1].style.display = 'block';
+		for(var i=0;i<iLength;i++)
+		{
+		   aBtns[i].index = i;
+		   aBtns[i].onclick = function()
+		   {
+			  clearInterval(timer);
+			  tabs(this.index); 
+			  autoplay(this.index);
+		   }
+		}
+	 }else{
+	    return false;
+	 }
+     
+	 //tabs
+	 function tabs(index)
+	 {
+	   aBtns[olderIndex].className = '';
+	   oTab[olderIndex+1].style.display = 'none';
+       aBtns[index].className = 'active';
+	   oTab[index+1].style.display = 'block';
+	   olderIndex = index;
+	 }
+     
+	 //auto自动播放
+	 function autoplay(iNow)
+	 {
+		clearInterval(timer);
+	    timer = setInterval(function(){
+		   iNow++;
+		   if(iNow===iLength)
+		   {
+			  iNow=0;
+		   }
+		   tabs(iNow);
+		},time);
+	 }
+	 autoplay(0);
+  }
+
+  
+  //第二种方式 tab  ajax请求
+  function tab2(id)
+  {
+     var obj = document.getElementById(id);
+     if(id && obj)
+	 {
+
+        var aBtns = document.getElementById('btns1').getElementsByTagName('a');
+		var oTab = obj.getElementsByTagName('div')[1];
+		var iLength = aBtns.length;
+        var olderIndex = 0;
+        var dateId = aBtns[olderIndex].getAttribute('data_id');
+        
+		//默认第一次请求
+		getAjax(dateId);
+
+		for(var i=0;i<iLength;i++)
+		{
+		   aBtns[i].index = i;
+		   aBtns[i].onclick = function()
+		   {  
+			  var thisId = this.getAttribute('data_id');
+		      aBtns[olderIndex].className = '';
+              aBtns[this.index].className = 'active';
+			  //请求
+			  getAjax(thisId);
+			  olderIndex = this.index;
+		   }
+		}
+	 }
+
+     //数据请求函数
+     function getAjax(dateId)
+	 {
+	      Vjajax({
+		  url:'../ajax/tab.php',
+		  method : 'GET',
+		  data:{
+		      data_id:dateId
+		  },
+		  async : true,
+		  dataType : 'json',
+		  success : function(O) { 
+			   var str = '';
+			   for(attr in O)
+			   {
+				  str = O[attr];
+				  break;
+			   } 
+               aBtns[olderIndex].className = 'active';
+		       oTab.innerHTML = str;
+		  },
+		  failure : function(){
+		       alert('错误');
+		  }
+		});
+	 }
+  }
+
+
+</script>
+</head>
+
+<body>
+<p>第一种方式</p>
+<div id="div1" class="div">
+   <div id="btns" class="btns"><a href="javascript:void(0);" hidefocus=true>tab1</a><a href="javascript:void(0);" hidefocus=true>tab2</a><a href="javascript:void(0);" hidefocus=true>tab3</a></div>
+   <div class="tab">
+     The first tab
+   </div>
+   <div class="tab">
+     The second tab
+   </div>
+   <div class="tab">
+     The third tab
+   </div>
+ </div>
+
+<p>第二种方式</p>
+ <div id="div2" class="div">
+   <div id="btns1" class="btns"><a href="javascript:void(0);" data_id='1' hidefocus=true>tab1</a><a href="javascript:void(0);" data_id='2' hidefocus=true>tab2</a><a href="javascript:void(0);" data_id='3' hidefocus=true>tab3</a></div>
+   <div class="tab"></div>
+ </div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head>
+  <title> New Document </title>
+  <meta http-equiv="Content-Type" content="text/html; charset=GBK"/>
+ <script type="text/javascript">
+ window.onload = function()
+ {
+   var iframe = document.createElement("iframe");
+   iframe.style.display = "none";
+   var btn = true;
+   iframe.src = "http://www.test.com/demo/javascript/kyjson/windowNameb.html";
+   document.body.appendChild(iframe);
+   
+   function addMy(obj,evt,fun)
+   {
+     if(obj.attachEvent)//attachEvent
+  	 {
+  		   obj.attachEvent("on"+evt,test);
+  	 }else{
+  	     obj.addEventListener(evt,test,false);//addEventListener
+  	 }
+   }
+   function test()
+   {   
+  	  if(btn)
+  	  {
+  	    iframe.contentWindow.location="http://www.ylx.com/demo/javascript/kyjson/windowNameinfor.html";
+  		  btn =false;
+  	  }else{
+  		  btn =true;
+  	    alert(iframe.contentWindow.name);
+  		  iframe.contentWindow.document.write = "";
+        document.body.removeChild(iframe);
+  	  } 
+   }
+
+   addMy(iframe,"load",test);
+ }
+ </script>
+ </head>
+
+ <body>
+  <span id="s">sdfsdf</span>
+ </body>
+</html>

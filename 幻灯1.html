@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head>
+  <title> New Document </title>
+  <meta name="Generator" content="EditPlus">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+<script type="text/javascript" src="move.js"></script>
+<script type="text/javascript">
+window.onload = function()
+{
+    toSoilde("div","btn");
+}
+function toSoilde(oMain,aBtn)
+{
+   if(!oMain || !aBtn)
+   {
+      return false;
+   }else{
+     var oConinter = (typeof oMain==="string" ? document.getElementById(oMain):document.getElementById("oMain"));
+	 var oBtnConinter = (typeof aBtn==="string" ? document.getElementById(aBtn):document.getElementById("aBtn"));
+	 var oSub = oConinter.children;
+	 var length = oSub[0].children.length;
+	 var aSub = oSub[0].children;
+	 var aBtns = oBtnConinter.children;
+	 var oImgWidth = 1520;
+	 var iNow2=0;
+	 var num = 0;
+     var timer = null;
+
+     oSub[0].style.width = oImgWidth*length+'px';
+     oBtnConinter.style.left = (document.documentElement.clientWidth-oBtnConinter.offsetWidth)/2+'px'; 
+	 oBtnConinter.style.top = aSub[0].offsetHeight-30+'px';
+	 
+     
+     window.onresize = function()
+	 {
+	     if(document.documentElement.clientWidth>1000)
+		 {  
+		    oConinter.style.marginLeft = -(aSub[0].offsetWidth-document.documentElement.clientWidth)/2+'px';
+			oBtnConinter.style.left = (oConinter.offsetWidth-oBtnConinter.offsetWidth)/2+'px'; 
+			oBtnConinter.style.top = aSub[0].offsetHeight-30+'px';
+		 }
+	 }
+
+     
+     aBtns[0].className = "root";
+     for(var i=0;i<aBtns.length;i++)
+	 {
+	     aBtns[i].index = i;
+         aBtns[i].onclick = function()
+		 {
+		 	clearInterval(timer);
+		 	iNow2=this.index-1;
+			if(!!num===false)
+		    {
+				num++;
+			}else{
+			    if(this.index===0)
+				{
+				   aSub[0].style.position = "relative";
+				   aSub[0].style.left = length*oImgWidth+'px';	
+				   iNow2=length-1;
+				}
+				if(this.index===length-1) 
+				{
+				   aSub[0].style.position = "relative";
+				   aSub[0].style.left = length*oImgWidth+'px';
+				}
+			}
+		 	
+            m(this.index);
+            //toSolide(this.index);
+		 }
+	 }
+     
+     function toSolide(index)   
+	 {  
+		 
+	     timer = setInterval(function(){
+	     	iNow2 = index;
+	     	if(index===length-1)
+			{ 
+				index=0;
+				aSub[0].style.position = "relative";
+				aSub[0].style.left = length*oImgWidth+'px';
+			 }else{
+				index++;
+			 }
+		     m(index);
+		 },3000);
+	 }
+	 function m(index)
+	 {
+		for(var i=0;i<aBtns.length;i++)
+		{
+		    aBtns[i].className = "";
+		}
+		aBtns[index].className = "root";
+		iNow2++;
+		startMove(oSub[0],{"left":-(iNow2)*oImgWidth},function(){ 
+			if(index==0)
+			{
+				aSub[0].style.position = "static";
+				oSub[0].style.left = "0px";
+				iNow2=0;
+			}
+	    });
+	 }
+     //toSolide(0);
+   } 
+}
+</script>
+<style>
+*{padding:0;margin:0;}
+#div{position:relative;min-width:1000px;overflow:hidden;height:200px;border:1px solid #000;}
+ul{list-style:none;position:absolute;left:0;}
+ul li{width:1520px;height:200px;background:red;color:#000;float:left;}
+#btn{position:absolute;z-index:2;}
+#btn a{display:inline-block;background:#ccc;color:#000;text-align:center;margin:0 5px;width:15px;height:15px;font-size:12px;}
+#btn a.root{background:#000;color:#fff;}
+</style>
+ </head>
+
+ <body>
+  <div id="div">
+
+	  <ul>
+		  <li>11111111111111111111111111111111111111111111111111111111111111111111111111111111</li>
+		  <li>22222222222222222222222222222222222222222222222222222222222222222222222222222222</li>
+		  <li>33333333333333333333333333333333333333333333333333333333333333333333333333333333</li>
+	  </ul>
+	
+	<div id="btn">
+	 <a href="javascript:void(0);">1</a><a href="javascript:void(0);">2</a><a href="javascript:void(0);">3</a>
+	</div>
+  </div>
+ </body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>無標題文件</title>
+<script type="text/javascript" src="/jquery/js/jquery-1.7.1.js"></script>
+<script type="text/javascript">
+  window.onload = function()
+  {
+     (function(id,t){
+        if(!document.getElementById(id)){return false;}
+        var doc = document,
+            obj = doc.getElementById(id),
+            oul = obj.getElementsByTagName("ul")[0],
+            aLi = oul.getElementsByTagName("li"),
+            length = aLi.length,
+            times = null,
+            timer = null,
+            iNow = -1,
+            alis=[],
+            icur = 0,
+            paddBottom = -30,
+            time1 = 150,
+            time2 = 50,
+            iTargent = 100,
+            fric = 7,
+            paddText = 5,
+            IE = /msie (\d+\.\d)/i.test(navigator.userAgent),
+            addHtml=function()
+            {
+               var oInfor = document.createElement("ul");
+               var omark = document.createElement("div");
+               oInfor.id = "oInfor";
+               omark.id = "omark";
+               for(var i=0;i<length;i++)
+               {
+                   var oli = document.createElement("li");
+                   var otitle = aLi[i].children;
+                   oli.innerHTML = otitle[0].alt;
+                   oInfor.appendChild(oli);
+                   alis.push(oli);
+               }
+               obj.appendChild(omark);
+               obj.appendChild(oInfor);
+            },
+            getStyle = function(obj,attr,value)
+            {
+               if(arguments.length===2)
+               {
+                  return obj.currentStyle ? obj.currentStyle[attr] : document.defaultView.getComputedStyle(obj,false)[attr];
+               }else{
+                  switch(attr)
+                  {
+                      case "width":
+                      case "height":
+                      case "marginTop":
+                      case "marginBottom":
+                      case "marginLeft":
+                      case "marginRight":
+                      case "paddingTop":
+                      case "paddingBottom":
+                      case "paddingLeft":
+                      case "paddingRight":
+                      case "left":
+                      case "right":
+                      case "top":
+                      case "bottom":
+                           obj.style[attr] = value+'px';
+                           break;
+                      case "opacity":
+                           obj.style.opacity = value/100;
+                           if(IE)
+                           {
+                              obj.style.filter = "alpha(opacity="+value+")"; 
+                           }
+                           break;
+                      default:
+                           obj.style[attr] = value;
+                  }
+               }
+            },
+            showImg = function(iNow)
+            {   
+                clearInterval(times);
+                clearInterval(timer);
+                times = setInterval(function(){
+                   var ispeed = (iTargent-icur)/fric;
+                   ispeed = ispeed>0?Math.ceil(ispeed):Math.floor(ispeed);
+                   if(icur >= iTargent)
+                   {
+                      clearInterval(times);
+                      time = null;
+                      getStyle(aLi[iNow],"opacity",iTargent);
+                      icur = 0;
+                      setTimeout(stmove,t*1000);
+                   }else{
+                      getStyle(aLi[iNow],"opacity",(icur+ispeed));
+                      icur = (icur+ispeed);
+                   }
+                },time1);
+                timer = setInterval(function(){
+                   if(paddBottom===paddText)
+                   {
+                      clearInterval(timer);
+                      timer = null;
+                      getStyle(alis[iNow],"bottom",paddText);
+                      paddBottom=-30;
+                   }else{
+                      paddBottom+=5;
+                      getStyle(alis[iNow],"bottom",paddBottom);
+                   }
+                },time2);
+            },
+            set = function()
+            {
+               var i=0;
+               for(i;i<length;i++)
+               {
+                   getStyle(aLi[i],"opacity",0);
+                   getStyle(aLi[i],"zIndex",1);
+                   getStyle(alis[i],"bottom",paddBottom);
+               }
+            },
+            stmove = function()
+            {
+                if(iNow===length-1)
+                {
+                   iNow=-1;
+                }
+                iNow++;
+                set();
+                showImg(iNow);
+                aLi[iNow].style.zIndex=5;
+            },
+            init = function()
+            {   
+                getStyle(aLi[0],"opacity",1);
+                getStyle(aLi[0],"z-ndex",5);
+                addHtml();
+                stmove();
+            };
+        init();
+     })("div",2);     
+  }
+</script>
+<style>
+*{padding:0;margin:0;}
+  ul li{list-style:none;}
+  #div{width:200px;margin:20px auto;height:150px;position:relative;overflow:hidden;}
+  #div .ul_pic{list-style:none;width:200px;position:relative;height:150px;overflow:hidden;}
+  #div .ul_pic li{float:left;position:absolute;opacity:0;filter:alpha(opacity=0);}
+  #oInfor{position:absolute;left:10px;z-index:10;color:#fff;}
+  #oInfor li{position:absolute;height:auto;bottom:-30px;}
+  #omark{background:#000;opacity:0.5;filter:alpha(opacity=50);position:absolute;height:30px;bottom:0;z-index:6;left:0;width:200px;}
+</style>
+</head>
+
+<body>
+  <div id="div">
+    <ul class="ul_pic">
+       <li><img src="/javascript/img/1.jpg" alt="1.jpg" width="200" height="150" data-url="www.baidu.com"></li>
+       <li><img src="/javascript/img/2.jpg" alt="2.jpg" width="200" height="150" data-url="www.baidu.com"></li>
+       <li><img src="/javascript/img/3.jpg" alt="3.jpg" width="200" height="150" data-url="www.baidu.com"></li>
+    </ul>
+  </div>
+</body>
+</html>

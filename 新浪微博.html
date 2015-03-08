@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>無標題文件</title>
+<style>
+*{margin:0;padding:0;}
+.div{width:280px;height:180px;border:1px solid #000;margin:20px auto;padding:10px;}
+ul li{list-style:none;border-bottom:1px dashed #ccc;padding:5px 0;}
+#ul2{width:390px;height:190px;margin:20px auto;border:1px solid #000;padding:5px 5px;overflow:hidden;}
+#ul2 li{padding:5px;border-bottom:1px dashed #ccc;}
+</style>
+<script type="text/javascript">
+
+window.onload = function()
+{
+    var oUl = document.getElementById("ul");
+	var oUl2 = document.getElementById("ul2");
+	var aLi = oUl.getElementsByTagName("li");
+	var aLi2 = oUl2.getElementsByTagName("li");
+	
+	var oBtn = document.getElementById("btn");
+	var oText = document.getElementById("textarea");
+	var value=null;
+	
+	//点击生成li
+	oBtn.onclick = function()
+	{
+		if(oText.value)
+		{
+			value = oText.value;
+			var oLi = document.createElement("li");
+			oLi.innerHTML = value;
+			if(aLi.length>0)
+			{
+				oUl.insertBefore(oLi,aLi[0])
+			}else{
+				oUl.appendChild(oLi);
+			}
+	    }
+	}
+	setInterval(function(){  
+	   var last = aLi2[aLi2.length-1];
+	   var iHeight = last.offsetHeight-11;
+	   oUl2.insertBefore(last,aLi2[0]);
+	   last.style.height = 0;
+	   last.style.opacity = 0;
+	   last.style.filter = 'alpha(opacity=0)';
+	   startMove(last,{height:iHeight},function(){
+		  startMove(last,{opacity:100});   
+	   });	
+	},3000);
+	
+		
+}
+
+
+function startMove(obj,json,fun)
+{
+	clearInterval(obj.timer);
+	obj.timer = setInterval(function(){
+		 var btn = true;
+	     for(attr in json)
+		 {   
+		     var icur = 0;
+		     if(attr=="opacity")
+			 {
+				 icur = Math.round(parseFloat(getStyle(obj,attr))*100);
+			 }else{
+			     icur = parseInt(getStyle(obj,attr));	 
+			 }	
+
+			 var ispeed = (json[attr]-icur)/8;
+			 ispeed = ispeed>0?Math.ceil(ispeed):Math.floor(ispeed);
+			 
+			 if(icur!=json[attr])
+			 {
+				 btn = false;
+			 }
+			 
+			 if(attr=="opacity")
+			 {
+				 obj.style.opacity = (icur+ispeed)/100;
+				 obj.style.filter = "alpha(opacity="+(icur+ispeed)+")";
+			 }else{
+			     obj.style[attr] = icur+ispeed+'px';	 
+			 }  
+		 }
+		 if(btn){
+			 clearInterval(obj.timer);
+			 if(fun){
+			    fun.call(obj);
+			 }
+			}
+	},30);
+}
+
+function getStyle(obj,attr)
+{
+	if(obj.currentStyle)
+	{
+	   return obj.currentStyle[attr];	
+	}else{
+	   return getComputedStyle(obj)[attr];	
+	}
+}
+</script>
+</head>
+
+<body>
+<input type="button" value="发布" id="btn" />
+<textarea id="textarea">
+
+</textarea>
+<div class="div">
+<ul id="ul">
+</ul>
+</div>
+<br/>
+<ul id="ul2">
+  <li>1是大法师打发士大夫似的发士大夫是否是大法师打发士大夫似的发士大夫是否是大法师打发士大夫似的发士大夫是否</li>
+  <li>2是大法师打发士大夫似的发士大夫是否</li>
+  <li>3是大法师打发士大夫似的发士大夫是否打算发士大夫</li>
+  <li>4是大法师打发士大夫似的发士师傅的士大夫是大法师打发士大夫似的发士大夫大夫是否</li>
+  <li>5是大法师打发士大夫似的发士大夫是否打算发士大夫</li>
+  <li>6是大法师打发士大夫似的发士大夫是否打算发士大夫</li>
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>New Web Project</title>
+        <style>
+            *{padding:0;margin:0;}
+            #box{overflow:hidden;width:584px;margin:20px auto;}
+            #box ul{list-style:none;width:2080px;}
+            #box ul li{width:22px;height:250px;float:left;position:relative;overflow:hidden;}
+            #box ul li img{height:250px;float:left;width:520px;}
+            #box ul li span{width:22px;display:block;float:left;height:250px;position:absolute;top:0;left:0;}
+            .first{background:#ccc;}
+            .two{background:yellow;}
+            .three{background:blue;}
+            .four{background:red;}
+        </style>
+        <script type="text/javascript" src="move.js"></script>
+        <script type="text/javascript">
+            window.onload = function()
+            {
+                var oBox = document.getElementById('box');
+                var aSpan = oBox.getElementsByTagName('span');
+                var aLi = oBox.getElementsByTagName('li');
+                var timer=null;
+               
+               
+               for(var i=0;i<aSpan.length;i++)
+               {
+                   aSpan[i].index = i;
+                   aSpan[i].onmouseover = function()
+                   { 
+                       var _this = this; 
+                       clearInterval(timer);
+                       timer = setInterval(function(){
+                           var num = 0;
+                           for(var i=0;i<aLi.length;i++)
+                           {   
+                               if(i!=_this.index)
+                               {
+                                   var ispeed = (22-aLi[i].offsetWidth)/8;
+                                   ispeed = ispeed>0?Math.ceil(ispeed):Math.floor(ispeed);
+                                   aLi[i].style.width = aLi[i].offsetWidth+ispeed+'px';
+                                   num+=aLi[i].offsetWidth;
+                               }
+                           }
+                           aLi[_this.index].style.width = 584-num+'px';
+                       },30);
+                   }
+               }
+            }
+        </script>
+    </head>
+    <body>
+       <div id="box">
+           <ul>
+               <li>
+                   <span class="first">这是第一个</span>
+                   <img src="img/t103_26.jpg" alt=""/>
+               </li>
+               <li>
+                   <span class="two">这是第二个</span>
+                   <img src="img/t103_27.jpg" alt=""/>
+               </li>
+               <li>
+                   <span class="three">这是第三个</span>
+                   <img src="img/t103_28.jpg" alt=""/>
+               </li>
+               <li>
+                   <span class="four">这是第四个</span>
+                   <img src="img/t103_29.jpg" alt=""/>
+               </li>
+           </ul>
+       </div> 
+    </body>
+</html>
+

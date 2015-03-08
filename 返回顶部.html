@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<style>
+* html,* html body{/*_background-image:url(about:blank);_background-attachment:fixed;*/} 
+#div1{background:red;width:100px;height:100px;position:fixed;_position:absolute;right:0px;bottom:0;}
+</style>
+<script>
+
+window.onload = function(){
+	var oDiv = document.getElementById('div1');
+	var timer = null;
+    var btn = true;
+ 
+    var scT = document.documentElement.scrollTop || document.body.scrollTop;
+    var h = document.documentElement.clientHeight;
+   
+
+    if(window.attachEvent&&navigator.userAgent.indexOf("MSIE 6.0")>-1)//navigator.userAgent.indexOf('MSIE 6.0')
+	{
+	   oDiv.style.top = scT+h-oDiv.offsetHeight+'px'; 
+       window.onscroll = function()
+		  {  
+		     var sc = document.documentElement.scrollTop || document.body.scrollTop;
+		     oDiv.style.top = h+sc-oDiv.offsetHeight+'px';
+		  }
+	}  
+	oDiv.onclick = function(){
+      startMove(0);
+	};
+	
+	function startMove(iTarent)
+	{
+      clearInterval(timer);
+      timer = setInterval(function(){
+        var scrollH = document.documentElement.scrollTop||document.body.scrollTop;
+        var ispeed = (iTarent-scrollH)/8;
+		    iSpeed = ispeed>0?Math.ceil(ispeed):Math.floor(ispeed);
+        if(iTarent==scrollH)
+        {
+           clearInterval(timer);
+        }else{
+           var s = document.documentElement.scrollTop = document.body.scrollTop = scrollH+ispeed;
+           btn = false;
+        }
+        window.onscroll = function()
+        {
+          var sc = document.documentElement.scrollTop || document.body.scrollTop; 
+    	    if(window.attachEvent&&navigator.userAgent.indexOf("MSIE 6.0")>-1)
+    			{
+    			  oDiv.style.top = h+sc-oDiv.offsetHeight+'px'; 
+    			}
+    			if(btn)
+          { 
+            clearInterval(timer);   
+          }else{
+            btn=true;
+          }
+        }	  
+    },30);     
+  }
+};
+
+</script>
+</head>
+
+<body style="height:2000px;">
+<div id="div1">回到顶部</div>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>输入法</title>
+<script type="text/javascript" src="/jquery/js/jquery-1.7.1.js"></script>
+<script type="text/javascript" src="js/LinkageSelect.js"></script>
+<style type="text/css">
+	.menBox .men_box{margin:30px auto;position:relative;float:left;margin-right:10px;display:inline;background:url(img/oy.gif) no-repeat left center;height:35px;}
+	.menBox ul{border:1px solid #d8d8da;border-top:none;float:left;display:none;position:absolute;background:#fff;z-index:1;overflow-y:scroll;clear:both;}
+	.menBox ul li{cursor:pointer;clear:both;word-wrap:break-word;background:#fdfdfd;border-top:1px solid #e5e5e5;padding-left:10px;padding:5px 0;text-align:center;}
+	.menBox ul li span{line-height:normal;}
+	.menBox input{display:none;}
+	.menBox .meth{position:relative;font-size:12px;/*background:#fff;border:1px solid #000;border-bottom:none;*/background:url(img/os.gif) repeat-x left center;height:35px;left:2px;line-height:35px;_float:left;}
+	.menBox .meth span{display:block;float:left;white-space:nowrap;text-indent:10px;padding-right:5px;cursor:pointer;}
+	.menBox .meth a{float:left;background:url(img/btn.gif) no-repeat left top;height:35px;width:35px;}
+	
+
+</style>
+
+<script type="text/javascript">
+/*
+  引入JS文件jquer库文件
+  插架参数介绍:
+      id(容器ID)
+      evt(触发模式)
+      ajaxUrl(ajax数据请求地址)
+      type(ajax type请求方式)
+      inputId(后端接入数据提交inputId号)
+      defTxt(是否有自定义提示默认值)
+      defKey(默认值id标示)
+      dateId(后端数据ID)
+      datelayerRoot(顶层级定义[生成层级标注号，默认datelayer,0级别开始])//html首层datelayer对应
+      cssClass(hover,btn样式转换class) 例如：.menBox ul .hovers{background:#000;}
+*/
+window.onload = function()
+{
+   menuBox({
+      id : 'menuBox',
+	  evt : 'click',
+	  ajaxUrl:'/ajax/select.php',
+	  type:'get',
+	  inputId : 'txt_put',
+	  defTxt:'请选择项目',//默认请选择项目
+	  defKey:"-1",
+	  dateId:'dateid',//数据ID
+	  datelayerRoot :['datelayer','0'],
+	  cssClass:{
+	  	 hoverClass:'hovers',//可图片和背景色
+	  	 btnShow:''//按钮变换class
+	  },
+      callBack:function()
+      {
+      	  //提交或其他操作
+          //console.log($("#txt_put").val());
+      }
+   });
+}
+</script>
+</head>
+<body>
+<div id="menuBox" class="menBox">
+  <input type="hiden" value="" id="txt_put">
+  <div class="men_box">
+  	 <div class="meth">
+  	 	<span class="spanTitle"></span>
+  	 	<a href="javascript:void(0);" hidefocus="true"></a>
+  	 </div>
+  	 <ul datelayer = "0">
+  	 	<li dateid="00q_1"><span>select01</span></li>
+  	 	<li dateid="00_2"><span>select02</span></li>
+  	 	<li dateid="00_3"><span>select03</span></li>
+  	 	<li dateid="00_4"><span>select04</span></li>
+  	 	<li dateid="00_5"><span>select05</span></li>
+  	 </ul>
+  </div>
+</div>
+</body>
+</html>

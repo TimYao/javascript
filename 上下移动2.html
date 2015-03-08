@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head>
+  <title>兼容浏览器方法2</title>
+  <meta name="Generator" content="EditPlus">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <meta charset="utf-8">
+  <style>
+  *{padding:0;margin:0;}
+  ul{margin:30px 30px;}
+  ul li{list-style:none;cursor:pointer;margin:10px 0;}/*cursor:pointer*/
+  </style>
+  <script type="text/javascript">
+  window.onload = function()
+  {
+     var uid = getId("ul_1");
+     var aLi = uid.getElementsByTagName('li');
+  	 for(var i=0;i<aLi.length;i++)
+  	 {
+  	     move(aLi[i]);
+  	 }
+  }
+
+  function getId(id)
+  {
+     return document.getElementById(id);
+  }
+  function first(obj)
+  {
+     return obj.firstElementChild || obj.firstChild;    //firstElementChild   firstChild
+  }
+  function last(obj)
+  {
+     return obj.lastElementChild || obj.lastChild;     //lastElementChild     lastChild
+  }
+  function next(obj)
+  {
+       return obj.nextElementSibling || obj.nextSibling;      //nextElementSibling nextSibling
+  }
+  function pre(obj)
+  {
+      return obj.previousElementSibling || obj.previousSibling;    //previousElementSibling previousSibling
+  }
+  function appendBefore(obj,obj1,obj2)
+  {
+     return obj.insertBefore(obj1,obj2);
+  }
+  function appendaffter(obj,obj1,obj2)
+  {
+     if(obj2==last(obj))
+  	 {
+  	    obj.appendChild(obj1);
+  	 }else{
+  	    obj.insertBefore(obj1,next(obj2));                      //insertBefore
+  	 }
+  }
+  function bindEvent(obj,events,fn)
+  {
+     if(obj.addEventListener)                                      //addEventListener addEventListener attachEvent
+  	 {
+  	    return obj.addEventListener(events,fn,false);
+  	 }else{
+  	    return obj.attachEvent("on"+events,function(){fn.call(obj)});            //attachEvent
+  	 }
+  }
+  function move(obj)
+  {
+     var aInput = obj.getElementsByTagName('input');
+  	 bindEvent(aInput[0],'click',doUp);
+  	 bindEvent(aInput[1],'click',doDown);
+  }
+  function doUp()
+  {
+	var oparent = this.parentNode.parentNode;
+    var oFirstChild = first(oparent);
+  	if(this.parentNode==oFirstChild)
+  	{
+  	    alert("sorry Its up");
+  	    
+  	}else{
+  	    appendBefore(oparent,this.parentNode,pre(this.parentNode));
+  	} 
+  }
+  function doDown()
+  {
+  	  var oparent = this.parentNode.parentNode;
+      var oLastChild = last(oparent);
+      if(this.parentNode==oLastChild)
+    	{
+    	    alert("sorry Its down");
+    	}else{
+    	    appendaffter(oparent,this.parentNode,next(this.parentNode)); 
+    	} 
+  }
+  </script>
+ </head>
+
+ <body>
+  <ul id="ul_1">
+    <li>第一个LI<input type="button" value="向上"><input type="button" value="向下"></li>
+    <li>第二个LI<input type="button" value="向上"><input type="button" value="向下"></li>
+    <li>第三个LI<input type="button" value="向上"><input type="button" value="向下"></li>
+    <li>第四个LI<input type="button" value="向上"><input type="button" value="向下"></li>
+  </ul>
+ </body>
+</html>

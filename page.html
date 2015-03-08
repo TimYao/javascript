@@ -1,0 +1,373 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="../jquery/js/jquery-1.7.1.js"></script>
+<title>無標題文件</title>
+
+<!-- 待完善继续中...... Tim -->
+
+<style>
+*{padding:0;margin:0;}
+a{text-decoration:none;}
+ul{list-style:none;}
+#div{margin:10px;clear:both;}
+#div a{margin:0 5px;float:left;display:inline;padding:0 5px;}
+.active{color:#ff0000;}
+#div a:hover{text-decoration:underline;}
+#ul{width:600px;position:relative;height:220px;overflow:hidden;}
+#ul li{width:100px;height:100px;background:#ff0000;float:left;margin:5px;}
+.clear:after{content:'.';display:block; visibility:hidden;clear:both;}
+.root{background:red;}
+.alla{background:#ccc;}
+
+#oTexts{border:1px solid #000;padding:5px;}
+</style>
+<script type="text/javascript">
+window.onload = function()
+{
+	page({
+		id:'div',          
+		now:2,
+		allN:20,
+		showNum:4,
+		sepNum:4,
+		currentFormat:'root',
+		pageFormat:'alla',
+		dateUrl:"../ajax/page.php",
+		dateMethod:'get',
+		dateType:'json',
+		allDate:{
+			firstPage:['首页','firstC1'],
+			prePage:['上一页','preC1'],
+			nextPage:['下一页','nextC1'],
+			lastPage:['尾页','lastC1']
+		},
+		callback:function(dates){
+            var oText = document.getElementById('oTexts');
+            if(dates)
+            {   
+            	var obj = (eval("("+dates+")"));
+            	oText.innerHTML = obj.key;
+            }
+		}
+	});
+	
+}
+ function page(json)
+{
+	//参数介绍id(page生成在的容器) now(当前页) allN(总共页) showNum(显示几页) sepNum(多少页产生上下页码) allDate(默认上下页数据样式)  callback(page生成后要进行其他操作函数体)  currentFormat(当前页面样式显示)  pageFormat（设置时为非默认样式，不填为默认样式）ajax请求参数(dateUrl：地址、dateMethod：请求方式post/get默认get、dateType：返回数据类型默认JSON)
+	var id = json.id,
+	    now = json.now || 1,//当前页
+	    allN = json.allN,//总页码
+	    showNum = json.showNum || 5,//默认显示5页码
+	    sepNum = json.sepNum || 4,//间隔多少显示上下页
+	    allDate = json.allDate || {firstPage:['首页','firstC'],prePage:['上一页','preC'],nextPage:['下一页','nextC'],lastPage:['尾页','lastC']},//默认页码样式
+	    currentFormat = json.currentFormat || '',//当前样式class
+	    pageFormat = json.pageFormat || '',//非当前样式class
+	    dateUrl = json.dateUrl || '',//请求地址
+	    dateMethod = (json.dateMethod).toLowerCase() || 'get',//请求模式
+	    dateType = (json.dateType).toLowerCase() || 'json',//返回数据类型
+	    callback = json.callback || function(){},//回调函数
+	    oDiv = document.getElementById(id),
+	    iSep = 3,//分页间隔
+	    first = 1,//第一页
+	    two = 2,//第二页
+	    regClass = /(aNum)/,//页码持有样式
+	    pA,
+	    sCloneNode="";
+
+	if(!oDiv || now>allN)
+	{
+		alert("参数标写有问题");
+	}else{
+		//置空 以防生成重复的页码
+	    oDiv.innerHTML="";
+		var pageList = document.createElement("p");
+		//分页创建
+	    if(allN<=showNum)       //小于shonwNum页时 
+		{
+			for(var i=1;i<=allN;i++)
+			{   
+			    var oA = document.createElement("a");
+				oA.href="#"+i;
+			    addCurrent(oA,i);
+				pageList.appendChild(oA);
+				oDiv.appendChild(pageList);
+			}
+		}else{
+			for(var i=1;i<=showNum;i++)
+			{ 
+				var oA = document.createElement("a");
+				if(now===first || now===two)
+				{
+				   oA.href="#"+i;
+				   addCurrent(oA,i);
+				   pageList.appendChild(oA); 
+				   oDiv.appendChild(pageList);	    
+				}else if(((now-iSep)+i)>allN){
+					 oDiv.innerHTML = "";
+					 if(sCloneNode==="")
+					 {  
+					 	var oNum = now;
+					 	var op = document.createElement("p");
+					 	for(var n=parseInt(oNum-showNum)+1;n<=oNum;n++)
+					 	{
+                             var ahr = document.createElement("a");
+                             ahr.href="#"+n;
+                             ahr.innerHTML = n;
+                             addCurrent(ahr,n);
+                             op.appendChild(ahr);
+					 	}
+					 	sCloneNode = op;
+					 }
+					 //移除下页，尾页节点
+					 for(var j=0;j<sCloneNode.children.length;j++)
+					 {
+					 	 if(sCloneNode.children[j].className===allDate.nextPage[1])
+					 	 {
+					 	 	 sCloneNode.removeChild(sCloneNode.children[j]);
+					 	 }
+					 	 if(sCloneNode.children[j].className===allDate.lastPage[1])
+					 	 {
+                             sCloneNode.removeChild(sCloneNode.children[j]);
+					 	 }
+					 }
+					 oDiv.appendChild(sCloneNode);
+					 pageList = (oDiv.children)[0];
+					 var aAs = getByClass(oDiv,"aNum");
+					 if(aAs.length>0)
+					 {  					
+					 	//大于allN
+					 	if(parseInt(aAs[aAs.length-1].getAttribute("href").substring(1))+1>allN)
+					    {
+					        for(var n1=0;n1<aAs.length;n1++)
+					        {
+					        	addCurrent(aAs[n1],(parseInt(aAs[n1].getAttribute("href").substring(1),10)));
+                                if(now===(parseInt(aAs[n1].getAttribute("href").substring(1),10)+1))
+		                    	{
+		                            var k1 = n1+1;
+		                    	}
+					        }
+                           addCurrent(aAs[k1],now);
+					       addEvents(aAs);//重新添加事件	
+                           break;
+					    }
+					    //等于allN
+                        if(now===allN)
+                        {   
+                        	aAs[aAs.length-1].innerHTML = allN;
+                        	aAs[aAs.length-1].setAttribute("href","#"+allN);
+                        	var allNums = allN-1;
+                            for(var m=aAs.length-2;m>=0;m--)
+                            {
+                            	var snum = allNums;
+                            	addCurrent(aAs[m],allNums--);
+                                aAs[m].setAttribute("href","#"+snum); 
+                            }
+                            addCurrent(aAs[aAs.length-1],allN);
+                        }else{//非allN页
+                        	for(var n=0;n<aAs.length;n++)
+	                        {  
+	                        	addCurrent(aAs[n],parseInt(aAs[n].getAttribute("href").substring(1),10)+1);
+	                            aAs[n].setAttribute("href","#"+(parseInt(aAs[n].getAttribute("href").substring(1),10)+1));
+	                            if(now===(parseInt(aAs[n].getAttribute("href").substring(1),10)+1))
+	                        	{
+	                                var k = n+1;
+	                        	}
+	                        	pA = parseInt(aAs[n].getAttribute('href').substring(1));//记录是否是最后一页
+	                        }
+	                        addCurrent(aAs[k],now);
+                        }
+					}
+					 pageList = (oDiv.children)[0];
+					 addEvents(aAs);//重新添加事件
+                     break;
+				}else{
+					oA.href="#"+((now-iSep)+i); 
+					addCurrent(oA,((now-iSep)+i));
+					pA = parseInt(oA.getAttribute('href').substring(1));//记录是否是最后一页
+					pageList.appendChild(oA); 
+				    oDiv.appendChild(pageList);
+				}
+			}
+			var aA1 = pageList.getElementsByTagName("a");
+			//是否生成上、下、首、尾页
+			setPageControl(aA1,now,sepNum,pA,allN);
+		}
+		//事件添加
+		var aA = pageList.getElementsByTagName("a");
+		var this_value = null;
+		addEvents(aA);
+		sCloneNode = (oDiv.children)[0].cloneNode(true);//存在需记录节点
+	   	//执行回调函数 
+	    if(callback && dateUrl!=="")
+		{
+		   ajax(dateUrl,now);
+		}
+		
+	}
+	//设置分页上下首尾页
+	function setPageControl(aA,now,sepNum,pA,allN)
+	{
+		//当当前页大于4时出现上一页   首页出现
+		if(now>=sepNum)
+		{
+			if(getByClass(oDiv,allDate.prePage[1]).length>0)
+	        {
+               getByClass(oDiv,allDate.prePage[1])[0].href="#"+(now-1);
+               addEvents(oDiv.getElementsByTagName("a"));
+	        }
+	        if(getByClass(oDiv,allDate.firstPage[1]).length>0)
+	        {
+               getByClass(oDiv,allDate.firstPage[1])[0].href="#"+first;
+               addEvents(oDiv.getElementsByTagName("a"));
+	        }
+			var oFirst = document.createElement("a");
+			var oPre = document.createElement("a");
+			oPre.href="#"+(now-1);
+			oFirst.href="#"+first;
+			oFirst.className = allDate.firstPage[1];
+			oPre.className = allDate.prePage[1];
+			oFirst.innerHTML = allDate.firstPage[0];
+			oPre.innerHTML = allDate.prePage[0];
+			pageList.insertBefore(oPre,aA[0]);
+			pageList.insertBefore(oFirst,aA[0]);
+		}
+		//总页数大于showNum就出现下一页  尾页
+		if(now>=1 && pA<allN)
+		{
+			if(getByClass(oDiv,allDate.nextPage[1]).length>0)
+	        {
+               getByClass(oDiv,allDate.nextPage[1])[0].href="#"+(now+1);
+               addEvents(oDiv.getElementsByTagName("a"));
+	        }
+	        if(getByClass(oDiv,allDate.lastPage[1]).length>0)
+	        {
+               getByClass(oDiv,allDate.lastPage[1])[0].href="#"+(allN);
+               addEvents(oDiv.getElementsByTagName("a"));
+	        }
+			var oNext = document.createElement("a");
+			var oLast = document.createElement("a");
+			oLast.href="#"+(allN);
+		    oNext.href="#"+(now+1);
+		    oLast.className = allDate.lastPage[1];
+			oNext.className = allDate.nextPage[1];
+		    oNext.innerHTML = allDate.nextPage[0];
+			oLast.innerHTML = allDate.lastPage[0];
+			pageList.appendChild(oNext);  //下一页
+			pageList.appendChild(oLast);  //尾页
+		}else if(now>=1 && pA===allN)
+		{
+            if(getByClass(oDiv,allDate.nextPage[1]).length>0)
+	        {
+               getByClass(oDiv,allDate.nextPage[1])[0].href="#"+(now+1);
+               addEvents(oDiv.getElementsByTagName("a"));
+               (oDiv.children)[0].removeChild(getByClass(oDiv,allDate.nextPage[1])[0]);
+	        }
+	        if(getByClass(oDiv,allDate.lastPage[1]).length>0)
+	        {
+               getByClass(oDiv,allDate.lastPage[1])[0].href="#"+(allN);
+               addEvents(oDiv.getElementsByTagName("a"));
+               (oDiv.children)[0].removeChild(getByClass(oDiv,allDate.lastPage[1])[0]);
+	        }
+		}   
+	}
+	function addCurrent(oA,i)
+	{  
+		if(now==i)
+		{
+			oA.innerHTML = i;   //默认样式
+			if(currentFormat!='')
+			{
+				oA.setAttribute('class',currentFormat+" aNum");
+			}else{
+				oA.setAttribute('class',"aNum");
+			}
+	    }else{
+			if(pageFormat!=='')
+			{
+				oA.innerHTML = i;
+				oA.setAttribute('class',pageFormat+" aNum");
+			}else{
+				oA.innerHTML = "["+i+"]";    //默认样式
+				oA.setAttribute('class',"aNum");
+			}  
+		}
+	}
+	function addEvents(aA)
+	{
+		for(var i=0;i<aA.length;i++)
+		{
+			aA[i].onclick = function(ev)
+			{   
+				var ev = ev || window.event;
+				ev.cancelBubble = true;
+		    	this_value = this.getAttribute("href");
+				this_value = parseInt(this_value.substring(1),10);
+				oDiv.innerHTML = "";
+				ajax(dateUrl,this_value);//分页请求
+				page({
+					  id:json.id,
+					  now:this_value,
+					  allN:json.allN,
+					  showNum:json.showNum,
+					  allDate:allDate,
+					  currentFormat:json.currentFormat,
+					  pageFormat:json.pageFormat,
+					  dateUrl:json.dateUrl,
+					  dateMethod:json.dateMethod,
+					  dateType:json.dateType,
+					  callback:json.callback
+			   }); 
+			   return false;
+			}
+		}
+	}
+	function getByClass(oparent,sclass)
+	{
+       var result = [];
+       var reg = eval("/\\b"+sclass+"\\b/");
+       var allObj = oparent.getElementsByTagName("*");
+       var length = allObj.length;
+       for(var i=0;i<length;i++)
+       {
+           if(reg.test(allObj[i].className))
+	       {  
+	          result.push(allObj[i]);
+	       }
+       }
+       return result;
+	}
+	function ajax(dateUrl,now)
+	{ 
+        if(dateUrl==="")
+        {
+           return false;
+        }
+        $.ajax({
+        	url:dateUrl+"?page="+now,
+        	type:dateMethod,
+        	async:true,
+        	date:{},
+        	dateType:dateType,
+        	success:function(reponse)
+        	{ 
+                callback(reponse);
+        	},
+        	error:function()
+        	{
+
+        	}
+        });
+	}
+}
+</script>
+</head>
+
+<body>
+<p id="oTexts"></p>
+<div id="div" class="clear">
+</div>
+</body>
+</html>

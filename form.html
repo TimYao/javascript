@@ -1,0 +1,786 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title> New Document </title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <style type="text/css">
+    input,textarea{outline:none;}
+    .myform{width:500px;}
+    .ierror{color:#ff0000;font-size:12px;float:left;margin-left:5px;display:inline;}
+    .label_value{color:#ccc;position:absolute;left:65px;left:45px\9;top:3px;font-size:12px;}
+    .inpute{float:left;clear:both;margin:10px 0;width:500px;}
+    .icheckbox{clear:both;}
+    .itextput{clear:both;}
+    .suBtn{clear:both;padding:10px 0 10px 60px;padding:10px 0 10px 40px\9;}
+    .text_title{float:left;margin-right:10px;display:inline;}
+    .input_text{float:left;position:relative;}
+    .input_text .text,.textarea,.password{font-size:12px;-ms-box-shadow:0 1px 3px rgba(0, 0, 0, 0.1) inset;-o-box-shadow:0 1px 3px rgba(0, 0, 0, 0.1) inset;-webkit-box-shadow:0 1px 3px rgba(0, 0, 0, 0.1) inset;box-shadow:0 1px 3px rgba(0, 0, 0, 0.1) inset;border:1px solid #ccc;-o-border-radius:3px;-ms-border-radius:3px;-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px;-moz-transition:border 0.2s linear 0s,box-shadow 0.2s linear 0s;-webkit-transition:border 0.2s linear 0s,box-shadow 0.2s linear 0s;-ms-transition:border 0.2s linear 0s,box-shadow 0.2s linear 0s;-o-transition:border 0.2s linear 0s,box-shadow 0.2s linear 0s;height:20px;line-height:22px;}
+    .itextarea{float:left;}
+    .textarea{width:200px;height:100px;resize:none;}
+    .ierr_img,.icorr_img{margin-top:3px;}
+    .icorr_img{margin-left:3px;}
+    .input_text .text:focus,.textarea:focus,.password:focus{
+          border-color: rgba(82, 168, 236, 0.8);
+          -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) inset, 0 0 8px rgba(82, 168, 236, 0.6);
+          -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) inset, 0 0 8px rgba(82, 168, 236, 0.6);
+          -o-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) inset, 0 0 8px rgba(82, 168, 236, 0.6);
+          -ms-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) inset, 0 0 8px rgba(82, 168, 236, 0.6);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) inset, 0 0 8px rgba(82, 168, 236, 0.6);
+       }
+       /*密码有默认值*/
+       .pass_label{position:absolute;left:6px;top:4px;font-size:12px;color:#ccc;z-index:1;}
+       .checkbox{margin-left:3px;}
+       .password{font-size:12px;font-family:Arial;}
+       .r_right{color:#ff0000;font-size:12px;float:left;margin-left:5px;display:inline;}
+       .err_span{color:#ff0000;font-size:12px;margin-left:5px;}
+  </style>
+  <script type="text/javascript" src="/jquery/jquery-1.7.1.js"></script>
+  <script type="text/javascript" src="/ajax/ajax.js"></script>
+<script type="text/javascript">
+  window.onload = function()
+  {
+    formControl({
+      oid : 'form',
+      rules :[
+           {
+             name:'password',
+             all_rule:[
+                {
+                  rule:'empty',
+                  law:'',
+                  error:'密码不能为空',
+                  correct:'<div class="r_right">正确</div>'
+                },
+                {
+                  rule:'restriction',
+                  law:[0,4,'en'],
+                  error:'<img src="img/false.png" class="ierr_img" alt="" />',
+                  correct:'<img src="img/true.png" class="icorr_img" alt="" />'
+                }
+             ]
+           }, 
+           {
+             name:'text',
+             all_rule:[
+                {
+                  rule:'empty',
+                  law:'',
+                  error:'<img src="img/false.png" class="ierr_img" alt="" />',
+                  correct:'<img src="img/true.png" class="icorr_img" alt="" />'
+                },
+                {
+                  rule:'fun',
+                  fun_run:function()
+                  {
+                       var flg;
+                       var f_error="错误";
+                       var f_correct="其他验证正确1";
+                       var oput = $("#oput");
+                       var parentD = $("#oput").parents(".inpute");
+                       var oInfor_span = parentD.find("span");
+                       oInfor_span.attr("class","err_span");
+                       var reg = /^\d+$/g;
+                       if(reg.test($(oput).val()))
+                       {
+                            oInfor_span.html(f_correct);
+                            flg = true; 
+                       }else{
+                            oInfor_span.html(f_error);
+                            flg = false;
+                       }
+                       //ajax
+                       /*$.ajax({
+                            url :'/ajax/login.php',
+                            type : 'GET',
+                            async : false,
+                            timeout : '',
+                            data :{
+                                 name : "tim",
+                                 password :"123456"
+                            },
+                            dataType : 'json',
+                            success:function(RETURNA)
+                            {
+                               if(RETURNA.state==="200")
+                              {
+                                 oInfor_span.html(f_correct);
+                                 flg = true;
+                              }else{
+                                 oInfor_span.html(f_error);
+                                 flg = false;
+                              } 
+                            }
+                       })*/
+                       return flg;//返回true验证成功提交
+                  }
+                },
+                {
+                  rule:'restriction',
+                  law:[0,4,'en'],
+                  error:'长度过长',//<img src="img/false.png" class="ierr_img" alt="" />
+                  correct:'<img src="img/true.png" class="icorr_img" alt="" />'
+                }  
+             ]/*,
+             fun_run:function()
+             {
+                
+             }*/
+           },
+           {
+             name:'text',
+             all_rule:[
+                {
+                  rule:'empty',
+                  law:'',
+                  error:'请填写...',
+                  correct:''
+                },
+                {
+                  rule:'restriction',
+                  law:[0,3,'en'],
+                  error:'请填写正确的文字数',
+                  correct:''
+                },
+                {
+                  rule:'regular',
+                  law:/^[\d]+$/g,
+                  error:'格式不对',
+                  correct:''
+                } 
+             ]
+           },
+           {
+             name:'text',
+             all_rule:[
+                {
+                  rule:'empty',
+                  law:'',
+                  error:'请填写...',
+                  correct:''
+                },
+                {
+                  rule:'fun',
+                  fun_run:function()
+                  {
+                       var flg;
+                       var f_error="错误";
+                       var f_correct="其他验证正确";
+                       var oput = $("#oput1");
+                       var parentD = $("#oput").parents(".inpute");
+                       var oInfor_span = parentD.find("span");
+                       oInfor_span.attr("class","err_span");
+                       var reg = /^\d+$/g;
+                       if(reg.test($(oput).val()))
+                       {
+                            oInfor_span.html(f_correct);
+                            flg = true; 
+                       }else{
+                            oInfor_span.html(f_error);
+                            flg = false;
+                       }
+                       return flg;//返回true验证成功提交
+                  }
+                }
+             ]
+           },
+           {
+             name:'textarea',
+             all_rule:[
+                {
+                  rule:'empty',
+                  law:'',
+                  error:'请填写...',
+                  correct:''
+                },
+                {
+                  rule:'restriction',
+                  law:[0,3,'cn'],
+                  error:'请填写正确的文字数',
+                  correct:''
+                }
+             ]
+           }
+      ],
+      subAction:{
+         submit:'suBtn',
+         funAct:function(){
+            return true;   //函数运行后返回true提交 返回false不提交
+         }
+      }
+    });
+    
+    function formControl(PARSE)
+    {
+        var oid = PARSE.oid || '';
+        var rules = PARSE.rules || {};
+        var oFrom = getById(oid);
+        var iflg = false;//验证后返回标示
+        var subAction = PARSE.subAction || {};//提交相关
+        var textputRule = 0;
+        var textareaRule = 0;
+        var textArule = [];
+        var textareaArule=[];
+        var checkRule = 0;
+        var checkRules = [];
+        var passRule = 0;
+        var passRules = [];
+        if((oid != '' || oid != ' '|| oid != null) && oFrom && rules && subAction.submit!="")
+        { 
+           var form = oFrom.getElementsByTagName('form')[0];//form
+           var subtn = subAction.submit || '';
+           var aInputs = getByClass(oFrom,'text') || [];//all inputs
+           var aPassword = getByClass(oFrom,'password') || [];//all checkbox
+           var aTextArea = getByClass(oFrom,'textarea') || [];//all textarea
+           var aCheckbox = getByClass(oFrom,'checkbox') || [];//all checkbox
+           var osuBtn = getByClass(oFrom,subAction.submit) || [];//提交
+           var subActFun = subAction.funAct || function(){};//提交执行函数
+           var iRules_length = rules.length;//规则长度
+           if(aInputs && aInputs.length>0)
+           {
+               var inputLength = aInputs.length; //input length
+           }
+           if(aTextArea && aTextArea.length>0)
+           {
+               var textareaLength = aTextArea.length; //textarea length
+           }
+           if(aCheckbox && aCheckbox.length>0)
+           {
+               var checkboxLength = aCheckbox.length;
+           }
+           if(aPassword && aPassword.length>0)
+           {
+               var passlength = aPassword.length;   
+           }
+           for(var j=0;j<(iRules_length);j++)
+           {
+               if(rules[j].name==='text')
+               {
+                   textputRule++;
+                   textArule.push(rules[j]);
+               }
+               if(rules[j].name==='textarea')
+               {
+                   textareaRule++;
+                   textareaArule.push(rules[j]);
+               }
+               if(rules[j].name==='checkbox')
+               {
+                   checkRule++;
+                   checkRules.push(rules[j]);
+               }
+               if(rules[j].name==='password')
+               {
+                   passRule++;
+                   passRules.push(rules[j]);
+               }
+           }
+           //all text add default_value ------> 如果存在
+           for(var i=0;i<(inputLength);i++)
+           {  
+              var value_text = strim(aInputs[i].value);//若input有value值
+              if(value_text==="")
+              {
+                if(aInputs[i].getAttribute('default_value'))
+                {
+                   aInputs[i].setAttribute('value',aInputs[i].getAttribute('default_value'));
+                }
+              }
+           }
+           //all textarea add default_value ------> 如果存在
+           for(var i=0;i<(textareaLength);i++)
+           {
+               if(aTextArea[i].getAttribute('default_value'))
+               {
+                  aTextArea[i].innerHTML=aTextArea[i].getAttribute('default_value');
+               }
+           }
+           //all password add default_value ------> 如果存在
+           for(var i=0;i<(passlength);i++)
+           {
+               aPassword[i].value = "";
+               if(aPassword[i].getAttribute('default_value'))
+               {
+                  var this_input_text = aPassword[i].parentNode;
+                  if(this_input_text)
+                  {  
+                     createTxt(this_input_text,aPassword[i].getAttribute('default_value'));
+                  }
+               }
+           }
+           
+           //分派验证
+           verAddEvent(aPassword,passRule,passRules);//password
+           verAddEvent(aInputs,textputRule,textArule);//input
+           verAddEvent(aTextArea,textareaRule,textareaArule);//textarea
+
+           
+           //onSubmit
+           onSubmit(aInputs,aPassword,aTextArea,osuBtn);
+        }else{
+          return false;
+        }
+        //给password创建提示文本
+        function createTxt(obj,default_value)
+        {
+           var oLabel = document.createElement("label");
+           oLabel.className = "pass_label";
+           oLabel.innerHTML = default_value;
+           obj.appendChild(oLabel);
+           oLabel.onclick = function()
+           { 
+              (getByClass(obj,"password"))[0].focus();
+           }
+        }
+        //给input textarea 置空项加聚失焦事件
+        function verAddEvent(operObj,aRule,aArule)
+        {   
+             for(var i=0;i<(aRule);i++)
+             {   
+                operObj[i].index = i;//给INPUT TYPE=TEXT标注索引
+                operObj[i].error_closed=false;//控制是否删除错误提示false为不存在页面里
+                var name = aArule[i].name;//操作对应的NAME input为text
+                var all_rule = aArule[i].all_rule;//操作对应下面的所有规则
+                var iall_rule_length = all_rule.length;//单个input规则项
+                for(var j=0;j<(iall_rule_length);j++)
+                {
+                    var rule = all_rule[j].rule;//总规则下面的各规则
+                    var law = all_rule[j].law;//规格
+                    var error = all_rule[j].error;//对应规则所对应错误
+                    var correct = all_rule[j].correct;//对应规则正确显示(当图标提示)
+                    //如果规则为empty添加事件focus and onblur
+                    if(name==="text" || name==="textarea" || name==="password")
+                    {
+                        if(rule==='empty')
+                        {
+                            operObj[i].onfocus=function()
+                            {
+                              Focus(this,aArule[this.index]);//add onfocus
+                            }
+                            operObj[i].onblur=function()
+                            {
+                               Blur(this,aArule[this.index]);//add onblur
+                            }
+                        }
+                    }    
+                }
+             }
+        }
+        //Focus
+        function Focus(oBj,rule)
+        {  //聚焦去除如果有默认值
+           var name = (rule.name).toLowerCase(); 
+           if(name==='text')
+           {
+                if(oBj.getAttribute('value')===oBj.getAttribute('default_value'))
+               {  
+                   oBj.setAttribute('value','');
+               }else{
+                   return false;
+               }
+           }
+           if(name==='textarea')
+           {
+               if(oBj.innerHTML===oBj.getAttribute('default_value'))
+               {
+                  oBj.innerHTML='';
+               }else{
+                  return false;
+               }
+           }
+           if(name==='password')
+           { 
+              var oLabel_default = getByClass(oBj.parentNode,"pass_label");
+              var default_value = oBj.getAttribute("default_value");
+              if(oLabel_default && oLabel_default.length>0 && default_value)
+              {
+                  oLabel_default[0].style.display = "none";
+              } 
+           }
+        }
+        //Blur
+        function Blur(oBj,rule)
+        {
+            var oBj_name = (rule.name).toLowerCase();
+            var oBj_rules = rule.all_rule;
+            var isLast = true;
+            //调用规则方法处理对应不同规则显示
+            var isTs = Rules(oBj,oBj_name,oBj_rules);
+            return isTs;
+        }
+        //Rules
+        function Rules(oBj,oBj_name,oBj_rules)
+        { 
+           var mainParent = oBj.parentNode.parentNode;//inpute二顶级父节点
+           var length = oBj_rules.length;//规则个数
+           //分类验证
+           if(oBj_name==='text' || oBj_name==='textarea' || oBj_name==='password')
+           {
+               var input_value = strim(oBj.value);
+               var default_value = oBj.getAttribute('default_value');//标签里默认值
+               verific(oBj_name,input_value);
+           }
+           /*if(oBj_name==='checkbox')
+           {
+              verific(oBj_name,'ckb');
+           }*/
+
+           //验证input textarea等
+           function verific(oBj_name,verValue)
+           {
+              for(var i=0;i<(length);i++)
+              { 
+                 var oBj_rule = (oBj_rules[i].rule).toLowerCase();;
+                 oBj.error_value=oBj_rules[i].error; //错误提示
+                 oBj.correct_value = oBj_rules[i].correct;//正确提示
+                 //text textarea
+                 if(oBj_name === "text" || oBj_name === "textarea" || oBj_name === "password")
+                 {
+                     if((verValue === '') || verValue === default_value)
+                     {
+                          if(oBj_rule === 'empty')//如果为空错误提示显示置空提示
+                          { 
+                             oBj.error_closed=false;
+                             errorPoint(mainParent,oBj,oBj.error_value,oBj.correct_value,oBj_name);
+                             iflg = false;
+                             break;
+                          }else if(oBj_rule==="fun")//如果存在自定义验证
+                          {
+                               var fun_ver = oBj_rules[i].fun_run;//运行其他检测
+                               errorPoint(mainParent,oBj,'','',oBj_name);
+                               var fun_flg = fun_ver();
+                               if(fun_flg === true)
+                               {  
+                                   iflg = true;
+                               }else{
+                                   iflg = false;
+                                   break;
+                               }
+                          }
+                     }else{
+                          if(oBj_rule === 'empty'){//当只有规则empty 清除错误
+                               if(strim(verValue) !='' || strim(verValue) != ' ' || strim(verValue) !=null||strim(verValue) != default_value)
+                               {
+                                    oBj.error_closed=true;
+                                    errorPoint(mainParent,oBj,oBj.error_value,oBj.correct_value,oBj_name);
+                                    iflg = true;
+                               }else{
+                                    oBj.error_closed=false;
+                                    errorPoint(mainParent,oBj,oBj.error_value,oBj.correct_value,oBj_name);
+                                    iflg = false;
+                                    break;
+                               }
+                               
+                          }else if(oBj_rule === 'regular'){//正则规则
+                               var oBj_law = oBj_rules[i].law;
+                               if(strim(verValue).match(oBj_law) && strim(verValue) != default_value)
+                               {
+                                   oBj.error_closed=true;
+                                   errorPoint(mainParent,oBj,oBj.error_value,oBj.correct_value,oBj_name);
+                                   iflg = true;
+                               }else{
+                                   oBj.error_closed=false;
+                                   errorPoint(mainParent,oBj,oBj.error_value,oBj.correct_value,oBj_name);
+                                   iflg = false;
+                                   break;
+                               }
+                          }else if(oBj_rule === 'restriction')//如果不为空错误提示显示长度规则提示
+                          {   
+                               var oBj_law = oBj_rules[i].law;
+                               var law_min = oBj_law[0];//规则为长度判定（restriction）最小值
+                               var law_max = oBj_law[1];//最大值
+                               var law_char_rule = oBj_law[2];//数字符（半角与圆角两种）
+
+                               if((stringLength(strim(verValue),law_char_rule) < law_min || stringLength(strim(verValue),law_char_rule) > law_max) && strim(verValue) != default_value)
+                               {
+                                   oBj.error_closed=false;
+                                   iflg = false; 
+                                   errorPoint(mainParent,oBj,oBj.error_value,oBj.correct_value,oBj_name);
+                                   break;
+                               }else{
+                                   oBj.error_closed=true;
+                                   errorPoint(mainParent,oBj,oBj.error_value,oBj.correct_value,oBj_name);
+                                   iflg = true;
+                               }
+                          }else if(oBj_rule==="fun")//如果存在自定义验证
+                          {
+                               var fun_ver = oBj_rules[i].fun_run;//运行其他检测
+                               errorPoint(mainParent,oBj,'','',oBj_name);
+                               var fun_flg = fun_ver();
+                               if(fun_flg === true)
+                               {  
+                                   iflg = true;
+                               }else{
+                                   iflg = false;
+                                   break;
+                               }  
+                          }
+                     }
+                 }
+                 //checkbox
+                 /*if(oBj_name === "checkbox" && verValue === "ckb")
+                 {
+                    if(oBj_rule === "restriction")
+                    {
+                       var oBj_law = oBj_rules[i].law;
+                       var law_min = oBj_law[0];//规则为长度判定（restriction）最小值
+                       var law_max = oBj_law[1];//最大值
+                       //var law_char_rule = oBj_law[2];//数字符（半角与圆角两种）
+                       if(law_max > 1)
+                       {
+
+                       }  
+                    }
+                 }*/
+              }
+           }
+           return iflg; 
+        } 
+        //errorPoint   ---错误提示关于节点错误bug
+        function errorPoint(mainParent,oBj,error_value,correct_value,oBj_name)
+        { 
+           var oError = getByClass(mainParent,'ierror');
+           var oCorrect = getByClass(mainParent,'icorrect');
+           var iSpan = mainParent.getElementsByTagName("span");
+           if(iSpan && iSpan.length>0 && iSpan[0].className!="ierror" && iSpan[0].className!="icorrect")
+           {
+               mainParent.removeChild(iSpan[0]);
+           }
+           if(oBj_name==='text')
+           {
+              oBj.obj = getByClass(mainParent,'text');
+           }else if(oBj_name==='textarea')
+           {
+              oBj.obj = getByClass(mainParent,'textarea');
+           }else if(oBj_name==='password')
+           {
+              oBj.obj = getByClass(mainParent,'password');
+           }
+           if((oBj.obj)[0].error_closed===false)
+           {  
+               if(oError.length>0)
+               {
+                  oError[0].innerHTML = error_value;
+               }else{
+                 if(oCorrect.length>0)
+                 {
+                    mainParent.removeChild(oCorrect[0]);
+                 }
+                 //生成错误提示
+                 createSpan(mainParent,error_value,"ierror");
+               }
+           }else if((oBj.obj)[0].error_closed===true){
+               if(!!correct_value || !!error_value)
+               {
+                 if(oCorrect.length>0)
+                 { 
+                   oCorrect[0].innerHTML = correct_value;
+                 }else{
+                    if(oError.length>0)
+                   {
+                      mainParent.removeChild(oError[0]);
+                   }
+                   //生成正确提示
+                   createSpan(mainParent,correct_value,"icorrect");
+                 }
+               }else{
+                  //如果存在自定义验证处理
+                  if(oError.length>0)
+                  {
+                     oError[0].innerHTML = "";
+                     oError[0].className = "";  
+                  }else if(oCorrect.length>0)
+                  {
+                     oCorrect[0].innerHTML = "";
+                     oCorrect[0].className = "";
+                  } 
+               }
+           }
+           //创建错误提示
+           function createSpan(oParent,value,sClass)
+           { 
+               var oEspan = document.createElement("span");
+               oEspan.className = sClass;
+               oEspan.innerHTML = value;
+               oParent.appendChild(oEspan);
+           }   
+        }
+        //onsubmit
+        function onSubmit(aInputs,aPassword,aTextArea,osuBtn)
+        {  
+           var Input_flg = null;
+           var Pass_flg = null;
+           var Pass_flgi = null;
+           var Text_flg = null;
+           var last_flgi = null;//控制input是否提交，true提交
+           var last_flgT = null;//控制textarea是否提交，true提交
+           var flg_arri=[];//存储INPUT返回来的布尔值
+           var flg_arrT = [];//存储textarea返回来的布尔值
+           if(osuBtn.length>0 && (aInputs.length>0 || aPassword.length>0 || aTextArea.length > 0))
+           {  
+              var obtn = osuBtn[0].getElementsByTagName('input')[0];
+              obtn.onclick=function()
+              {  
+                 this.btn = true;
+                 //提交验证 input textarea
+                 var inputFlg = subflg(aInputs,textArule,flg_arri,Input_flg,last_flgi);
+                 var Pass_flg = subflg(aPassword,passRules,flg_arri,Pass_flg,Pass_flgi);
+                 var textareaFlg = subflg(aTextArea,textareaArule,flg_arrT,Text_flg,last_flgT);
+                 //提交控制
+                 if((inputFlg === true && Pass_flg === true && textareaFlg === true)||(inputFlg === true && Pass_flg === true && textareaFlg === null)||(inputFlg === true && Pass_flg === null && textareaFlg === true) || (inputFlg === true && Pass_flg === null && textareaFlg === null) || (inputFlg === null && Pass_flg === null && textareaFlg === true) || (inputFlg === null && Pass_flg === true && textareaFlg === true)|| (inputFlg === null && Pass_flg === true && textareaFlg === null))
+                 {   
+                     if(subActFun)
+                     {
+                        var return_flg = subActFun();
+                     }
+                     if(return_flg)
+                     {
+                        form.submit();
+                     }
+                 }else{
+                    return false;
+                 }
+                 return false;
+              }
+           }
+           //匹配最后提交标识true and false
+           function subflg(aObj,aTextArule,aFlg,oFlg,lastFlg)
+           {
+              aFlg.length=0;//存储布尔值数组清0
+              var length = aObj.length;
+              for(var i=0;i<(length);i++)
+              {
+                  oFlg = Blur(aObj[i],aTextArule[i]);
+                  aFlg.push(oFlg);
+              }
+              for(var k=0;k<(aFlg.length);k++)
+              {
+                  if(aFlg[k]===false)
+                  {
+                     lastFlg=false;
+                     break;
+                  }else{
+                     lastFlg=true;
+                  }
+              }
+              return lastFlg;
+           }
+        }
+    }
+
+    //公用函数
+    function getById(ivalue)
+    {
+        return (typeof ivalue)==='string'?document.getElementById(ivalue):document.getElementById('ivalue');
+    }
+    function getByClass(obj,sClass)
+    {
+           var result = [];
+           var regClass = eval('/\\b'+sClass+'\\b/');
+           if(obj && sClass!='' && sClass!=' ' && sClass!=null)
+           {
+               var allobj = obj.getElementsByTagName("*");
+               var ilength = allobj.length;
+               for(var i=0;i<(ilength);i++)
+               {
+                   if(regClass.test(allobj[i].className)===true)
+                   {
+                      result.push(allobj[i]);
+                   }
+               }
+           }
+           return result;
+    }
+    //stringLength字符长度
+    function stringLength(iString,type)
+    {
+        var length = 0;
+        switch(type)
+        {
+           case 'cn':
+                 length = iString.length;
+                 return length;
+                 break;
+           case 'en':
+                 for(var i=0;i<(iString.length);i++)
+                 {
+                     var charCode = iString.charCodeAt(i);
+                     if(charCode>=0 && charCode<=128)
+                     {   
+                         length+=0.5;//英文，数字
+                     }else{
+                         length+=1;//汉字
+                     }
+                 }
+                 return length;
+                 break;
+        }
+    }
+    //strim去除空格
+    function strim(iValue)
+    {
+       var regBlank=/\S/g;
+       var reg = /\s+/g;
+       var result;
+       if(regBlank.test(iValue))
+       {
+          result = iValue.match(regBlank).join('');
+       }else{
+          result = iValue.replace(reg,"");
+       }
+       return result;
+    }
+  }
+</script>
+
+ </head>
+
+ <body>
+<div id="form" class="myform">
+   <form action = 'www.baidu.com' id="forms" name="form">
+    <div class="inpute">
+         <div class="text_title">password</div>
+         <div class="input_text">
+          <input type="password" value=""  class='password' default_value = '请输入密码' autocomplete="off"/>
+        </div>
+    </div>
+     <div class="inpute">
+         <div class="text_title">title1</div>
+         <div class="input_text">
+          <input type="text" value='' class='text' default_value = '请输入...' id="oput"/>
+        </div>
+    </div>
+     <div class="inpute">
+         <div class="text_title">title2</div>
+         <div class="input_text">
+           <input type="text" value='' class='text' default_value = '请输入...'/>
+        </div>
+     </div>
+     <div class="inpute">
+         <div class="text_title">title3</div>
+         <div class="input_text">
+            <input type="text" value='' class='text' default_value = '请输入...' id="oput1"/>
+        </div>
+     </div>
+     <div class="icheckbox">
+       <div class="icheck">
+        <input type="checkbox" class="checkbox" id="checkbox" />
+        <label for="checkbox">1212</label>
+       </div>
+     </div>
+     <div class="iradiobox">
+      <div class="iradio">
+        <input type="radio" class="radio" id="radio" />
+        <label for="radio">1212</label>
+      </div>
+    </div>
+     <div class="itextput">
+         <div class="text_title">title3</div>
+         <div class="itextarea"><textarea class ='textarea' default_value = '请输入1...'></textarea></div>
+      </div>
+     <div class="suBtn">
+     <input type="submit" value="click"/>
+     </div>
+   </form>
+</div>
+ </body>
+</html>

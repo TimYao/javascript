@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>無標題文件</title>
+<style type="text/css">
+* { padding: 0; margin: 0; }
+li { list-style: none; }
+img{position:absolute;}
+</style>
+<script type="text/javascript">
+/*
+   方法纾解：
+   1、图片预加载
+   2、拖拽
+   3、随机数生成  
+*/
+ window.onload = function()
+ {  
+    var samp = 0;
+    var SAMP_RATE = 3;
+    var continue_count = 0;
+    var CONTINUE_LEN=5;
+    var lastIType=-1;
+    var oImg = [];
+    var aSharps = [];
+    var SPEED_RATE = 10;
+    var bManual = true;
+    var arr = ['img/qun_1.png', 'img/qun_3.png', 'img/qun_5.png', 'img/qun_4.png', 'img/qun_2.png'];
+    var x1 = rad(document.documentElement.clientWidth,0);
+    var y1 = rad(document.documentElement.clientHeight,0);
+    var count = 0;
+    for(var i=0;i<arr.length;i++)
+    {
+      oImg[i] = new Image();
+      oImg[i].onload = function()
+      {
+         count++;
+         if(count===arr.length)
+         {
+             moveTo();
+         }
+      }
+      oImg[i].src = arr[i];
+    } 
+    document.oncontextmenu=function()
+    {
+       return false;
+    };
+    function moveTo()
+    { 
+      document.onmousedown = function(ev)
+      {   
+          var ev = ev || window.event;
+          ev.cancelBubble=true;
+          document.onmousemove = function(ev)
+          {
+             var ev = ev || window.event;
+             var x = ev.clientX;
+             var y = ev.clientY;
+             if(document.setCapture)
+             {
+                document.setCapture();
+             }
+             if(!(samp++%SAMP_RATE))
+             {  
+                move(x,y);
+             } 
+             ev.cancelBubble = true;
+             return false;   
+          }
+          document.onmouseup = function()
+          {
+             if(document.releasecapture)
+             {
+                document.releasecapture();
+             }
+             document.onmousemove = null;
+             document.onmouseup = null;
+          }
+          return false;
+      } 
+      m();  
+    }
+    function rad(max,min)
+    {
+      return parseInt(Math.random()*999999)%(max-min+1)+min;
+    }
+    function createImg(index, l, t)
+    {
+      var oImg1=document.createElement('img');
+      oImg1.src=oImg[index].src;
+      oImg1.style.left=l+'px';
+      oImg1.style.top=t+'px';
+      oImg1.height=oImg[index].height;
+      oImg1.width=oImg[index].width;
+      oImg1.style.marginLeft=-oImg1.width/2+'px';
+      oImg1.style.marginTop=-oImg1.height/2+'px';
+      document.body.appendChild(oImg1);
+      aSharps.push({obj: oImg1, endTime: getNow(), speedX: oImg[index].width/SPEED_RATE, speedY: oImg[index].height/SPEED_RATE});
+    }
+    function move(x,y)
+    {
+      if(continue_count++%CONTINUE_LEN)
+      {   
+        var iType=lastIType;
+      }
+      else
+      {
+        iType=(lastIType+1)%arr.length;
+        lastIType=iType;
+      }
+      createImg(iType, x, y, 1000);
+    }
+    function m()
+    {
+      var lastMove = 0; 
+      setInterval(function(){
+         var date = getNow();
+         var newSharps = [];
+         if(date-lastMove>30)
+         {
+           for(var m = 0;m<aSharps.length;m++)
+           {
+               aSharps[m].obj.width = Math.max(aSharps[m].obj.offsetWidth-aSharps[m].speedX,0);
+               aSharps[m].obj.height = Math.max(aSharps[m].obj.offsetHeight-aSharps[m].speedY,0);
+               aSharps[m].obj.style.marginLeft = -aSharps[m].obj.offsetWidth/2+'px';
+               aSharps[m].obj.style.marginTop = -aSharps[m].obj.offsetHeight/2+'px';
+               if(bManual)
+               {
+                   aSharps[m].obj.style.top=parseInt(aSharps[m].obj.style.top)-5+'px';
+               }
+                if(aSharps[m].obj.width==0 || aSharps[m].obj.height==0)
+                {
+                   document.body.removeChild(aSharps[m].obj);
+                }else{
+                   newSharps.push(aSharps[m]); 
+                }
+           }
+           aSharps = newSharps;
+           lastMove = date;
+         }
+      },1);
+    }
+    function getNow()
+    {
+       return new Date().getTime();
+    }
+ }
+</script>
+</head>
+
+<body>
+
+
+</body>
+</html>

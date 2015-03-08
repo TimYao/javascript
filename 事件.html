@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>無標題文件</title>
+<style type="text/css">
+*{padding:0;margin:0;}
+.div{width:200px;height:200px;background:red;position:absolute;z-index:2;}
+.div1{border:1px dashed #000;position:absolute;z-index:2}
+#divs{background:#ccc;word-wrap:break-word;}
+#span{width:18px;height:18px;background:yellow;filter:alpha(opacity=0);opacity:0;position:absolute;right:0;bottom:0;overflow:hidden;}
+#span1{width:18px;height:18px;background:yellow;/*filter:alpha(opacity=0);opacity:0;*/position:absolute;top:0;left:0;overflow:hidden;}
+#span2{width:18px;height:18px;background:yellow;filter:alpha(opacity=0);opacity:0;position:absolute;right:0;top:0;overflow:hidden;}
+#span3{width:18px;height:18px;background:yellow;filter:alpha(opacity=0);opacity:0;position:absolute;left:0;bottom:0;overflow:hidden;}
+.div3{width:200px;height:200px;background:blue;position:absolute;top:150px;left:200px;z-index:1;}
+</style>
+<script type="text/javascript">
+window.onload = function()
+{
+	drag("div","divs",'div1','');
+}
+
+function drag(id,osubDiv,borderClass,fun)
+{
+	var odiv = document.getElementById(id);
+	var divs = document.getElementById(osubDiv);
+	var blankPx = 35;
+	var minWidth = 150;
+	var minHeight = 150;
+	if(id && odiv && divs)
+	{
+        var ospan = document.getElementById('span');
+		var ospan1 = document.getElementById('span1');
+		var ospan2 = document.getElementById('span2');
+		var ospan3 = document.getElementById('span3');
+
+		divs.style.width = odiv.offsetWidth-blankPx+'px';
+		divs.style.height = odiv.offsetHeight-blankPx+'px';
+		divs.style.marginLeft=divs.style.marginRight=divs.style.marginTop=divs.style.marginBottom= (odiv.offsetWidth-divs.offsetWidth)/2+'px';
+		odiv.onmousedown = fndown;
+		
+		//右下
+		ospan.onmousedown = function(ev)     //右下角的控制改变窗口的大小
+		{
+			var ev = ev || window.event;
+			var disx = ev.clientX-odiv.offsetLeft;
+			var disy = ev.clientY-odiv.offsetTop;
+			downs(this,ev,disx,disy);
+			ev.cancelBubble=true;
+	        return false;		
+		}
+		
+		//左上
+		ospan1.onmousedown = function(ev)
+		{
+			var ev = ev || window.event;
+			var disx = ev.clientX-odiv.offsetLeft;
+			var disy = ev.clientY-odiv.offsetTop;
+			downs(this,ev,disx,disy);
+			ev.cancelBubble=true;
+			return false;
+		}
+
+		ospan2.onmousedown = function(ev)     //右下角的控制改变窗口的大小
+		{
+			var ev = ev || window.event;
+			var disx = ev.clientX - odiv.offsetLeft;
+	        var disy = ev.clientY - odiv.offsetTop; 
+			ev.cancelBubble=true;
+			downs(this,ev,disx,disy);	
+			return false;	
+		}
+		
+		//左下
+		ospan3.onmousedown = function(ev)
+		{
+			var ev = ev || window.event;
+			var disx = ev.clientX - odiv.offsetLeft;
+	        var disy = ev.clientY - odiv.offsetTop; 
+			ev.cancelBubble=true;
+			downs(this,ev,disx,disy);
+			return false;
+		}
+        
+        //拖拽框里的内容容器清楚拖拽
+        divs.onmousedown=function(ev){
+        	var ev = ev || window.event;
+        	var disx = ev.clientX - this.offsetLeft;
+	        var disy = ev.clientY - this.offsetTop; 
+        	downs(this,ev,disx,disy);
+        	ev.cancelBubble=true;
+        	return false;
+        }
+        //所有浏览器文字不选中
+        document.onselectstart = function()
+        {
+        	return false;
+        }
+        divs.onselectstart = function()
+        {
+        	return false;
+        }
+		document.onmousedown=function()
+		{  
+		   document.onmousemove=function(ev)
+		   {   
+		 	  return false;
+		   }
+		   return false;
+		 }
+	}else{
+	   return false;
+	}
+     //整个块的拖拽
+     function fndown(ev)                         
+	 {
+		var ev = ev || window.event;
+		var disx = ev.clientX - this.offsetLeft;
+		var disy = ev.clientY - this.offsetTop;
+		//创建虚线框
+		if(borderClass)
+	    {
+		    var obox = document.createElement("div");
+			obox.className = borderClass;
+			
+			obox.style.width = this.offsetWidth-2+'px';
+			obox.style.height = this.offsetHeight-2+'px';
+			obox.style.left = this.offsetLeft + 'px';
+			obox.style.top = this.offsetTop + 'px';
+			
+			document.body.appendChild(obox);
+		}
+        var box = obox || odiv;
+		document.onmousemove = function(ev)
+		{
+			var ev = ev || window.event;
+			if(odiv.setCapture)                     //ie关于拖拽选住文字兼容解决,加捕获
+			{
+				odiv.setCapture()
+			}
+			box.style.left = ev.clientX - disx + 'px';
+			box.style.top = ev.clientY - disy + 'px';
+		}
+		document.onmouseup = function()
+		{
+			if(odiv.releaseCapture)                //ie关于拖拽选住文字兼容解决,去掉捕获
+			{
+				odiv.releaseCapture();
+			}
+			//存在边框虚线
+			if(borderClass)
+			{
+				odiv.style.left = box.style.left;
+			    odiv.style.top = box.style.top;
+			    document.body.removeChild(obox);
+			}
+			document.onmousemove = null;
+			document.onmouseup = null;
+		}
+		ev.cancelBubble=true;
+		return false;			
+	 }
+
+	 //拖拽改变width height
+	 function downs(obj,ev,disx1,disy1)
+	 {
+
+	   var x = ev.clientX;
+	   var y = ev.clientY;
+	   var oWidth = odiv.offsetWidth;
+	   var oHeight = odiv.offsetHeight;
+       if(obj!=divs)
+       {
+		   //mousemove
+		    document.onmousemove = function(ev)
+			{
+				var ev = ev || window.event;
+				if(obj.setCapture)//setCaputure  releaseCapture
+				{ 
+					obj.setCapture();
+				}
+				if(obj.id==='span')
+				{  
+				   odiv.style.width = Math.max(ev.clientX - x+oWidth,minWidth)+"px";
+				   odiv.style.height = Math.max(ev.clientY - y+oHeight,minHeight)+"px";
+				   //odiv.style.width = (ev.clientX - x+oWidth)+"px";
+				   //odiv.style.height = (ev.clientY - y+oHeight)+"px";
+				   divs.style.width=parseInt(odiv.style.width)-blankPx+"px";
+				   divs.style.height= parseInt(odiv.style.height)-blankPx+"px";
+				   divs.style.marginLeft=divs.style.marginRight=divs.style.marginTop=divs.style.marginBottom= (parseInt(odiv.style.width)-parseInt(divs.style.width))/2+'px';
+				}
+				if(obj.id==='span1')
+				{
+				   odiv.style.width = Math.max(x - ev.clientX+oWidth,minWidth)+"px";
+				   odiv.style.height = Math.max(y - ev.clientY+oHeight,minHeight)+"px";
+				   divs.style.width=parseInt(odiv.style.width)-blankPx+"px";
+				   divs.style.height= parseInt(odiv.style.height)-blankPx+"px";
+				   divs.style.marginLeft=divs.style.marginRight=divs.style.marginTop=divs.style.marginBottom= (parseInt(odiv.style.width)-parseInt(divs.style.width))/2+'px';
+				   if(x - ev.clientX+oWidth<minWidth || y - ev.clientY+oHeight<minHeight)
+				   {
+                      document.onmousemove=null;
+				   }else{
+				     odiv.style.top = ev.clientY-disy1+'px';
+				     odiv.style.left = ev.clientX-disx1+'px';	
+				   }  
+				}
+				if(obj.id==='span2')
+				{	
+				   odiv.style.width = Math.max(ev.clientX - x+oWidth,minWidth)+"px";
+				   odiv.style.height = Math.max(y-ev.clientY+oHeight,minHeight)+"px";
+				   if(ev.clientX - x+oWidth<minWidth || y-ev.clientY+oHeight<minHeight)
+				   {
+                      document.onmousemove=null;
+				   }else{
+				   	  odiv.style.top = (ev.clientY-disy1)+'px';
+				   }
+				   divs.style.width=parseInt(odiv.style.width)-blankPx+"px";
+				   divs.style.height= parseInt(odiv.style.height)-blankPx+"px";
+				   divs.style.marginLeft=divs.style.marginRight=divs.style.marginTop=divs.style.marginBottom= (parseInt(odiv.style.width)-parseInt(divs.style.width))/2+'px';
+				}
+				if(obj.id==='span3')
+				{
+				   odiv.style.width = Math.max(x-ev.clientX+oWidth,minWidth)+"px";
+				   odiv.style.height = Math.max(ev.clientY-y+oHeight,minHeight)+"px";
+				   if(x-ev.clientX+oWidth<minWidth || ev.clientY-y+oHeight<minHeight)
+				   {
+                      document.onmousemove=null;
+				   }else{
+				   	  odiv.style.left = ev.clientX-disx1+'px';
+				   }
+				   divs.style.width=parseInt(odiv.style.width)-blankPx+"px";
+				   divs.style.height= parseInt(odiv.style.height)-blankPx+"px";
+				   divs.style.marginLeft=divs.style.marginRight=divs.style.marginTop=divs.style.marginBottom= (parseInt(odiv.style.width)-parseInt(divs.style.width))/2+'px';
+				}
+				return false;
+			}
+		   //mouseup
+		    document.onmouseup = function()
+			{
+				if(obj.releaseCapture)
+				{   
+					obj.releaseCapture();
+				}
+				document.onmousemove = null;
+				document.onmouseup = null;
+				odiv.onmousedown = fndown;
+			}
+	   }else{
+    	   document.onmousemove = null;
+	       document.onmouseup = null;
+	       ev.cancelBubble=true;
+	       return false;
+	   }
+	   	ev.cancelBubble = true;
+		return false;
+	 }
+	 //操作拖拽后执行的函数待续......
+	 if(fun)
+	 {
+	   fun(odiv,fun);
+	 }
+}
+</script>
+</head>
+
+<body>
+<div class="div" id="div">
+    <div id="divs"><a href="javascript:void(0);">sdfsdfdf</a></div>
+	<span id="span"></span>
+	<span id="span1"></span>
+	<span id="span2"></span>
+	<span id="span3"></span>
+</div>
+sdfsdfsdf
+<div class="div3" id="div3"></div>
+</body>
+</html>

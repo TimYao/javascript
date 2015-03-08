@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>無標題文件</title>
+<script type="text/javascript">
+window.onload = function()
+{
+    var iYearput = document.getElementById('iYear');
+	var iMonthput = document.getElementById('iMonth');
+	var iDayput = document.getElementById('iDay');
+	var ptext = document.getElementById('ptext');
+	var ptext1 = document.getElementById('ptext1');
+	var aSpan = ptext1.getElementsByTagName('span');
+	var obtn = document.getElementById('btn');
+	
+	
+	
+	obtn.onclick = function()
+	{
+		if(iYearput.value!=''&&iMonthput.value!=''&&iDayput.value!='')
+		{
+            var timer = setInterval(update,1000);
+		}	
+	}
+	
+	function update()
+	{
+	    var dateEnd = new Date();
+	    var dateNow = new Date();
+	    var oNewDay = 0;
+	    var oNewH = 0;
+	    var oNewM = 0;
+	    var oNewS = 0;
+        var iRamin = 0;
+		
+		var iYear = parseInt(iYearput.value);
+		var iMonth = parseInt(iMonthput.value)-1;
+		var iDay = parseInt(iDayput.value); 
+		dateEnd.setFullYear(iYear);	
+		dateEnd.setMonth(iMonth);
+		dateEnd.setDate(iDay);
+		dateEnd.setHours(0);
+		dateEnd.setMinutes(0);
+		dateEnd.setSeconds(0);
+		iRamin =(dateEnd.getTime()-dateNow.getTime())/1000;
+        
+		if(iRamin<0)
+		{
+			return;
+		}
+		
+		oNewDay = parseInt(iRamin/86400);
+		iRamin%=86400;
+		oNewH = parseInt(iRamin/3600);
+		iRamin%=3600; 
+		oNewM = parseInt(iRamin/60);
+		iRamin%=60;
+		oNewS = parseInt(iRamin);
+		ptext1.innerHTML = setDigia(oNewDay)+"天"+setDigia(oNewH)+"时"+setDigia(oNewM)+"分"+setDigia(oNewS)+'秒';
+	}
+	
+    function setDigia(obj)
+	{
+		if(obj<10)
+		{
+			return obj +='0';
+		}else{
+		    return obj	
+		}
+	}	
+	
+}
+</script>
+</head>
+
+<body>
+<input type="text" id="iYear"/>
+<input type="text" id="iMonth"/>
+<input type="text" id="iDay">
+<input type="button" id="btn" value="click"/>
+<p id="ptext"></p>
+<p id="ptext1">
+
+</p>
+</body>
+</html>

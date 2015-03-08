@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>记录浏览信息</title>
+	<style>
+		*{padding:0;margin:0;}
+		body{height:auto;}
+		#ul_1 li{float:left;list-style:none;margin:10px;display:inline;}
+		#ul_1 li a{color:#000;text-decoration:none;}
+		.clear{clear:both;}
+		ul li{margin:10px;list-style:none;}
+		a{color:#000;text-decoration:none;}
+	</style>
+	<script>
+		window.onload = function()
+		{
+			var oUl_1 = document.getElementById("ul_1");
+			var aLi = oUl_1.getElementsByTagName("li");
+			var aA = oUl_1.getElementsByTagName("a");
+			var oUl_2 = document.createElement("ul");
+			var timer = 2;
+			var result = [];
+			
+			oUl_2.id = "ul_2";
+			document.body.appendChild(oUl_2);
+			var oul_2 = document.getElementById("ul_2");
+			
+			if(document.cookie)
+			{
+
+                var newCookie = document.cookie.split("; ");
+				var Cookielength = newCookie.length;
+				for(var i=0;i<Cookielength;i++)
+				{
+					var arr = newCookie[i].split("=");
+					if(getCookie("key"+arr[1]))
+					{  
+						var newNode = creatCookieLi(getCookie("key"+arr[1]),"ul_1");
+						oul_2.appendChild(newNode);
+					}
+				}	
+			}
+				
+			for(var i=0;i<aLi.length;i++)
+			{
+				aLi[i].index = i;
+				aLi[i].onclick = function()
+				{   
+					createLi(aLi[this.index],aA[this.index],oUl_2,this.index);	
+				}
+			}
+			var str = oul_2.innerHTML;
+		
+		
+		
+		/*实现点击上面的列表控制下面显示对应效果*/
+		function createLi(obj,obj1,oMain,indexs)
+		{ 
+			var oLi = document.createElement("li");
+			oLi.innerHTML = obj.innerHTML;
+            var aLi = oMain.getElementsByTagName("li");
+           
+            
+            if(aLi.length>0)
+            {  
+            	var oFirst = oMain.firstElementChild || oMain.firstChild;
+                var btn =true;
+            	for(var i=0;i<aLi.length;i++)
+				{
+					if(aLi[i].innerHTML==obj.innerHTML)
+					{
+						btn = false;
+						oMain.insertBefore(aLi[i],oFirst);    //交替已经有的对象位置，使其置顶
+						//console.log(result);
+                        for(var i=0;i<result.length;i++)     //重新改变他们的COOKIE存储值顺序
+                        {
+                        	delCookie("key"+result[i]);     //删除原来保存的COOKIE值
+                        	if(result[i]==indexs)          //检查点击当前对象的是否存在下面列表中，进行两种结构判断，一种是该对象处于数组最后位置，第二种是该对象存在非数组最后位置
+	                        {
+	                        	if(i==result.length-1)          
+	                        	{
+	                        		var newFirst = result.pop();      //删除存在数组最后位置的对象，重新插入到数组最前
+	                        		result.unshift(newFirst);	
+	                        	}else{
+	                        		
+	                        		var news = result[i];           //找到该位置进行改变插入到数组最前位置
+	                        		result.splice(i,1);
+	                        		result.unshift(news);
+	                        		
+	                        	}
+	                        }
+	                        
+	                        
+                        }
+	                     changeCookie(result,timer);            //重新设置存储COOKIE值
+					} 
+					
+				}
+				
+				if(btn){                                      //点击对象不存在下面类表的生成
+					oMain.insertBefore(oLi,oFirst);
+					result.unshift(indexs);
+            	    changeCookie(result,timer);
+				}
+	            	
+            }else{
+                                        //默认下面列表没有时，生成的第一个列表对象  
+            	oMain.appendChild(oLi); 
+            	result.unshift(indexs);
+            	changeCookie(result,timer); 
+            	
+            }
+	
+		}
+		
+    }
+    
+    
+    /***重新打开浏览器后读取已经有的COOKIE创建记录值显示*****/
+    function creatCookieLi(value,oUl)
+    {
+    	var oUl = document.getElementById(oUl);
+    	var aLi = oUl.getElementsByTagName("li");
+    	var oLi = document.createElement("li");
+    	for(var i=0;i<aLi.length;i++)
+    	{
+    		if(value==i)
+	    	{   
+	    		return aLi[i].cloneNode(true);
+	    	}
+    	}
+    }
+    
+    
+    /*改变COOKIE存储位置顺序(在改变对象位置时要改变他们的COOKIE存储顺序)*/
+    function changeCookie(result,timer)
+    {   
+    	var length = result.length;
+    	for(var i=0;i<length;i++)
+    	{
+    		delCookie("key"+result[i]);
+    		setCookie("key"+result[i],result[i],timer);
+    	}
+    }
+    
+    
+       /*设置COOKIE*/
+		function setCookie(key,value,times){
+			var oDate = new Date();
+			oDate.setDate(oDate.getDate() + times);
+			document.cookie = key + '=' + encodeURIComponent(value) +'; expire=' + oDate;//document.cookie = "name=1;expires=11"
+	    }//encodeURIComponent decodeURIComponent
+		
+		/*获取COOKIE*/ 
+		function getCookie(key)
+		{
+			var a = document.cookie.split("; ");
+			for(var i=0;i<a.length;i++)
+			{
+				var b = a[i].split("=");
+				if(b[0]==key)
+				{
+					return decodeURIComponent(b[1]); //;decodeURIComponent encodeURIComponent
+				}
+			}
+		}
+		
+		/*删除COOKIE*/
+		function delCookie(key)
+		{
+			setCookie(key,1,-1);
+		}
+		
+	</script>
+</head>
+<body>
+	<ul id="ul_1">
+		<li><a href="javascript:void(0);">百度</a></li>
+		<li><a href="javascript:void(0);">新郎</a></li>
+		<li><a href="javascript:void(0);">优酷</a></li>
+		<li><a href="javascript:void(0);">人人</a></li>
+		<li><a href="javascript:void(0);">微博</a></li>
+	</ul>
+	<div class="clear"></div>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>無標題文件</title>
+<style type="text/css">
+div{width:100px;height:20px;}
+#span{width:20px;height:20px;background:red;color:#fff;position:absolute;display:none;}
+</style>
+<script type="text/javascript">
+/*
+   document.selection(ie支持)  createRange()创建好选择到的区域   text属性获得创建出来返回的文本内容 
+   window.getSelection(firefox支持) toString()将创建好的区域文本
+
+   ie
+   通过判断document.selection
+   createRange()获取文本相关信息
+   createRange().text 选中文本内容,通过length 得到长度
+   设置改变光标位置
+   创建文本位置操作对象createTextRange()
+   创建对象后调用collapse()将插入点移动到当前范围的开始或结尾
+   通过moveStart('character',number)设置前移动number
+   通过moveEnd('character',number)设置后移动number//
+   对象选中select()
+   
+   标准：
+   window.getSelection()文本信息 ,window.getSelection().toString()文字长度
+   关于选中文字通过obj.selectionStart,obj.selectionEnd获得 返回obj.value.substring(obj.selectionStart,obj.selectionEnd)
+   设置改变光标位置
+   setSelectionRange(num1,num2)//num1=num2同一位置
+
+*/
+window.onload = function()
+{
+   var ptext = document.getElementById("ptext");
+   var oSpan = document.getElementById("span");
+   var obj = null;
+   function selectText()
+   {
+	   if(document.selection)
+	   {
+	      obj = document.selection.createRange();
+		  return document.selection.createRange().text;
+	   }else{
+		  return window.getSelection().toString();   
+	   }   
+   }
+   
+   ptext.onmouseup = function(ev)
+   {
+	   var ev = ev || window.event;
+	   var left = ev.clientX;
+	   var top = ev.clientY;
+	   
+	   if(selectText().length>10)
+	   {       
+          if(document.selection)
+		  {
+             obj.select();   //解决IE8不能选中文字的BUG 
+		  }
+		  oSpan.style.display="block";
+		  oSpan.style.left = left+'px';
+		  oSpan.style.top = top+'px';
+	   }
+   }
+   
+   ptext.onclick = function(ev)
+   {
+	   var ev = ev || window.event;
+	   ev.cancelBubble=true;
+   }
+   
+   document.onclick = function()
+   {
+	   oSpan.style.display="none";
+   }
+   oSpan.onclick = function()
+   {
+	  return false;  
+   }
+
+
+   //光标设置
+   var pt = document.getElementById("pt");
+   var text = document.getElementById("text");
+   var textarea = document.getElementById("textarea");
+
+  text.focus();
+  textarea.focus();
+  if(document.selection)
+  {
+    var otext = text.createTextRange();
+    var otextarea = textarea.createTextRange();
+    otext.collapse();
+    otextarea.collapse();
+    otext.moveStart('character',2);//参数一移动字符格式，character word textedit......
+    otextarea.moveStart('character',2);//moveEnd(字符，个数);
+    textarea.focus();
+    otext.select();
+    otextarea.select();
+  }else{
+  	var istart = parseInt(text.selectionStart);
+  	var iend = parseInt(text.selectionEnd);
+  	var tstart = parseInt(textarea.selectionStart);
+  	var tend = parseInt(textarea.selectionEnd);
+  	text.setSelectionRange(istart+2,iend+2);
+    textarea.setSelectionRange(tstart+3,tend+3);
+    text.focus();
+    //textarea.focus();
+  }
+}
+</script>
+</head>
+
+<body>
+<p id="ptext">是当前表达式模式首次匹配内容的开始位置，从0开始计数。其初始值为-1，每次成功匹配时，index属性都会随之改变。是当前表达式模式首次匹配内容的开始位置，从0开始计数。其初始值为-1，每次成功匹配时，index属性都会随之改变。是当前表达式模式首次匹配内容的开始位置，从0开始计数。其初始值为-1，每次成功匹配时，index属性都会随之改变。是当前表达式模式首次匹配内容的开始位置，从0开始计数。其初始值为-1，每次成功匹配时，index属性都会随之改变。是当前表达式模式首次匹配内容的开始位置，从0开始计数。其初始值为-1，每次成功匹配时，index属性都会随之改变。是当前表达式模式首次匹配内容的开始位置，从0开始计数。其初始值为-1，每次成功匹配时，index属性都会随之改变。</p>
+<span id="span">fx</span>
+<p id="pt">是当前表达式模式首次匹配内容的开始位置</p>
+<input type="text" id="text" value="是当是当前表达"/>
+<textarea id="textarea" >是当前表达式模式首次匹配内容的开始位置</textarea>
+</body>
+</html>

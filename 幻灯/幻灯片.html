@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>New Web Project</title>
+        <style>
+            *{padding:0;margin:0;}
+            ul,ol{font-style:normal;}
+            /*幻灯一*/
+            #box{height:150px;overflow:hidden;margin:30px auto;width:400px;position:relative;}
+            #box ul{width:400px;position:absolute;top:0;left:0;}
+            #box ul li{height:150px;overflow:hidden;}
+            #box ol{position:absolute;top:120px;right:5px;overflow:hidden;zoom:1;}
+            #box ol li{color:#fff;background:#ccc;float:left;width:18px;height:18px;margin:0 4px;display:inline;text-align:center;line-height:18px;cursor:pointer;}
+            #box ol .active{background:#ff0000;}
+            #box .play{height:150px;overflow:hidden;}
+            
+            
+        </style>
+        <script type="text/javascript" src="move.js"></script>
+        <script type="text/javascript">
+            window.onload = function()
+            {
+                var oBox = document.getElementById('box');
+                var oUl = oBox.getElementsByTagName('ul')[0];
+                var oOl = oBox.getElementsByTagName('ol')[0];
+                var aoLi = oOl.getElementsByTagName('li');
+                var iNow = 0;
+                var timer=null;
+                
+                aoLi[0].className = 'active';
+                for(var i=0;i<aoLi.length;i++)
+                {
+                    aoLi[i].index = i;
+                    aoLi[i].onmouseover = function()
+                    {
+                        clearInterval(timer);
+                        addRoot();
+                        aoLi[this.index].className='active';
+                        startMove(oUl,{"top":-150*this.index});
+                    }
+                    
+                    aoLi[i].onmouseout = function()
+                    {
+                        toRun(this.index);
+                    }
+                }
+                
+                function addRoot()
+                {
+                    for(var i=0;i<aoLi.length;i++)
+                    {
+                        aoLi[i].className = '';
+                    }
+                }
+                toRun(0);
+
+                function toRun(index)
+                {
+                    clearInterval(timer);
+                    timer = setInterval(function(){
+                       if(index==aoLi.length-1)
+                       {
+                          index=-1; 
+                       } 
+                       index++;
+                       startMove(oUl,{"top":-150*index});
+                       addRoot(); 
+                       aoLi[index].className='active';
+                    },5000);
+                    
+                }
+                
+            }
+        </script>
+    </head>
+    <body>
+       
+       <!--幻灯一--> 
+       <div id="box">
+           <div class="play">
+               <ul>
+                   <li><img src="img/1.jpg" width="400" height="150" alt=""/></li>
+                   <li><img src="img/2.jpg" width="400" height="150" alt=""/></li>
+                   <li><img src="img/3.jpg" width="400" height="150" alt=""/></li>
+                   <li><img src="img/4.jpg" width="400" height="150" alt=""/></li>
+              </ul>
+           </div>
+           <ol>
+               <li>1</li>
+               <li>2</li>
+               <li>3</li>
+               <li>4</li>
+           </ol>
+       </div> 
+       
+       
+    </body>
+</html>
+

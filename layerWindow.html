@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>输入法</title>
+<style type="text/css">
+	*{padding:0;margin:0;}
+	ul li{list-style:none;}
+	#window{position:absolute;width:310px;height:210px;z-index:10;display:none;}
+	#window .con_window{width:300px;height:200px;-moz-border-radius:3px;-webkit-border-radius:3px;-o-border-radius:3px;-ms-border-radius:3px;border-radius:3px;border:5px solid rgb(128,128,128);position:absolute;}
+	.c_window{width:300px;height:200px;background:#fff;}
+	.gb_window{position:absolute;background:url(img/gb_cha.gif) no-repeat left top;width:32px;height:32px;opacity:0.7;filter:alpha(opacity=70);right:0;top:0;}
+	.clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden;}
+	*html .clearfix{height:1%;}
+</style>
+<script type="text/javascript" src="/jquery/jquery-1.7.1.js"></script>
+<script type="text/javascript" src="/ajax/ajax.js"></script>
+<script type="text/javascript">
+/*
+  
+*/
+window.onload = function()
+{
+   /*setTimeout(function(){
+      layerWindow({
+      id:'window',
+      pos:{
+         posLeft:'',
+         posTop:''
+      }
+     });
+   },1000);*/
+   layerWindow({
+   	id:'window',
+   	pos:{
+       posLeft:'',
+       posTop:''
+    }
+   });
+}
+//函数定义
+function layerWindow(prame)
+{
+   var id = prame.id || '';
+   if(!id)
+   {
+      alert("请输入弹层容器ID号");
+   }
+   var oMain = document.getElementById(id);
+   if(!oMain)
+   {
+      return false;
+   }
+   var iflg = false;
+   var oMainWidth = parseInt(css(oMain,"width"));
+   var oMainHeight = parseInt(css(oMain,"height"));
+   var oClientWidth = document.documentElement.clientWidth;
+   var oClientHeight = Math.max(document.documentElement.clientHeight,document.body.offsetHeight);
+   var gb_window = getByClass(oMain,"gb_window")[0];
+   var con_window = getByClass(oMain,"con_window")[0];
+   //参数
+   var pos = prame.pos || {};
+   var posLeft = pos.posLeft || (oClientWidth-oMainWidth)/2;
+   var posTop = pos.posTop || (oClientHeight-oMainHeight)/2;
+   if(!gb_window || !con_window)
+   {
+      return false;
+   }
+   
+   //iframe imarke
+   createTag();
+   gb_window.onclick = function()
+   { 
+      if(css(oMain,"display") === "block")
+      { 
+      	 iflg = true;
+         css(oMain,"display","none");
+         createTag();
+      }
+      return false;
+   }
+   gb_window.onfocus = function()
+   {
+      this.blur();
+   }
+   function createTag()
+   {
+   	  if(iflg)
+   	  {  
+   	  	  var oIframe = getByClass(document,id+"iframe"); 
+   	  	  var oImarke = getByClass(document,id+"imarke"); 
+          document.body.removeChild(oIframe[0]);
+          document.body.removeChild(oImarke[0]); 
+   	  }else{
+        //初始化弹层位置
+        css(oMain,"display","block");
+        css(oMain,"left",posLeft);
+        css(oMain,"top",posTop); 
+        var iFrame = document.createElement("iframe");
+        var iFrame1 = document.createElement("iframe");
+	   	  var iMarke = document.createElement("div");
+	   	  iFrame.className=id+"iframe";
+	   	  iMarke.className=id+"imarke";
+	   	  css(iFrame,"position","absolute");
+	   	  css(iFrame,"width",oMainWidth);
+	   	  css(iFrame,"height",oMainHeight);
+	   	  css(iFrame,"left",posLeft);
+	   	  css(iFrame,"top",posTop);
+	   	  css(iFrame,"opacity",0);
+	   	  css(iFrame,"zIndex",6);
+        css(iFrame1,"position","absolute");
+        css(iFrame1,"width",oClientWidth-20);
+        css(iFrame1,"height",oClientHeight-20);
+        css(iFrame1,"left",0);
+        css(iFrame1,"top",0);
+        css(iFrame1,"opacity",0);
+        css(iFrame1,"zIndex",3);
+	   	  css(iMarke,"position","absolute");
+	   	  css(iMarke,"left",0);
+	   	  css(iMarke,"top",0);
+	   	  css(iMarke,"width",oClientWidth);
+	   	  css(iMarke,"height",oClientHeight);
+	   	  css(iMarke,"backgroundColor","#000");
+	   	  css(iMarke,"opacity",0.5);
+	   	  css(iMarke,"zIndex",5);
+	   	  document.body.appendChild(iFrame);
+        document.body.appendChild(iFrame1);
+	   	  document.body.appendChild(iMarke);
+   	    iflg = true;
+   	  }
+   }
+   //获取指定class名对象
+   function getByClass(oMain,sClass)
+   {
+       var result = [];
+       var aElems = oMain.getElementsByTagName("*");
+       var regClass = eval("/\\b"+sClass+"\\b/");
+       for(var i=0;i<aElems.length;i++)
+       {
+           if(regClass.test(aElems[i].className))
+           {
+              result.push(aElems[i]);
+           }
+       }
+       return result;
+   }
+   //设置获取CSS值
+   function css(obj,attr,value)
+   {
+      if(arguments.length===2)
+      {
+         return obj.currentStyle?obj.currentStyle[attr]:document.defaultView.getComputedStyle(obj,false)[attr];
+      }else{
+         switch(attr)
+         {
+         	case "width":
+         	case "height":
+         	case "paddingLeft":
+         	case "paddingRight":
+         	case "paddingTop":
+         	case "paddingBottom":
+         	     obj.style[attr] = Math.max(value,0)+"px";
+         	case "top":
+         	case "bottom":
+         	case "left":
+         	case "right":
+         	     obj.style[attr] = value+"px";
+         	case "opacity":
+         	     obj.style.opacity = value;
+         	     obj.style.filter = "alpha(opacity="+value*100+")";
+         	default:
+         	     obj.style[attr] = value;
+         }
+      }
+   }
+}
+</script>
+</head>
+<body style="height:1000px;">
+<div id="window">
+ <div class="con_window">
+  <div class="c_window">
+  
+  </div>
+  <a href="" id="gb_window" class="gb_window"></a>
+ </div>
+</div>
+<select style="margin:100px;">
+ <option>sdfsdfsf</option>
+ <option>sdfsdfsf</option>
+ <option>sdfsdfsf</option>
+ <option>sdfsdfsf</option>
+</select>
+</body>
+</html>

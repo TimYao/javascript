@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+<html>
+<body>
+<style>
+    .div{width:5px;height: 5px;background-color:#000;}
+</style>
+
+
+<canvas id="myCanvas" width="300" height="300" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+<canvas id="myCanvas1" width="300" height="300" style="border:1px solid #d3d3d3;">
+    Your browser does not support the HTML5 canvas tag.
+</canvas>
+<script>
+
+/***********三角轨迹canvas实现***************/
+var c=document.getElementById("myCanvas");
+var ctx=c.getContext("2d");
+ctx.beginPath();
+ctx.lineWidth = 2;
+//ctx.fillStyle = "red";
+ctx.strokeStyle = "blue";
+ctx.translate(150, 150);
+ctx.moveTo(-100,50);
+for(var i=0;i<3;i++)
+{
+    ctx.rotate(2*Math.PI/3);
+    ctx.lineTo(-100,50);
+}
+//ctx.fill();
+//ctx.rotate(Math.PI*2/3);
+//ctx.lineTo(200,10);
+ctx.stroke();
+ctx.closePath();
+c.restore();
+
+
+/******************椭圆轨迹canvas实现两种方式************************/
+paramEllipse(document.getElementById('myCanvas').getContext('2d'),30,30,100,50);
+function paramEllipse(context, x, y, a, b)
+{
+    context.translate(100,100);
+    var step = (a > b) ? 1 / a : 1 / b;  //控制长轴和短轴比例，相等画出圆
+    context.beginPath();
+    context.lineWidth=2;
+    for (var i = 0; i < 2 * Math.PI; i += step)
+    {
+        context.lineTo(x + a * Math.cos(i), y + b * Math.sin(i));
+    }
+    context.closePath();
+    context.stroke();
+};
+
+testcanvas(document.getElementById('myCanvas1').getContext('2d'),50,50,40,30);
+function testcanvas(context,x,y,a,b)
+{
+    var r = a>b ? a: b;
+    var rx = a/r;
+    var ry = b/r;
+    context.strokeStyle="#000";
+    context.scale(rx,ry);   //利用canvas本方法按比例缩放实现
+    context.beginPath();
+    context.arc(x,y,r,0,2*Math.PI);
+    context.closePath();
+    context.stroke();
+}
+</script>
+<script type="text/javascript">
+
+    /*
+    * 几何圆推导出椭圆轨迹方程,a,b决定是椭圆还是圆,当a=b=r是按圆实现轨迹
+    * 利用x=cosdeg*a y=sindeg*b  分别加偏移量cx,cy（圆心点）
+    *
+    */
+    //画圆
+    var deg=-1;   //控制度数
+    var cx = 200;
+    var cy = 200;
+    var r = 200;
+    var t = null;
+    t=setInterval(
+            function()
+            {
+                if(deg>=360)
+                {
+                    clearInterval(t);
+                    t=null;
+                    return false;
+                }
+                deg++;
+                x = cx + r*Math.cos(deg*Math.PI/180)+"px";
+                y = cx + r*Math.sin(deg*Math.PI/180)+"px";
+                document.body.innerHTML +="<div id='"+deg+"' style='position:absolute;margin:0px;width:5px; height:5px; background-color:black; left:"+x+"; top:"+y+";'></div>"
+            },
+    10);
+
+     //推导出画椭圆
+     var degy=-1;
+     var degx=-1;
+     var deg = -1;
+     var a = 200;
+     var b = 100;
+     var cx = 200;
+     var cy = 200;
+     var t = null;
+     t = setInterval(
+             function()
+             {
+                 if(degx>=360 && degy>=360)
+                 {
+                      clearInterval(t);
+                      t = null;
+                      return false;
+                 }
+                 degx++;
+                 degy++;
+                 x = cx + a*Math.cos(degx*Math.PI/180)+"px";
+                 y = cy + b*Math.sin(degy*Math.PI/180)+"px";
+                 document.body.innerHTML +="<div id='"+deg+"' style='position:absolute;margin:0px;width:5px; height:5px; background-color:black; left:"+x+"; top:"+y+";'></div>"
+             },
+     10);
+</script>
+</body>
+</html>

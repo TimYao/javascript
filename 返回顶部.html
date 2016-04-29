@@ -45,7 +45,9 @@ window.onload = function(){
            var s = document.documentElement.scrollTop = document.body.scrollTop = scrollH+ispeed;
            btn = false;
         }
-        window.onscroll = function()
+        	  
+    },30); 
+    window.onscroll = function()
         {
           var sc = document.documentElement.scrollTop || document.body.scrollTop; 
     	    if(window.attachEvent&&navigator.userAgent.indexOf("MSIE 6.0")>-1)
@@ -58,8 +60,7 @@ window.onload = function(){
           }else{
             btn=true;
           }
-        }	  
-    },30);     
+        }
   }
 };
 

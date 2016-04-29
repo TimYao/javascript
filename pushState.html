@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html>
+<body style="height:3000px;">
+
+<script src="../../js/web/libs/jquery-1.11.1.min.js"></script>
+
+
+<a href="" name="md" id="md">ddddd</a>
+<div class="box f9 fix" style="height:1000px">
+    <a href="#prettyGirl" class="l mr10" data-a = 1 id="l"><img border="0" src="http://image.zhangxinxu.com/image/study/s/s128/mm2.jpg" /></a>
+    <div class="content">
+        <p><a href="#prettyGirl">大美女一枚</a> 来自上海</p>
+        <p class="mt5">签名：想找个保鲜盒把你给我的那些感动都装起来。当你让我伤心的时候就拿出来回味一下。</p>
+        <p class="mt5">微博：坐在办公室，只听轰隆隆几声巨响，晴天也能打雷吗？原来街对面的芭莎咖啡厅被炸成了两截。这定点爆破也太失败了，也不清下场，把路过的汽车震得灰头土脸，愣在路中央不知如何是好。其次，房子只炸了一半，另一半屹立不倒，是乍药太水还是房子质量太好？</p>
+    </div>
+</div>
+
+<a href="" type="a" id="a">这里测试</a>
+<script>
+    var host = window.location.host;
+    var path = window.location.pathname;
+    var olderp;
+    $("#a").on('click',function(){
+        var type = $(this).attr('type');
+        if(window.history.pushState)
+        {
+            var state = {
+                title: 'cc',
+                url: host+path+'?'+type+'=1#md',
+                otherkey: 'k'
+            };
+            window.history.pushState(state, document.title, ('?'+type+'=1#md'));
+        }
+        $.ajax({
+            url:'../../test/test.php',
+            data:{
+                dataid:1
+            },
+            type:'get',
+            success:function(res){
+                $("#content").html('数据在这里');
+                $(window).scrollTop($("#md").offset().top);
+                return true;
+
+            }
+        });
+
+        return false;
+    });
+    window.addEventListener('popstate', function(e){
+        if (history.state){
+            var state = e.state;
+            state.url = location.href;
+            location.search ? ($(window).scrollTop($("#md").offset().top)) : void(0);
+        }
+    }, false);
+    function triggerh()
+    {
+        var href = location.href;
+        var search = location.search;
+        var urls = '';
+        if(window.history.pushState)
+        {
+            if(!window.history.state)
+            {
+                var state = {
+                    title: 'cc',
+                    url: href,
+                    otherkey: 'k'
+                };
+                urls = search?search+"#md":'';
+                window.history.pushState(state, document.title, urls);
+                window.history.state.url = location.href;
+            }
+
+        }
+    }
+    triggerh();
+</script>
+<div id="content">dfgdfgdfg</div>
+</body>
+</html>
